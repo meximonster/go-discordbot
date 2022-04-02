@@ -40,6 +40,35 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	checkAndReact(m, s)
+	checkForBet(m, s)
+}
+
+func checkForBet(m *discordgo.MessageCreate, s *discordgo.Session) {
+	// Message was sent to pad-bets channel.
+	if m.ChannelID == messageConfig.ChannelID {
+		// Author is pad.
+		if m.Author.ID == messageConfig.UserID {
+			if betRegexp1.MatchString(m.Content) || betRegexp2.MatchString(m.Content) || betRegexp3.MatchString(m.Content) || betRegexp4.MatchString(m.Content) {
+				words := strings.Split(m.Content, " ")
+				for i := range words {
+					if unitsRegexp.MatchString(words[i]) {
+						betSizeStr := words[i][:strings.IndexByte(words[i], 'u')]
+						betSizeInt, err := strconv.Atoi(betSizeStr)
+						if err != nil {
+							fmt.Println("error converting betSize to int: ", err)
+						}
+						if betSizeInt >= 15 {
+							s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("@here possible bet with %d stake was just posted.", betSizeInt))
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+func checkAndReact(m *discordgo.MessageCreate, s *discordgo.Session) {
 	// Check for goal.
 	if m.ChannelID == messageConfig.ChannelID && goalRegexp.MatcherString(m.Content, 0).MatchString(m.Content, 0) {
 		s.ChannelMessageSend(messageConfig.ChannelID, "GOOOOOOOAAAAAAAAAAAAAAAALLLLL !!!!")
@@ -81,28 +110,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		})
 		if err != nil {
 			fmt.Println("error sending image: ", err)
-		}
-	}
-
-	// Message was sent to pad-bets channel.
-	if m.ChannelID == messageConfig.ChannelID {
-		// Author is pad.
-		if m.Author.ID == messageConfig.UserID {
-			if betRegexp1.MatchString(m.Content) || betRegexp2.MatchString(m.Content) || betRegexp3.MatchString(m.Content) || betRegexp4.MatchString(m.Content) {
-				words := strings.Split(m.Content, " ")
-				for i := range words {
-					if unitsRegexp.MatchString(words[i]) {
-						betSizeStr := words[i][:strings.IndexByte(words[i], 'u')]
-						betSizeInt, err := strconv.Atoi(betSizeStr)
-						if err != nil {
-							fmt.Println("error converting betSize to int: ", err)
-						}
-						if betSizeInt >= 15 {
-							s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("@here possible bet with %d stake was just posted.", betSizeInt))
-						}
-					}
-				}
-			}
 		}
 	}
 }
