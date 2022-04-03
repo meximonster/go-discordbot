@@ -12,7 +12,7 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		if err != nil {
 			fmt.Println("error getting message from reaction: ", err)
 		}
-		if betRegexp1.MatchString(m.Content) || betRegexp2.MatchString(m.Content) || betRegexp3.MatchString(m.Content) || betRegexp4.MatchString(m.Content) {
+		if isBet(m.Content) {
 			if r.Emoji.Name == "✅" {
 				s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("*** %s ----> *** WON!", m.Content))
 			} else {
