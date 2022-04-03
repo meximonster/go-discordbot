@@ -9,10 +9,10 @@ import (
 )
 
 var (
-	betRegexp1  = regexp.MustCompile(`(.*?)(o|over|u|under)[0-9]{1,2}([.]5)? [0-9]{1,3}u(.*)`)
-	betRegexp2  = regexp.MustCompile(`(.*?)[0-9]{1,3}u (o|over|u|under)[0-9]{1,2}([.]5)?(.*)`)
-	betRegexp3  = regexp.MustCompile(`(.*?)(o|over|u|under)[0-9]{1,2}([.]5)?(.*?)[0-9]{1,3}u(.*)`)
-	betRegexp4  = regexp.MustCompile(`(.*?)[0-9]{1,3}u(.*?)(o|over|u|under)[0-9]{1,2}([.]5)?(.*)`)
+	betRegexp1  = regexp.MustCompile(`(.*?)((o|over|u|under)[0-9]{1,2}([.]5)?|X|x) [0-9]{1,3}u(.*)`)
+	betRegexp2  = regexp.MustCompile(`(.*?)[0-9]{1,3}u ((o|over|u|under)[0-9]{1,2}([.]5)?|X|x)(.*)`)
+	betRegexp3  = regexp.MustCompile(`(.*?)((o|over|u|under)[0-9]{1,2}([.]5)?|X|x)(.*?)[0-9]{1,3}u(.*)`)
+	betRegexp4  = regexp.MustCompile(`(.*?)[0-9]{1,3}u(.*?)((o|over|u|under)[0-9]{1,2}([.]5)?|X|x)(.*)`)
 	goalRegexp  = pcre.MustCompile(`([0-9])\1{2,}$`, 0)
 	unitsRegexp = regexp.MustCompile(`^[0-9]{1,3}u(.*?)`)
 )
