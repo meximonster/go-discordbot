@@ -14,9 +14,9 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		}
 		if betRegexp1.MatchString(m.Content) || betRegexp2.MatchString(m.Content) || betRegexp3.MatchString(m.Content) || betRegexp4.MatchString(m.Content) {
 			if r.Emoji.Name == "✅" {
-				s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("*** %s ----> considered WON! ***", m.Content))
+				s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("*** %s ----> *** WON!", m.Content))
 			} else {
-				s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("*** %s *** ----> considered lost ***", m.Content))
+				s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("*** %s *** ----> *** lost", m.Content))
 			}
 		}
 	}
