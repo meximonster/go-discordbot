@@ -60,6 +60,11 @@ func checkForBet(channel string, author string, content string, s *discordgo.Ses
 func checkAndRespond(m *discordgo.MessageCreate, s *discordgo.Session) {
 	content := strings.ToLower(m.Content)
 
+	// return repo url.
+	if m.Content == "!git" {
+		s.ChannelMessageSend(m.ChannelID, "https://github.com/meximonster/go-discordbot")
+	}
+
 	// Check for goal.
 	if m.ChannelID == messageConfig.ChannelID && bets.IsGoal(m.Content) {
 		s.ChannelMessageSend(messageConfig.ChannelID, "GOOOOOOOAAAAAAAAAAAAAAAALLLLL !!!!")
