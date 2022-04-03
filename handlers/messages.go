@@ -84,15 +84,3 @@ func checkAndRespond(m *discordgo.MessageCreate, s *discordgo.Session) {
 		respondWithImage(m.ChannelID, "gamw thn panagia", "https://www.in.gr/wp-content/uploads/2019/08/23.png", s)
 	}
 }
-
-func respondWithImage(channel string, title string, imageURL string, s *discordgo.Session) {
-	_, err := s.ChannelMessageSendEmbed(channel, &discordgo.MessageEmbed{
-		Title: title,
-		Image: &discordgo.MessageEmbedImage{
-			URL: imageURL,
-		},
-	})
-	if err != nil {
-		fmt.Println("error sending image: ", err)
-	}
-}
