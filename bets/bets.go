@@ -57,7 +57,7 @@ func Decouple(content string, result string) *Bet {
 	for _, s := range words {
 
 		if IsOdds(s) {
-			bet.Odds = strings.ReplaceAll(s, "@", "")
+			bet.Odds = strings.Replace(s, "@", "", 1)
 			continue
 		}
 
