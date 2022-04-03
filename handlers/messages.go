@@ -70,13 +70,15 @@ func checkForBet(m *discordgo.MessageCreate, s *discordgo.Session) {
 }
 
 func checkAndReact(m *discordgo.MessageCreate, s *discordgo.Session) {
+	content := strings.ToLower(m.Content)
+
 	// Check for goal.
 	if m.ChannelID == messageConfig.ChannelID && goalRegexp.MatcherString(m.Content, 0).MatchString(m.Content, 0) {
 		s.ChannelMessageSend(messageConfig.ChannelID, "GOOOOOOOAAAAAAAAAAAAAAAALLLLL !!!!")
 	}
 
 	// Check for messages related to covid.
-	if strings.Contains(m.Content, "corona") || strings.Contains(m.Content, "korona") || strings.Contains(m.Content, "covid") {
+	if strings.Contains(content, "corona") || strings.Contains(content, "korona") || strings.Contains(content, "covid") {
 		_, err := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
 			Title: "covid???",
 			Image: &discordgo.MessageEmbedImage{
@@ -89,7 +91,7 @@ func checkAndReact(m *discordgo.MessageCreate, s *discordgo.Session) {
 	}
 
 	// Check for messages related to kouvas.
-	if strings.Contains(m.Content, "kouvas") || strings.Contains(m.Content, "κουβας") || strings.Contains(m.Content, "κουβά") {
+	if strings.Contains(content, "kouvas") || strings.Contains(content, "κουβας") || strings.Contains(content, "κουβά") {
 		_, err := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
 			Title: "kouvas",
 			Image: &discordgo.MessageEmbedImage{
@@ -102,7 +104,7 @@ func checkAndReact(m *discordgo.MessageCreate, s *discordgo.Session) {
 	}
 
 	// Check for messages related to panagia.
-	if strings.Contains(m.Content, "panagia") || strings.Contains(m.Content, "παναγία") || strings.Contains(m.Content, "παναγια") {
+	if strings.Contains(content, "panagia") || strings.Contains(content, "παναγία") || strings.Contains(content, "παναγια") {
 		_, err := s.ChannelMessageSendEmbed(m.ChannelID, &discordgo.MessageEmbed{
 			Title: "gamw thn panagia",
 			Image: &discordgo.MessageEmbedImage{
