@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/meximonster/go-discordbot/bets"
 )
 
 var messageConfig *MessageInfo
@@ -38,10 +39,10 @@ func checkForBet(channel string, author string, content string, s *discordgo.Ses
 	if channel == messageConfig.ChannelID {
 		// Author is pad.
 		if author == messageConfig.UserID {
-			if isBet(content) {
+			if bets.IsBet(content) {
 				words := strings.Split(content, " ")
 				for i := range words {
-					if unitsRegexp.MatchString(words[i]) {
+					if bets.IsUnits(words[i]) {
 						betSizeStr := words[i][:strings.IndexByte(words[i], 'u')]
 						betSizeInt, err := strconv.Atoi(betSizeStr)
 						if err != nil {
@@ -60,7 +61,7 @@ func checkAndRespond(m *discordgo.MessageCreate, s *discordgo.Session) {
 	content := strings.ToLower(m.Content)
 
 	// Check for goal.
-	if m.ChannelID == messageConfig.ChannelID && goalRegexp.MatcherString(m.Content, 0).MatchString(m.Content, 0) {
+	if m.ChannelID == messageConfig.ChannelID && bets.IsGoal(m.Content) {
 		s.ChannelMessageSend(messageConfig.ChannelID, "GOOOOOOOAAAAAAAAAAAAAAAALLLLL !!!!")
 	}
 
@@ -87,5 +88,17 @@ func checkAndRespond(m *discordgo.MessageCreate, s *discordgo.Session) {
 	// Check for messages related to panagia.
 	if strings.Contains(content, "panagia") || strings.Contains(content, "παναγία") || strings.Contains(content, "παναγια") {
 		respondWithImage(m.ChannelID, "gamw thn panagia", "https://www.in.gr/wp-content/uploads/2019/08/23.png", s)
+	}
+}
+
+func respondWithImage(channel string, title string, imageURL string, s *discordgo.Session) {
+	_, err := s.ChannelMessageSendEmbed(channel, &discordgo.MessageEmbed{
+		Title: title,
+		Image: &discordgo.MessageEmbedImage{
+			URL: imageURL,
+		},
+	})
+	if err != nil {
+		fmt.Println("error sending image: ", err)
 	}
 }
