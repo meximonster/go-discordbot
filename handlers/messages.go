@@ -69,6 +69,11 @@ func checkAndRespond(m *discordgo.MessageCreate, s *discordgo.Session) {
 		s.ChannelMessageSend(m.ChannelID, ":sweat_drops:")
 	}
 
+	// Check for messages related to begging for something.
+	if strings.Contains(content, "please") || strings.Contains(content, "plz") || strings.Contains(content, "pliz") {
+		s.MessageReactionAdd(m.ChannelID, m.ID, "🙏")
+	}
+
 	// Check for messages related to covid.
 	if strings.Contains(content, "corona") || strings.Contains(content, "korona") || strings.Contains(content, "covid") {
 		respondWithImage(m.ChannelID, "covid ????", "https://pbs.twimg.com/ext_tw_video_thumb/1239694832781512705/pu/img/zKpSNMMa_-8d9bFo.jpg", s)
