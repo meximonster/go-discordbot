@@ -30,7 +30,7 @@ func main() {
 
 	handlers.MessageConfigInit(c.ChannelID, c.UserID)
 
-	// Add handler for message and reaction events.
+	// Add handlers for message and reaction events.
 	dg.AddHandler(handlers.MessageCreate)
 	dg.AddHandler(handlers.ReactionCreate)
 
