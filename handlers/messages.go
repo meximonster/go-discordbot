@@ -57,6 +57,7 @@ func checkForBet(m *discordgo.MessageCreate, s *discordgo.Session) {
 						betSizeInt, err := strconv.Atoi(betSizeStr)
 						if err != nil {
 							fmt.Println("error converting betSize to int: ", err)
+							return
 						}
 						if betSizeInt >= 15 {
 							s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("@everyone possible bet with %du stake was just posted.", betSizeInt))
