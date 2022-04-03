@@ -34,7 +34,7 @@ func main() {
 	dg.AddHandler(handlers.MessageCreate)
 	dg.AddHandler(handlers.ReactionCreate)
 
-	// Only care about receiving message events.
+	// Add all intents that don't require privileges.
 	dg.Identify.Intents = discordgo.IntentsAllWithoutPrivileged
 
 	err = dg.Open()
