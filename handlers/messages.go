@@ -41,16 +41,16 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	checkAndReact(m, s)
-	checkForBet(m, s)
+	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
 }
 
-func checkForBet(m *discordgo.MessageCreate, s *discordgo.Session) {
+func checkForBet(channel string, author string, content string, s *discordgo.Session) {
 	// Message was sent to pad-bets channel.
-	if m.ChannelID == messageConfig.ChannelID {
+	if channel == messageConfig.ChannelID {
 		// Author is pad.
-		if m.Author.ID == messageConfig.UserID {
-			if betRegexp1.MatchString(m.Content) || betRegexp2.MatchString(m.Content) || betRegexp3.MatchString(m.Content) || betRegexp4.MatchString(m.Content) {
-				words := strings.Split(m.Content, " ")
+		if author == messageConfig.UserID {
+			if betRegexp1.MatchString(content) || betRegexp2.MatchString(content) || betRegexp3.MatchString(content) || betRegexp4.MatchString(content) {
+				words := strings.Split(content, " ")
 				for i := range words {
 					if unitsRegexp.MatchString(words[i]) {
 						betSizeStr := words[i][:strings.IndexByte(words[i], 'u')]
@@ -59,9 +59,7 @@ func checkForBet(m *discordgo.MessageCreate, s *discordgo.Session) {
 							fmt.Println("error converting betSize to int: ", err)
 							return
 						}
-						if betSizeInt >= 15 {
-							s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("@everyone possible bet with %du stake was just posted.", betSizeInt))
-						}
+						s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("@everyone possible bet with %du stake was just posted.", betSizeInt))
 					}
 				}
 			}
@@ -113,6 +111,22 @@ func checkAndReact(m *discordgo.MessageCreate, s *discordgo.Session) {
 		})
 		if err != nil {
 			fmt.Println("error sending image: ", err)
+		}
+	}
+}
+
+func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
+	if r.ChannelID == messageConfig.ChannelID && (r.Emoji.Name == "✅" || r.Emoji.Name == "❌") {
+		m, err := s.ChannelMessage(r.ChannelID, r.MessageID)
+		if err != nil {
+			fmt.Println("error getting message from reaction: ", err)
+		}
+		if betRegexp1.MatchString(m.Content) || betRegexp2.MatchString(m.Content) || betRegexp3.MatchString(m.Content) || betRegexp4.MatchString(m.Content) {
+			if r.Emoji.Name == "✅" {
+				s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("*** %s ----> considered WON! ***", m.Content))
+			} else {
+				s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("*** %s *** ----> considered lost ***", m.Content))
+			}
 		}
 	}
 }

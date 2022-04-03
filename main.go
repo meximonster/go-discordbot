@@ -32,9 +32,10 @@ func main() {
 
 	// Add handler for message events.
 	dg.AddHandler(handlers.MessageCreate)
+	dg.AddHandler(handlers.ReactionCreate)
 
 	// Only care about receiving message events.
-	dg.Identify.Intents = discordgo.IntentsGuildMessages
+	dg.Identify.Intents = discordgo.IntentsAllWithoutPrivileged
 
 	err = dg.Open()
 	if err != nil {
