@@ -59,7 +59,7 @@ func checkForBet(m *discordgo.MessageCreate, s *discordgo.Session) {
 							fmt.Println("error converting betSize to int: ", err)
 						}
 						if betSizeInt >= 15 {
-							s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("@here possible bet with %d stake was just posted.", betSizeInt))
+							s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("@everyone possible bet with %du stake was just posted.", betSizeInt))
 						}
 					}
 				}
