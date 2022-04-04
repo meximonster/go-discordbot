@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -41,15 +40,10 @@ func checkForBet(channel string, author string, content string, s *discordgo.Ses
 		if author == messageConfig.UserID {
 			if bets.IsBet(content) {
 				words := strings.Split(content, " ")
-				for i := range words {
-					if bets.IsUnits(words[i]) {
-						betSizeStr := words[i][:strings.IndexByte(words[i], 'u')]
-						betSizeInt, err := strconv.Atoi(betSizeStr)
-						if err != nil {
-							fmt.Println("error converting betSize to int: ", err)
-							return
-						}
-						s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("@everyone possible bet with %du stake was just posted.", betSizeInt))
+				for _, word := range words {
+					if bets.IsUnits(word) {
+						betSize := word[:strings.IndexByte(word, 'u')]
+						s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("@everyone possible bet with %su stake was just posted.", betSize))
 					}
 				}
 			}

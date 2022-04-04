@@ -49,25 +49,23 @@ func IsGoal(content string) bool {
 	return goalRegexp.MatcherString(content, 0).MatchString(content, 0)
 }
 
-func Decouple(content string, result string) *Bet {
-	bet := &Bet{}
+func (b *Bet) Decouple(content string, result string) {
 	words := strings.Split(content, " ")
 	var team string
-	bet.Result = result
 	for _, s := range words {
 
 		if IsOdds(s) {
-			bet.Odds = strings.Replace(s, "@", "", 1)
+			b.Odds = strings.Replace(s, "@", "", 1)
 			continue
 		}
 
 		if IsPrediction(s) {
-			bet.Prediction = s
+			b.Prediction = s
 			continue
 		}
 
 		if IsUnits(s) {
-			bet.Size = s
+			b.Size = s
 			continue
 		}
 
@@ -79,11 +77,7 @@ func Decouple(content string, result string) *Bet {
 		}
 	}
 
-	bet.Team = team
+	b.Team = team
+	b.Result = result
 
-	if bet.Team == "" || bet.Size == "" || bet.Prediction == "" {
-		return &Bet{}
-	}
-
-	return bet
 }

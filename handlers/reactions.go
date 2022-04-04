@@ -18,12 +18,12 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 			switch r.Emoji.Name {
 			case "✅":
 				s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("***"+"%s ----> WON!"+"***", m.Content))
-				b = bets.Decouple(m.Content, "won")
+				b.Decouple(m.Content, "won")
 			case "❌":
 				s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("***"+"%s ----> lost"+"***", m.Content))
-				b = bets.Decouple(m.Content, "lost")
+				b.Decouple(m.Content, "lost")
 			}
-			s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("BET INFO: Team: %s, Prediction: %s, Size: %s, Odds: %s, Result: %s", b.Team, b.Prediction, b.Size, b.Odds, b.Result))
+			s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("BET INFO: Team: *%s*, Prediction: *%s*, Size: *%s*, Odds: *%s*, Result: *%s*", b.Team, b.Prediction, b.Size, b.Odds, b.Result))
 		}
 	}
 }
