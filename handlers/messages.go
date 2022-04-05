@@ -31,6 +31,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	checkAndRespond(m, s)
 	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
+	checkForBetQuery(m, s)
 }
 
 func checkForBet(channel string, author string, content string, s *discordgo.Session) {
@@ -99,5 +100,24 @@ func respondWithImage(channel string, title string, imageURL string, s *discordg
 	})
 	if err != nil {
 		fmt.Println("error sending image: ", err)
+	}
+}
+
+func checkForBetQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
+	if strings.HasPrefix(m.Content, "!bet") {
+		q := bets.ParseBetQuery(m.Content)
+		bets, err := bets.GetByQuery(q)
+		if err != nil {
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("error getting bets: %s", err.Error()))
+		}
+		betFormats := make([]string, len(bets))
+		for i, b := range bets {
+			betFormats[i] = fmt.Sprintf("%s %s %s ---> %s\n", b.Team, b.Prediction, b.Size, b.Result)
+		}
+		var result string
+		for i := range betFormats {
+			result = result + betFormats[i]
+		}
+		s.ChannelMessageSend(m.ChannelID, result)
 	}
 }

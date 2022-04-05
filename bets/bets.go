@@ -28,7 +28,7 @@ type Bet struct {
 	Size       string
 	Odds       float64
 	Result     string
-	Created_at time.Time
+	Posted_at  time.Time
 }
 
 func IsBet(content string) bool {
@@ -98,4 +98,11 @@ func DecoupleAndStore(content string, result string) (Bet, error) {
 	}
 
 	return b, nil
+}
+
+func ParseBetQuery(content string) string {
+	q := strings.Replace(content, "!bet ", "", 1)
+	qq := strings.Replace(q, "date", "posted_at::date", 1)
+	query := "SELECT * FROM bets WHERE " + strings.ReplaceAll(qq, " ", " AND ")
+	return query
 }

@@ -20,8 +20,18 @@ func (b *Bet) Store() error {
 
 func (b *Bet) GetById(id int) (*Bet, error) {
 	q := `SELECT id,team,prediction,size,odds,result,posted_at FROM bets`
-	if err := dbC.Get(&b, q, id); err != nil {
+	err := dbC.Get(&b, q, id)
+	if err != nil {
 		return &Bet{}, fmt.Errorf("error getting bet: %s", err.Error())
 	}
 	return b, nil
+}
+
+func GetByQuery(query string) ([]Bet, error) {
+	bets := []Bet{}
+	err := dbC.Select(&bets, query)
+	if err != nil {
+		return nil, err
+	}
+	return bets, nil
 }
