@@ -110,9 +110,10 @@ func ParseBetQuery(content string) string {
 	var args string
 	if strings.Contains(q, "date") {
 		args = strings.Replace(q, "date", "posted_at::date", 1)
-	}
-	if strings.Contains(q, "today") {
+	} else if strings.Contains(q, "today") {
 		args = strings.Replace(q, "today", "posted_at::date=CURRENT_DATE", 1)
+	} else {
+		args = q
 	}
 	query := "SELECT * FROM bets WHERE " + strings.ReplaceAll(args, " ", " AND ")
 	fmt.Println(query)
