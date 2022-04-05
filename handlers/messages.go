@@ -6,6 +6,7 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	"github.com/meximonster/go-discordbot/bets"
+	"github.com/meximonster/go-discordbot/queries"
 )
 
 var messageConfig *MessageInfo
@@ -105,7 +106,7 @@ func respondWithImage(channel string, title string, imageURL string, s *discordg
 
 func checkForBetQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
 	if m.ChannelID == messageConfig.ChannelID && strings.HasPrefix(m.Content, "!bet") {
-		q := bets.ParseBetQuery(m.Content)
+		q := queries.Parse(m.Content)
 		bets, err := bets.GetByQuery(q)
 		if err != nil {
 			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("error getting bets: %s", err.Error()))
