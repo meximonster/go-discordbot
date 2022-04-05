@@ -14,8 +14,7 @@ func NewDB(db *sqlx.DB) {
 
 func (b *Bet) Store() error {
 	q := `INSERT INTO bets (team,prediction,size,odds,result) VALUES ($1,$2,$3,$4,$5)`
-	r := dbC.MustExec(q, b.Team, b.Prediction, b.Size, b.Odds, b.Result)
-	fmt.Println(r)
+	_ = dbC.MustExec(q, b.Team, b.Prediction, b.Size, b.Odds, b.Result)
 	return nil
 }
 
