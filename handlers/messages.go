@@ -111,6 +111,9 @@ func checkForBetQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
 		if err != nil {
 			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("error getting bets: %s", err.Error()))
 		}
+		if len(bets) == 0 {
+			s.ChannelMessageSend(m.ChannelID, "no results found")
+		}
 		betFormats := make([]string, len(bets))
 		for i, b := range bets {
 			betFormats[i] = fmt.Sprintf("%s %s %d ---> %s\n", b.Team, b.Prediction, b.Size, b.Result)
