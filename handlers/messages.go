@@ -110,6 +110,7 @@ func checkForBetQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
 		bets, err := bets.GetByQuery(q)
 		if err != nil {
 			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("error getting bets: %s", err.Error()))
+			return
 		}
 		if len(bets) == 0 {
 			s.ChannelMessageSend(m.ChannelID, "no results found")

@@ -12,6 +12,7 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		m, err := s.ChannelMessage(r.ChannelID, r.MessageID)
 		if err != nil {
 			fmt.Println("error getting message from reaction: ", err)
+			return
 		}
 		if bets.IsBet(m.Content) {
 			var result string
