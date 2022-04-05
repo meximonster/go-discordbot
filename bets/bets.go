@@ -107,8 +107,14 @@ func DecoupleAndStore(content string, result string) (Bet, error) {
 
 func ParseBetQuery(content string) string {
 	q := strings.Replace(content, "!bet ", "", 1)
-	qq := strings.Replace(q, "date", "posted_at::date", 1)
-	query := "SELECT * FROM bets WHERE " + strings.ReplaceAll(qq, " ", " AND ")
+	var args string
+	if strings.Contains(q, "date") {
+		args = strings.Replace(q, "date", "posted_at::date", 1)
+	}
+	if strings.Contains(q, "today") {
+		args = strings.Replace(q, "today", "posted_at::date=CURRENT_DATE", 1)
+	}
+	query := "SELECT * FROM bets WHERE " + strings.ReplaceAll(args, " ", " AND ")
 	fmt.Println(query)
 	return query
 }
