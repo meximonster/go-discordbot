@@ -25,7 +25,7 @@ type Bet struct {
 	Id         string
 	Team       string
 	Prediction string
-	Size       string
+	Size       int
 	Odds       float64
 	Result     string
 	Posted_at  time.Time
@@ -73,7 +73,12 @@ func DecoupleAndStore(content string, result string) (Bet, error) {
 		}
 
 		if IsUnits(s) {
-			b.Size = s
+			o := strings.Replace(s, "u", "", 1)
+			i, err := strconv.Atoi(o)
+			if err != nil {
+				return Bet{}, fmt.Errorf("error parsing int: %s", err.Error())
+			}
+			b.Size = i
 			continue
 		}
 
@@ -88,8 +93,8 @@ func DecoupleAndStore(content string, result string) (Bet, error) {
 	b.Team = team
 	b.Result = result
 
-	if b.Team == "" || b.Prediction == "" || b.Size == "" {
-		return b, fmt.Errorf("discarding bet: INFO: Team: %s, Prediction: %s, Size: %s", b.Team, b.Prediction, b.Size)
+	if b.Team == "" || b.Prediction == "" || b.Size == 0 {
+		return b, fmt.Errorf("discarding bet: INFO: Team: %s, Prediction: %s, Size: %d", b.Team, b.Prediction, b.Size)
 	}
 
 	err := b.Store()
@@ -104,5 +109,6 @@ func ParseBetQuery(content string) string {
 	q := strings.Replace(content, "!bet ", "", 1)
 	qq := strings.Replace(q, "date", "posted_at::date", 1)
 	query := "SELECT * FROM bets WHERE " + strings.ReplaceAll(qq, " ", " AND ")
+	fmt.Println(query)
 	return query
 }

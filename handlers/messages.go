@@ -112,7 +112,7 @@ func checkForBetQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
 		}
 		betFormats := make([]string, len(bets))
 		for i, b := range bets {
-			betFormats[i] = fmt.Sprintf("%s %s %s ---> %s\n", b.Team, b.Prediction, b.Size, b.Result)
+			betFormats[i] = fmt.Sprintf("%s %s %d ---> %s\n", b.Team, b.Prediction, b.Size, b.Result)
 		}
 		var result string
 		for i := range betFormats {

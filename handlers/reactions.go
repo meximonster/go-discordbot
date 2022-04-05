@@ -28,7 +28,7 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 				s.ChannelMessageSend(messageConfig.ChannelID, err.Error())
 				return
 			}
-			s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("BET INFO: Team: *%s*, Prediction: *%s*, Size: *%s*, Odds: *%v*, Result: *%s*", b.Team, b.Prediction, b.Size, b.Odds, b.Result))
+			s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("BET INFO: Team: *%s*, Prediction: *%s*, Size: *%d*, Odds: *%v*, Result: *%s*", b.Team, b.Prediction, b.Size, b.Odds, b.Result))
 		}
 	}
 }
