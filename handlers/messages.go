@@ -113,6 +113,7 @@ func checkForBetQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
 		}
 		if len(bets) == 0 {
 			s.ChannelMessageSend(m.ChannelID, "no results found")
+			return
 		}
 		betFormats := make([]string, len(bets))
 		for i, b := range bets {
