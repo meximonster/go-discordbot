@@ -14,16 +14,21 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 			fmt.Println("error getting message from reaction: ", err)
 		}
 		if bets.IsBet(m.Content) {
-			var b *bets.Bet
+			var result string
 			switch r.Emoji.Name {
 			case "✅":
 				s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("***"+"%s ----> WON!"+"***", m.Content))
-				b.Decouple(m.Content, "won")
+				result = "won"
 			case "❌":
 				s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("***"+"%s ----> lost"+"***", m.Content))
-				b.Decouple(m.Content, "lost")
+				result = "lost"
 			}
-			s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("BET INFO: Team: *%s*, Prediction: *%s*, Size: *%s*, Odds: *%s*, Result: *%s*", b.Team, b.Prediction, b.Size, b.Odds, b.Result))
+			b, err := bets.DecoupleAndStore(m.Content, result)
+			if err != nil {
+				s.ChannelMessageSend(messageConfig.ChannelID, err.Error())
+				return
+			}
+			s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("BET INFO: Team: *%s*, Prediction: *%s*, Size: *%s*, Odds: *%v*, Result: *%s*", b.Team, b.Prediction, b.Size, b.Odds, b.Result))
 		}
 	}
 }

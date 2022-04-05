@@ -6,8 +6,13 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
+
+	"github.com/jmoiron/sqlx"
+	_ "github.com/lib/pq"
 
 	"github.com/bwmarrin/discordgo"
+	"github.com/meximonster/go-discordbot/bets"
 	"github.com/meximonster/go-discordbot/configuration"
 	"github.com/meximonster/go-discordbot/handlers"
 )
@@ -17,6 +22,15 @@ func init() {
 	if err != nil {
 		log.Fatal("error loading configuration: ", err)
 	}
+
+	db, err := sqlx.Connect("postgres", "postgres://127.0.0.1/postgres?sslmode=disable&user=postgres&password=postgres")
+	if err != nil {
+		log.Fatal("error connecting to db: ", err)
+	}
+	bets.NewDB(db)
+	db.SetMaxOpenConns(25)
+	db.SetMaxIdleConns(25)
+	db.SetConnMaxLifetime(5 * time.Minute)
 }
 
 func main() {

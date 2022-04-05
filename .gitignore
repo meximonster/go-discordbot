@@ -1,2 +1,6 @@
 # env file
 .env
+
+# postgres data
+
+**/postgres-data

@@ -1,7 +1,9 @@
 package bets
 
 import (
+	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
@@ -24,7 +26,7 @@ type Bet struct {
 	Team       string
 	Prediction string
 	Size       string
-	Odds       string
+	Odds       float64
 	Result     string
 	Created_at time.Time
 }
@@ -49,13 +51,19 @@ func IsGoal(content string) bool {
 	return goalRegexp.MatcherString(content, 0).MatchString(content, 0)
 }
 
-func (b *Bet) Decouple(content string, result string) {
+func DecoupleAndStore(content string, result string) (Bet, error) {
+	var b Bet
 	words := strings.Split(content, " ")
 	var team string
 	for _, s := range words {
 
 		if IsOdds(s) {
-			b.Odds = strings.Replace(s, "@", "", 1)
+			o := strings.Replace(s, "@", "", 1)
+			fl, err := strconv.ParseFloat(o, 64)
+			if err != nil {
+				return Bet{}, fmt.Errorf("error parsing float: %s", err.Error())
+			}
+			b.Odds = fl
 			continue
 		}
 
@@ -80,4 +88,14 @@ func (b *Bet) Decouple(content string, result string) {
 	b.Team = team
 	b.Result = result
 
+	if b.Team == "" || b.Prediction == "" || b.Size == "" {
+		return b, fmt.Errorf("discarding bet: INFO: Team: %s, Prediction: %s, Size: %s", b.Team, b.Prediction, b.Size)
+	}
+
+	err := b.Store()
+	if err != nil {
+		return b, fmt.Errorf("error storing bet: %s", err.Error())
+	}
+
+	return b, nil
 }

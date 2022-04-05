@@ -5,6 +5,8 @@ go 1.17
 require (
 	github.com/bwmarrin/discordgo v0.24.0
 	github.com/glenn-brown/golang-pkg-pcre v0.0.0-20120522223659-48bb82a8b8ce
+	github.com/jmoiron/sqlx v1.3.4
+	github.com/lib/pq v1.2.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
