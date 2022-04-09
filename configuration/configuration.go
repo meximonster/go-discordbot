@@ -8,10 +8,15 @@ import (
 
 var appConfig *Config
 
-type Config struct {
-	BotToken  string `yaml:"botToken"`
+type userConfig struct {
 	ChannelID string `yaml:"channelID"`
 	UserID    string `yaml:"userID"`
+}
+
+type Config struct {
+	BotToken string     `yaml:"botToken"`
+	Pad      userConfig `yaml:"pad"`
+	Fyk      userConfig `yaml:"fyk"`
 }
 
 func Load() error {

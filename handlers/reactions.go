@@ -8,7 +8,7 @@ import (
 )
 
 func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
-	if r.ChannelID == messageConfig.ChannelID && (r.Emoji.Name == "✅" || r.Emoji.Name == "❌") {
+	if (r.ChannelID == padMsgConf.ChannelID || r.ChannelID == fykMsgConf.ChannelID) && (r.Emoji.Name == "✅" || r.Emoji.Name == "❌") {
 		m, err := s.ChannelMessage(r.ChannelID, r.MessageID)
 		if err != nil {
 			fmt.Println("error getting message from reaction: ", err)
@@ -16,20 +16,26 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		}
 		if bets.IsBet(m.Content) {
 			var result string
+			var table string
 			switch r.Emoji.Name {
 			case "✅":
-				s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("***"+"%s ----> WON!"+"***", m.Content))
+				s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("***"+"%s ----> WON!"+"***", m.Content))
 				result = "won"
 			case "❌":
-				s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("***"+"%s ----> lost"+"***", m.Content))
+				s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("***"+"%s ----> lost"+"***", m.Content))
 				result = "lost"
 			}
-			b, err := bets.DecoupleAndStore(m.Content, result)
+			if r.ChannelID == padMsgConf.ChannelID {
+				table = "bets"
+			} else {
+				table = "polo_bets"
+			}
+			b, err := bets.DecoupleAndStore(m.Content, result, table)
 			if err != nil {
-				s.ChannelMessageSend(messageConfig.ChannelID, err.Error())
+				s.ChannelMessageSend(r.ChannelID, err.Error())
 				return
 			}
-			s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("BET INFO: Team: *%s*, Prediction: *%s*, Size: *%d*, Odds: *%v*, Result: *%s*", b.Team, b.Prediction, b.Size, b.Odds, b.Result))
+			s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("BET INFO: Team: *%s*, Prediction: *%s*, Size: *%d*, Odds: *%v*, Result: *%s*", b.Team, b.Prediction, b.Size, b.Odds, b.Result))
 		}
 	}
 }

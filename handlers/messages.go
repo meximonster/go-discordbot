@@ -9,17 +9,24 @@ import (
 	"github.com/meximonster/go-discordbot/queries"
 )
 
-var messageConfig *MessageInfo
+var (
+	padMsgConf *MessageInfo
+	fykMsgConf *MessageInfo
+)
 
 type MessageInfo struct {
 	ChannelID string
 	UserID    string
 }
 
-func MessageConfigInit(channel string, user string) {
-	messageConfig = &MessageInfo{
-		ChannelID: channel,
-		UserID:    user,
+func MessageConfigInit(padChannel string, padID string, fykChannel string, fykID string) {
+	padMsgConf = &MessageInfo{
+		ChannelID: padChannel,
+		UserID:    padID,
+	}
+	fykMsgConf = &MessageInfo{
+		ChannelID: fykChannel,
+		UserID:    fykID,
 	}
 }
 
@@ -36,17 +43,13 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 }
 
 func checkForBet(channel string, author string, content string, s *discordgo.Session) {
-	// Message was sent to pad-bets channel.
-	if channel == messageConfig.ChannelID {
-		// Author is pad.
-		if author == messageConfig.UserID {
-			if bets.IsBet(content) {
-				words := strings.Split(content, " ")
-				for _, word := range words {
-					if bets.IsUnits(word) {
-						betSize := word[:strings.IndexByte(word, 'u')]
-						s.ChannelMessageSend(messageConfig.ChannelID, fmt.Sprintf("@everyone possible bet with %su stake was just posted.", betSize))
-					}
+	if (channel == padMsgConf.ChannelID && author == padMsgConf.UserID) || (channel == fykMsgConf.ChannelID && author == fykMsgConf.UserID) {
+		if bets.IsBet(content) {
+			words := strings.Split(content, " ")
+			for _, word := range words {
+				if bets.IsUnits(word) {
+					betSize := word[:strings.IndexByte(word, 'u')]
+					s.ChannelMessageSend(padMsgConf.ChannelID, fmt.Sprintf("@everyone possible bet with %su stake was just posted.", betSize))
 				}
 			}
 		}
@@ -62,8 +65,8 @@ func checkAndRespond(m *discordgo.MessageCreate, s *discordgo.Session) {
 	}
 
 	// Check for goal.
-	if m.ChannelID == messageConfig.ChannelID && bets.IsGoal(m.Content) {
-		s.ChannelMessageSend(messageConfig.ChannelID, "GOOOOOOOAAAAAAAAAAAAAAAALLLLL !!!!")
+	if m.ChannelID == padMsgConf.ChannelID && bets.IsGoal(m.Content) {
+		s.ChannelMessageSend(padMsgConf.ChannelID, "GOOOOOOOAAAAAAAAAAAAAAAALLLLL !!!!")
 	}
 
 	// Check for messages related to aalesund.
@@ -105,7 +108,7 @@ func respondWithImage(channel string, title string, imageURL string, s *discordg
 }
 
 func checkForBetQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
-	if m.ChannelID == messageConfig.ChannelID && strings.HasPrefix(m.Content, "!bet") {
+	if m.ChannelID == padMsgConf.ChannelID && strings.HasPrefix(m.Content, "!bet") {
 		q := queries.Parse(m.Content)
 		bets, err := bets.GetByQuery(q)
 		if err != nil {
