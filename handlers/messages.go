@@ -78,15 +78,18 @@ func checkAndRespond(m *discordgo.MessageCreate, s *discordgo.Session) {
 
 	if m.Content == "!giannakis" {
 		rng := rand.Intn(10)
-		var image string
+		var image, text string
 		if rng < 3 {
 			image = "https://i.imgur.com/VocVxhr.jpg"
+			text = "mpainei ez"
 		} else if rng >= 3 && rng < 7 {
 			image = "https://i.imgur.com/yBw8qEU.jpg"
+			text = "eixame"
 		} else {
 			image = "https://i.imgur.com/vfyPcEB.jpg"
+			text = "irtha kai to vazw"
 		}
-		respondWithImage(m.ChannelID, "tha mpei", image, s)
+		respondWithImage(m.ChannelID, text, image, s)
 	}
 
 	// Check for goal.
