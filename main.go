@@ -63,6 +63,7 @@ func main() {
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
 
-	// Gracefully stop session.
+	// Gracefully stop session and close db connection.
+	bets.CloseDB()
 	dg.Close()
 }

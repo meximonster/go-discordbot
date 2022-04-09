@@ -1,6 +1,8 @@
 package bets
 
 import (
+	"fmt"
+
 	"github.com/jmoiron/sqlx"
 )
 
@@ -8,6 +10,13 @@ var dbC *sqlx.DB
 
 func NewDB(db *sqlx.DB) {
 	dbC = db
+}
+
+func CloseDB() {
+	err := dbC.Close()
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func (b *Bet) Store() error {
