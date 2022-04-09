@@ -75,6 +75,10 @@ func checkAndRespond(m *discordgo.MessageCreate, s *discordgo.Session) {
 		s.ChannelMessageSend(m.ChannelID, "https://github.com/meximonster/go-discordbot")
 	}
 
+	if m.Content == "!giannakis" {
+		respondWithImage(m.ChannelID, "tha mpei", "https://i.imgur.com/VocVxhr.jpg", s)
+	}
+
 	// Check for goal.
 	if m.ChannelID == padMsgConf.ChannelID && bets.IsGoal(m.Content) {
 		s.ChannelMessageSend(padMsgConf.ChannelID, "GOOOOOOOAAAAAAAAAAAAAAAALLLLL !!!!")
@@ -92,17 +96,17 @@ func checkAndRespond(m *discordgo.MessageCreate, s *discordgo.Session) {
 
 	// Check for messages related to covid.
 	if strings.Contains(content, "corona") || strings.Contains(content, "korona") || strings.Contains(content, "covid") {
-		respondWithImage(m.ChannelID, "covid ????", "https://pbs.twimg.com/ext_tw_video_thumb/1239694832781512705/pu/img/zKpSNMMa_-8d9bFo.jpg", s)
+		respondWithImage(m.ChannelID, "covid ????", "https://i.imgur.com/Ydm7d7l.jpg", s)
 	}
 
 	// Check for messages related to kouvas.
 	if strings.Contains(content, "kouvas") || strings.Contains(content, "κουβας") || strings.Contains(content, "κουβά") {
-		respondWithImage(m.ChannelID, "mia zwh kouvas", "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYLsQwNnLkEyL1MeAAegoEJDs8KOYE6AtXng&usqp=CAU", s)
+		respondWithImage(m.ChannelID, "mia zwh kouvas", "https://i.imgur.com/XccIGz2.jpg", s)
 	}
 
 	// Check for messages related to panagia.
 	if strings.Contains(content, "panagia") || strings.Contains(content, "παναγία") || strings.Contains(content, "παναγια") {
-		respondWithImage(m.ChannelID, "gamw thn panagia", "https://www.in.gr/wp-content/uploads/2019/08/23.png", s)
+		respondWithImage(m.ChannelID, "gamw thn panagia", "https://i.imgur.com/eypNquJ.png", s)
 	}
 }
 
