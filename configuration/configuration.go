@@ -14,9 +14,10 @@ type userConfig struct {
 }
 
 type Config struct {
-	BotToken string     `yaml:"botToken"`
-	Pad      userConfig `yaml:"pad"`
-	Fyk      userConfig `yaml:"fyk"`
+	BotToken        string     `yaml:"botToken"`
+	Pad             userConfig `yaml:"pad"`
+	Fyk             userConfig `yaml:"fyk"`
+	ParolaChannelID string     `yaml:"parolaChannelID"`
 }
 
 func Load() error {

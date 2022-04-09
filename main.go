@@ -42,7 +42,7 @@ func main() {
 		log.Fatal("error creating session: ", err)
 	}
 
-	handlers.MessageConfigInit(c.Pad.ChannelID, c.Pad.UserID, c.Fyk.ChannelID, c.Fyk.UserID)
+	handlers.MessageConfigInit(c.Pad.ChannelID, c.Pad.UserID, c.Fyk.ChannelID, c.Fyk.UserID, c.ParolaChannelID)
 
 	// Add handlers for message and reaction events.
 	dg.AddHandler(handlers.MessageCreate)

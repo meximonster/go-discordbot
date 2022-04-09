@@ -10,8 +10,9 @@ import (
 )
 
 var (
-	padMsgConf *MessageInfo
-	fykMsgConf *MessageInfo
+	padMsgConf      *MessageInfo
+	fykMsgConf      *MessageInfo
+	parolaChannelID string
 )
 
 type MessageInfo struct {
@@ -19,7 +20,7 @@ type MessageInfo struct {
 	UserID    string
 }
 
-func MessageConfigInit(padChannel string, padID string, fykChannel string, fykID string) {
+func MessageConfigInit(padChannel string, padID string, fykChannel string, fykID string, parolaChannel string) {
 	padMsgConf = &MessageInfo{
 		ChannelID: padChannel,
 		UserID:    padID,
@@ -28,6 +29,7 @@ func MessageConfigInit(padChannel string, padID string, fykChannel string, fykID
 		ChannelID: fykChannel,
 		UserID:    fykID,
 	}
+	parolaChannelID = parolaChannel
 }
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -38,8 +40,17 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	checkAndRespond(m, s)
+	checkForParola(m, s)
 	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
 	checkForBetQuery(m, s)
+}
+
+func checkForParola(m *discordgo.MessageCreate, s *discordgo.Session) {
+	if m.ChannelID == parolaChannelID {
+		if len(m.Attachments) > 0 || strings.HasPrefix(m.Content, "https://www.stoiximan.gr/mybets/") {
+			s.ChannelMessageSend(m.ChannelID, "@everyone possible parola was just posted.")
+		}
+	}
 }
 
 func checkForBet(channel string, author string, content string, s *discordgo.Session) {
