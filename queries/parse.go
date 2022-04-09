@@ -5,10 +5,10 @@ import (
 	"strings"
 )
 
-func Parse(content string) string {
+func Parse(content string, table string) string {
 	q := strings.Replace(content, "!bet ", "", 1)
 	args := dateParser(q)
-	query := "SELECT * FROM bets WHERE " + strings.ReplaceAll(args, " ", " AND ")
+	query := fmt.Sprintf("SELECT * FROM %s WHERE ", table) + strings.ReplaceAll(args, " ", " AND ")
 	fmt.Println(query)
 	return query
 }

@@ -108,8 +108,14 @@ func respondWithImage(channel string, title string, imageURL string, s *discordg
 }
 
 func checkForBetQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
-	if m.ChannelID == padMsgConf.ChannelID && strings.HasPrefix(m.Content, "!bet") {
-		q := queries.Parse(m.Content)
+	if (m.ChannelID == padMsgConf.ChannelID || m.ChannelID == fykMsgConf.ChannelID) && strings.HasPrefix(m.Content, "!bet") {
+		var table string
+		if m.ChannelID == padMsgConf.ChannelID {
+			table = "bets"
+		} else {
+			table = "polo_bets"
+		}
+		q := queries.Parse(m.Content, table)
 		bets, err := bets.GetByQuery(q)
 		if err != nil {
 			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("error getting bets: %s", err.Error()))
