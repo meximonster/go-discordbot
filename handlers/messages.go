@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"math/rand"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
@@ -76,7 +77,16 @@ func checkAndRespond(m *discordgo.MessageCreate, s *discordgo.Session) {
 	}
 
 	if m.Content == "!giannakis" {
-		respondWithImage(m.ChannelID, "tha mpei", "https://i.imgur.com/VocVxhr.jpg", s)
+		rng := rand.Intn(10)
+		var image string
+		if rng < 3 {
+			image = "https://i.imgur.com/VocVxhr.jpg"
+		} else if rng >= 3 && rng < 7 {
+			image = "https://i.imgur.com/yBw8qEU.jpg"
+		} else {
+			image = "https://i.imgur.com/vfyPcEB.jpg"
+		}
+		respondWithImage(m.ChannelID, "tha mpei", image, s)
 	}
 
 	// Check for goal.
