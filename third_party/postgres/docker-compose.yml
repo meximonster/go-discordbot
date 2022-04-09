@@ -12,3 +12,4 @@ services:
           - ./postgres-data:/var/lib/postgresql/data
           # copy the sql script to create tables
           - ../../migrations/create_bets_table.sql:/docker-entrypoint-initdb.d/create_bets_table.sql
+          - ../../migrations/create_polo_bets_table.sql:/docker-entrypoint-initdb.d/create_polo_bets_table.sql
