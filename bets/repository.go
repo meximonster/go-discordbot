@@ -20,8 +20,8 @@ func CloseDB() {
 }
 
 func (b *Bet) Store(table string) error {
-	q := `INSERT INTO $1 (team,prediction,size,odds,result) VALUES ($2,$3,$4,$5,$6)`
-	_ = dbC.MustExec(q, table, b.Team, b.Prediction, b.Size, b.Odds, b.Result)
+	q := fmt.Sprintf(`INSERT INTO %s (team,prediction,size,odds,result) VALUES ($1,$2,$3,$4,$5)`, table)
+	_ = dbC.MustExec(q, b.Team, b.Prediction, b.Size, b.Odds, b.Result)
 	return nil
 }
 

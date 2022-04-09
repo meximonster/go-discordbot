@@ -49,7 +49,7 @@ func checkForBet(channel string, author string, content string, s *discordgo.Ses
 			for _, word := range words {
 				if bets.IsUnits(word) {
 					betSize := word[:strings.IndexByte(word, 'u')]
-					s.ChannelMessageSend(padMsgConf.ChannelID, fmt.Sprintf("@everyone possible bet with %su stake was just posted.", betSize))
+					s.ChannelMessageSend(channel, fmt.Sprintf("@everyone possible bet with %su stake was just posted.", betSize))
 				}
 			}
 		}
