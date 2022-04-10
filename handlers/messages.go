@@ -192,7 +192,7 @@ func checkForBetSumQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
 			} else {
 				net -= s.Total_units
 			}
-			sumFormats[i] = fmt.Sprintf("Count: %d total_units: %d ---> %s\n", s.Count, s.Total_units, s.Result)
+			sumFormats[i] = fmt.Sprintf("Count: %d, total_units: %d ---> %s\n", s.Count, s.Total_units, s.Result)
 		}
 		var result string
 		for i := range sumFormats {
