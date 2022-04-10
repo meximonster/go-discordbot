@@ -167,7 +167,7 @@ func checkForBetQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
 }
 
 func checkForBetSumQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
-	if (m.ChannelID == padMsgConf.ChannelID || m.ChannelID == "959793608469401670") && strings.HasPrefix(m.Content, "!betsum ") {
+	if (m.ChannelID == padMsgConf.ChannelID || m.ChannelID == fykMsgConf.ChannelID) && strings.HasPrefix(m.Content, "!betsum ") {
 		var table string
 		if m.ChannelID == padMsgConf.ChannelID {
 			table = "bets"
@@ -188,9 +188,9 @@ func checkForBetSumQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
 		var net int
 		for i, s := range sum {
 			if s.Result == "won" {
-				net += net
+				net += s.Total_units
 			} else {
-				net -= net
+				net -= s.Total_units
 			}
 			sumFormats[i] = fmt.Sprintf("Count: %d total_units: %d ---> %s\n", s.Count, s.Total_units, s.Result)
 		}
