@@ -116,7 +116,7 @@ func (b *Bet) Format() string {
 }
 
 func (bs *BetSummary) Format() string {
-	return fmt.Sprintf("Count: %d, total_units: %d ---> %s\n", bs.Count, bs.Total_units, bs.Result)
+	return fmt.Sprintf("%d bets %s, total_units: %d\n", bs.Count, bs.Result, bs.Total_units)
 }
 
 func FormatBets(bets []Bet) string {
