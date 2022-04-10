@@ -16,7 +16,7 @@ var (
 	betRegexp3       = regexp.MustCompile(`(.*?)((o|over|u|under|\+|\-)[0-9]{1,2}([.]5)?|X|x|1|2|1X|1x|2x|2X|X2|x2)(.*?)[0-9]{1,3}u(.*)`)
 	betRegexp4       = regexp.MustCompile(`(.*?)[0-9]{1,3}u(.*?)((o|over|u|under|\+|\-)[0-9]{1,2}([.]5)?|X|x|1|2|1X|1x|2x|2X|X2|x2)(.*)`)
 	unitsRegexp      = regexp.MustCompile(`^[0-9]{1,3}u(.*?)$`)
-	predictionRegexp = regexp.MustCompile(`^((o|over|u|under|\+|\-)[0-9]{1,2}([.]5)?|X|x|1|2|1X|1x|2x|2X|X2|x2)$`)
+	predictionRegexp = regexp.MustCompile(`^((o|over|u|under|\+|\-)[0-9]{1,2}([.]5)?|X|x|1|2|1X|1x|2x|2X|X2|x2|combo|[0-9]ada)$`)
 	oddsRegexp       = regexp.MustCompile(`^@([0-9]*[.])?[0-9]+$`)
 	goalRegexp       = pcre.MustCompile(`([0-9])\1{2,}$`, 0)
 )
