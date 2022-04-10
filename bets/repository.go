@@ -38,7 +38,6 @@ func GetBetsSumByQuery(query string) ([]BetSummary, error) {
 	sum := []BetSummary{}
 	err := dbC.Select(&sum, query)
 	if err != nil {
-		fmt.Println("aaaaaaaaaaaaaaa")
 		return nil, err
 	}
 	return sum, nil
