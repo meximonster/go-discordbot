@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/meximonster/go-discordbot/bets"
+	bet "github.com/meximonster/go-discordbot/bet"
 	"github.com/meximonster/go-discordbot/queries"
 )
 
@@ -57,10 +57,10 @@ func checkForParola(m *discordgo.MessageCreate, s *discordgo.Session) {
 
 func checkForBet(channel string, author string, content string, s *discordgo.Session) {
 	if (channel == padMsgConf.ChannelID && author == padMsgConf.UserID) || (channel == fykMsgConf.ChannelID && author == fykMsgConf.UserID) {
-		if bets.IsBet(content) {
+		if bet.IsBet(content) {
 			words := strings.Split(content, " ")
 			for _, word := range words {
-				if bets.IsUnits(word) {
+				if bet.IsUnits(word) {
 					betSize := word[:strings.IndexByte(word, 'u')]
 					s.ChannelMessageSend(channel, fmt.Sprintf("@everyone possible bet with %su stake was just posted.", betSize))
 				}
@@ -94,7 +94,7 @@ func checkAndRespond(m *discordgo.MessageCreate, s *discordgo.Session) {
 	}
 
 	// Check for goal.
-	if m.ChannelID == padMsgConf.ChannelID && bets.IsGoal(m.Content) {
+	if m.ChannelID == padMsgConf.ChannelID && bet.IsGoal(m.Content) {
 		s.ChannelMessageSend(padMsgConf.ChannelID, "GOOOOOOOAAAAAAAAAAAAAAAALLLLL !!!!")
 	}
 
@@ -124,6 +124,42 @@ func checkAndRespond(m *discordgo.MessageCreate, s *discordgo.Session) {
 	}
 }
 
+func checkForBetQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
+	if (m.ChannelID == padMsgConf.ChannelID || m.ChannelID == fykMsgConf.ChannelID) && strings.HasPrefix(m.Content, "!bet ") {
+		table := tableRef(m.ChannelID)
+		q := queries.Parse(m.Content, table)
+		bets, err := bet.GetBetsByQuery(q)
+		if err != nil {
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("error getting bets: %s", err.Error()))
+			return
+		}
+		if len(bets) == 0 {
+			s.ChannelMessageSend(m.ChannelID, "no results")
+			return
+		}
+		res := bet.FormatBets(bets)
+		s.ChannelMessageSend(m.ChannelID, res)
+	}
+}
+
+func checkForBetSumQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
+	if (m.ChannelID == padMsgConf.ChannelID || m.ChannelID == fykMsgConf.ChannelID) && strings.HasPrefix(m.Content, "!betsum ") {
+		table := tableRef(m.ChannelID)
+		q := queries.ParseSum(m.Content, table)
+		sum, err := bet.GetBetsSumByQuery(q)
+		if err != nil {
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("error getting bets: %s", err.Error()))
+			return
+		}
+		if len(sum) == 0 {
+			s.ChannelMessageSend(m.ChannelID, "no results")
+			return
+		}
+		res := bet.FormatBetsSum(sum)
+		s.ChannelMessageSend(m.ChannelID, res)
+	}
+}
+
 func respondWithImage(channel string, title string, imageURL string, s *discordgo.Session) {
 	_, err := s.ChannelMessageSendEmbed(channel, &discordgo.MessageEmbed{
 		Title: title,
@@ -136,69 +172,12 @@ func respondWithImage(channel string, title string, imageURL string, s *discordg
 	}
 }
 
-func checkForBetQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
-	if (m.ChannelID == padMsgConf.ChannelID || m.ChannelID == fykMsgConf.ChannelID) && strings.HasPrefix(m.Content, "!bet ") {
-		var table string
-		if m.ChannelID == padMsgConf.ChannelID {
-			table = "bets"
-		} else {
-			table = "polo_bets"
-		}
-		q := queries.Parse(m.Content, table)
-		bets, err := bets.GetBetsByQuery(q)
-		if err != nil {
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("error getting bets: %s", err.Error()))
-			return
-		}
-		if len(bets) == 0 {
-			s.ChannelMessageSend(m.ChannelID, "no results")
-			return
-		}
-		betFormats := make([]string, len(bets))
-		for i, b := range bets {
-			betFormats[i] = fmt.Sprintf("%s %s %du ---> %s\n", b.Team, b.Prediction, b.Size, b.Result)
-		}
-		var result string
-		for i := range betFormats {
-			result = result + betFormats[i]
-		}
-		s.ChannelMessageSend(m.ChannelID, result)
+func tableRef(channel string) string {
+	var table string
+	if channel == padMsgConf.ChannelID {
+		table = "bets"
+	} else {
+		table = "polo_bets"
 	}
-}
-
-func checkForBetSumQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
-	if (m.ChannelID == padMsgConf.ChannelID || m.ChannelID == fykMsgConf.ChannelID) && strings.HasPrefix(m.Content, "!betsum ") {
-		var table string
-		if m.ChannelID == padMsgConf.ChannelID {
-			table = "bets"
-		} else {
-			table = "polo_bets"
-		}
-		q := queries.ParseSum(m.Content, table)
-		sum, err := bets.GetBetsSumByQuery(q)
-		if err != nil {
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("error getting bets: %s", err.Error()))
-			return
-		}
-		if len(sum) == 0 {
-			s.ChannelMessageSend(m.ChannelID, "no results")
-			return
-		}
-		sumFormats := make([]string, len(sum))
-		var net int
-		for i, s := range sum {
-			if s.Result == "won" {
-				net += s.Total_units
-			} else {
-				net -= s.Total_units
-			}
-			sumFormats[i] = fmt.Sprintf("Count: %d, total_units: %d ---> %s\n", s.Count, s.Total_units, s.Result)
-		}
-		var result string
-		for i := range sumFormats {
-			result = result + sumFormats[i]
-		}
-		result = result + fmt.Sprintf("profit/loss: %d", net)
-		s.ChannelMessageSend(m.ChannelID, result)
-	}
+	return table
 }

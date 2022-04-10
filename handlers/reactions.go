@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/meximonster/go-discordbot/bets"
+	bet "github.com/meximonster/go-discordbot/bet"
 )
 
 func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
@@ -14,9 +14,8 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 			fmt.Println("error getting message from reaction: ", err)
 			return
 		}
-		if bets.IsBet(m.Content) {
+		if bet.IsBet(m.Content) {
 			var result string
-			var table string
 			switch r.Emoji.Name {
 			case "✅":
 				s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("***"+"%s ----> WON!"+"***", m.Content))
@@ -25,12 +24,8 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 				s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("***"+"%s ----> lost"+"***", m.Content))
 				result = "lost"
 			}
-			if r.ChannelID == padMsgConf.ChannelID {
-				table = "bets"
-			} else {
-				table = "polo_bets"
-			}
-			b, err := bets.DecoupleAndStore(m.Content, result, table)
+			table := tableRef(r.ChannelID)
+			b, err := bet.DecoupleAndStore(m.Content, result, table)
 			if err != nil {
 				s.ChannelMessageSend(r.ChannelID, err.Error())
 				return

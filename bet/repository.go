@@ -1,4 +1,4 @@
-package bets
+package bet
 
 import (
 	"fmt"

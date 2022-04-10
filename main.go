@@ -11,7 +11,7 @@ import (
 	_ "github.com/lib/pq"
 
 	"github.com/bwmarrin/discordgo"
-	"github.com/meximonster/go-discordbot/bets"
+	"github.com/meximonster/go-discordbot/bet"
 	"github.com/meximonster/go-discordbot/configuration"
 	"github.com/meximonster/go-discordbot/handlers"
 )
@@ -26,7 +26,7 @@ func init() {
 	if err != nil {
 		log.Fatal("error connecting to db: ", err)
 	}
-	bets.NewDB(db)
+	bet.NewDB(db)
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(25)
 	db.SetConnMaxLifetime(5 * time.Minute)
@@ -61,6 +61,6 @@ func main() {
 	<-sc
 
 	// Gracefully stop session and close db connection.
-	bets.CloseDB()
+	bet.CloseDB()
 	dg.Close()
 }

@@ -1,4 +1,4 @@
-package bets
+package bet
 
 import (
 	"fmt"
@@ -109,4 +109,43 @@ func DecoupleAndStore(content string, result string, table string) (Bet, error) 
 	}
 
 	return b, nil
+}
+
+func (b *Bet) Format() string {
+	return fmt.Sprintf("%s %s %du ---> %s\n", b.Team, b.Prediction, b.Size, b.Result)
+}
+
+func (bs *BetSummary) Format() string {
+	return fmt.Sprintf("Count: %d, total_units: %d ---> %s\n", bs.Count, bs.Total_units, bs.Result)
+}
+
+func FormatBets(bets []Bet) string {
+	betFormats := make([]string, len(bets))
+	for i, b := range bets {
+		betFormats[i] = b.Format()
+	}
+	var result string
+	for i := range betFormats {
+		result = result + betFormats[i]
+	}
+	return result
+}
+
+func FormatBetsSum(sum []BetSummary) string {
+	sumFormats := make([]string, len(sum))
+	var net int
+	for i, s := range sum {
+		if s.Result == "won" {
+			net += s.Total_units
+		} else {
+			net -= s.Total_units
+		}
+		sumFormats[i] = s.Format()
+	}
+	var result string
+	for i := range sumFormats {
+		result = result + sumFormats[i]
+	}
+	result = result + fmt.Sprintf("profit/loss: %d", net)
+	return result
 }
