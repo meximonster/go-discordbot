@@ -31,7 +31,6 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 				return
 			}
 			_ = bet.Store(b, table)
-			s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("BET INFO: Team: *%s*, Prediction: *%s*, Size: *%d*, Odds: *%v*, Result: *%s*", b.Team, b.Prediction, b.Size, b.Odds, b.Result))
 		}
 	}
 }
