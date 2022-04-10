@@ -58,13 +58,13 @@ func checkForParola(m *discordgo.MessageCreate, s *discordgo.Session) {
 func checkForBet(channel string, author string, content string, s *discordgo.Session) {
 	if (channel == padMsgConf.ChannelID && author == padMsgConf.UserID) || (channel == fykMsgConf.ChannelID && author == fykMsgConf.UserID) {
 		if bet.IsBet(content) {
-			words := strings.Split(content, " ")
-			for _, word := range words {
-				if bet.IsUnits(word) {
-					betSize := word[:strings.IndexByte(word, 'u')]
-					s.ChannelMessageSend(channel, fmt.Sprintf("@everyone possible bet with %su stake was just posted.", betSize))
-				}
+			table := tableRef(channel)
+			b, err := bet.Decouple(content, "", table)
+			if err != nil {
+				s.ChannelMessageSend(channel, fmt.Sprintf("%s %du %s @everyone", b.Team, b.Size, b.Prediction))
+				return
 			}
+			s.ChannelMessageSend(channel, err.Error())
 		}
 	}
 }

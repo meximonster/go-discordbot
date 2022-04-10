@@ -57,7 +57,7 @@ func IsGoal(content string) bool {
 	return goalRegexp.MatcherString(content, 0).MatchString(content, 0)
 }
 
-func DecoupleAndStore(content string, result string, table string) (Bet, error) {
+func Decouple(content string, result string, table string) (Bet, error) {
 	var b Bet
 	words := strings.Split(content, " ")
 	var team string
@@ -103,12 +103,15 @@ func DecoupleAndStore(content string, result string, table string) (Bet, error) 
 		return b, fmt.Errorf("discarding bet: INFO: Team: %s, Prediction: %s, Size: %d", b.Team, b.Prediction, b.Size)
 	}
 
+	return b, nil
+}
+
+func Store(b Bet, table string) error {
 	err := b.Store(table)
 	if err != nil {
-		return b, fmt.Errorf("error storing bet: %s", err.Error())
+		return err
 	}
-
-	return b, nil
+	return nil
 }
 
 func (b *Bet) Format() string {
