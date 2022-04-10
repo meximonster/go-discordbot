@@ -25,11 +25,21 @@ func (b *Bet) Store(table string) error {
 	return nil
 }
 
-func GetByQuery(query string) ([]Bet, error) {
+func GetBetsByQuery(query string) ([]Bet, error) {
 	bets := []Bet{}
 	err := dbC.Select(&bets, query)
 	if err != nil {
 		return nil, err
 	}
 	return bets, nil
+}
+
+func GetBetsSumByQuery(query string) ([]BetSummary, error) {
+	sum := []BetSummary{}
+	err := dbC.Select(&sum, query)
+	if err != nil {
+		fmt.Println("aaaaaaaaaaaaaaa")
+		return nil, err
+	}
+	return sum, nil
 }

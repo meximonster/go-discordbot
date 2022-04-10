@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -55,8 +54,6 @@ func main() {
 	if err != nil {
 		log.Fatal("error opening connection: ", err)
 	}
-
-	fmt.Println("Bot is running!")
 
 	// Create signaling for process termination.
 	sc := make(chan os.Signal, 1)

@@ -44,6 +44,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	checkForParola(m, s)
 	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
 	checkForBetQuery(m, s)
+	checkForBetSumQuery(m, s)
 }
 
 func checkForParola(m *discordgo.MessageCreate, s *discordgo.Session) {
@@ -136,7 +137,7 @@ func respondWithImage(channel string, title string, imageURL string, s *discordg
 }
 
 func checkForBetQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
-	if (m.ChannelID == padMsgConf.ChannelID || m.ChannelID == fykMsgConf.ChannelID) && strings.HasPrefix(m.Content, "!bet") {
+	if (m.ChannelID == padMsgConf.ChannelID || m.ChannelID == fykMsgConf.ChannelID) && strings.HasPrefix(m.Content, "!bet ") {
 		var table string
 		if m.ChannelID == padMsgConf.ChannelID {
 			table = "bets"
@@ -144,22 +145,52 @@ func checkForBetQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
 			table = "polo_bets"
 		}
 		q := queries.Parse(m.Content, table)
-		bets, err := bets.GetByQuery(q)
+		bets, err := bets.GetBetsByQuery(q)
 		if err != nil {
 			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("error getting bets: %s", err.Error()))
 			return
 		}
 		if len(bets) == 0 {
-			s.ChannelMessageSend(m.ChannelID, "no results found")
+			s.ChannelMessageSend(m.ChannelID, "no results")
 			return
 		}
 		betFormats := make([]string, len(bets))
 		for i, b := range bets {
-			betFormats[i] = fmt.Sprintf("%s %s %d ---> %s\n", b.Team, b.Prediction, b.Size, b.Result)
+			betFormats[i] = fmt.Sprintf("%s %s %du ---> %s\n", b.Team, b.Prediction, b.Size, b.Result)
 		}
 		var result string
 		for i := range betFormats {
 			result = result + betFormats[i]
+		}
+		s.ChannelMessageSend(m.ChannelID, result)
+	}
+}
+
+func checkForBetSumQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
+	if (m.ChannelID == padMsgConf.ChannelID || m.ChannelID == "959793608469401670") && strings.HasPrefix(m.Content, "!betsum ") {
+		var table string
+		if m.ChannelID == padMsgConf.ChannelID {
+			table = "bets"
+		} else {
+			table = "polo_bets"
+		}
+		q := queries.ParseSum(m.Content, table)
+		sum, err := bets.GetBetsSumByQuery(q)
+		if err != nil {
+			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("error getting bets: %s", err.Error()))
+			return
+		}
+		if len(sum) == 0 {
+			s.ChannelMessageSend(m.ChannelID, "no results")
+			return
+		}
+		sumFormats := make([]string, len(sum))
+		for i, s := range sum {
+			sumFormats[i] = fmt.Sprintf("Count: %d total_units: %d ---> %s\n", s.Count, s.Total_units, s.Result)
+		}
+		var result string
+		for i := range sumFormats {
+			result = result + sumFormats[i]
 		}
 		s.ChannelMessageSend(m.ChannelID, result)
 	}

@@ -31,6 +31,12 @@ type Bet struct {
 	Posted_at  time.Time
 }
 
+type BetSummary struct {
+	Count       int
+	Total_units int
+	Result      string
+}
+
 func IsBet(content string) bool {
 	return betRegexp1.MatchString(content) || betRegexp2.MatchString(content) || betRegexp3.MatchString(content) || betRegexp4.MatchString(content)
 }
