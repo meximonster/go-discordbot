@@ -61,10 +61,10 @@ func checkForBet(channel string, author string, content string, s *discordgo.Ses
 			table := tableRef(channel)
 			b, err := bet.Decouple(content, "", table)
 			if err != nil {
-				s.ChannelMessageSend(channel, fmt.Sprintf("%s %du %s @everyone", b.Team, b.Size, b.Prediction))
+				s.ChannelMessageSend(channel, err.Error())
 				return
 			}
-			s.ChannelMessageSend(channel, err.Error())
+			s.ChannelMessageSend(channel, fmt.Sprintf("%s %du %s @everyone", b.Team, b.Size, b.Prediction))
 		}
 	}
 }
