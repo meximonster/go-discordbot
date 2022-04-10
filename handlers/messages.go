@@ -64,7 +64,7 @@ func checkForBet(channel string, author string, content string, s *discordgo.Ses
 				s.ChannelMessageSend(channel, err.Error())
 				return
 			}
-			s.ChannelMessageSend(channel, fmt.Sprintf("%s %du %s @everyone", b.Team, b.Size, b.Prediction))
+			s.ChannelMessageSend(channel, fmt.Sprintf("%s %s %du @everyone", b.Team, b.Prediction, b.Size))
 		}
 	}
 }
