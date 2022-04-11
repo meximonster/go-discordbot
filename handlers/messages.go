@@ -63,8 +63,8 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 func serveBanlist(m *discordgo.MessageCreate, s *discordgo.Session) {
 	if m.Content == "!banlist" {
 		var result string
-		for _, banword := range banlist {
-			result = result + banword + "\n"
+		for i, banword := range banlist {
+			result = result + fmt.Sprintf("%d. %s\n", i, banword)
 		}
 		s.ChannelMessageSend(m.ChannelID, result)
 	}
