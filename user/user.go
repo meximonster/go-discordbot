@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"math/rand"
 	"time"
 
@@ -35,8 +36,11 @@ func GetUserByName(name string) *User {
 	return nil
 }
 
-func (u *User) RandomImage() configuration.ImageInfo {
+func (u *User) RandomImage() (configuration.ImageInfo, error) {
+	if len(u.Images) == 0 {
+		return configuration.ImageInfo{}, fmt.Errorf("no images for %s", u.Username)
+	}
 	rand.Seed(time.Now().UnixNano())
 	rng := rand.Intn(len(u.Images))
-	return u.Images[rng]
+	return u.Images[rng], nil
 }

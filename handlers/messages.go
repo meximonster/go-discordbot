@@ -158,7 +158,11 @@ func checkForBetSumQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
 
 func respondWithRandomImage(name string, channel string, s *discordgo.Session) {
 	u := user.GetUserByName(name)
-	img := u.RandomImage()
+	img, err := u.RandomImage()
+	if err != nil {
+		s.ChannelMessageSend(channel, err.Error())
+		return
+	}
 	respondWithImage(channel, img.Text, img.Url, s)
 }
 
