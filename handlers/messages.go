@@ -52,12 +52,31 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	serveBanlist(m, s)
+	serveUsers(m, s)
 	checkAndRespond(m, s)
 	checkForUser(m, s)
 	checkForParola(m, s)
 	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
 	checkForBetQuery(m, s)
 	checkForBetSumQuery(m, s)
+}
+
+func serveUsers(m *discordgo.MessageCreate, s *discordgo.Session) {
+	if m.Content == "!users" {
+		users := user.GetAll()
+		if len(users) == 0 {
+			s.ChannelMessageSend(m.ChannelID, "no users configured")
+			return
+		}
+		var str string
+		cnt := 0
+		for _, u := range users {
+			str = str + fmt.Sprintf("%d. %s\n", cnt+1, u.Username)
+			cnt++
+		}
+		result := "Configured users are:\n" + str
+		s.ChannelMessageSend(m.ChannelID, result)
+	}
 }
 
 func serveBanlist(m *discordgo.MessageCreate, s *discordgo.Session) {
@@ -157,7 +176,11 @@ func checkForBetSumQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
 }
 
 func respondWithRandomImage(name string, channel string, s *discordgo.Session) {
-	u := user.GetUserByName(name)
+	u, err := user.GetByName(name)
+	if err != nil {
+		s.ChannelMessageSend(channel, err.Error())
+		return
+	}
 	img, err := u.RandomImage()
 	if err != nil {
 		s.ChannelMessageSend(channel, err.Error())

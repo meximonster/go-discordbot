@@ -29,11 +29,15 @@ func InitUsers(usrConfig []configuration.UserConfig) {
 	}
 }
 
-func GetUserByName(name string) *User {
+func GetAll() map[string]*User {
+	return users
+}
+
+func GetByName(name string) (*User, error) {
 	if u, ok := users[name]; ok {
-		return u
+		return u, nil
 	}
-	return nil
+	return nil, fmt.Errorf("user %s not found", name)
 }
 
 func (u *User) RandomImage() (configuration.ImageInfo, error) {
