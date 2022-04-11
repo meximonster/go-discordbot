@@ -2,6 +2,7 @@ package user
 
 import (
 	"math/rand"
+	"time"
 
 	"github.com/meximonster/go-discordbot/configuration"
 )
@@ -35,6 +36,7 @@ func GetUserByName(name string) *User {
 }
 
 func (u *User) RandomImage() configuration.ImageInfo {
+	rand.Seed(time.Now().UnixNano())
 	rng := rand.Intn(len(u.Images))
 	return u.Images[rng]
 }
