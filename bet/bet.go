@@ -6,8 +6,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/glenn-brown/golang-pkg-pcre/src/pkg/pcre"
 )
 
 var (
@@ -18,7 +16,6 @@ var (
 	unitsRegexp      = regexp.MustCompile(`^[0-9]{1,3}u(.*?)$`)
 	predictionRegexp = regexp.MustCompile(`^((o|over|u|under|\+|\-)[0-9]{1,2}([.]7?5)?|X|x|1|2|1X|1x|2x|2X|X2|x2|combo|[0-9]ada)$`)
 	oddsRegexp       = regexp.MustCompile(`^@([0-9]*[.])?[0-9]+$`)
-	goalRegexp       = pcre.MustCompile(`([0-9])\1{2,}$`, 0)
 )
 
 type Bet struct {
@@ -51,10 +48,6 @@ func IsOdds(word string) bool {
 
 func IsUnits(word string) bool {
 	return unitsRegexp.MatchString(word)
-}
-
-func IsGoal(content string) bool {
-	return goalRegexp.MatcherString(content, 0).MatchString(content, 0)
 }
 
 func Decouple(content string, result string, table string) (Bet, error) {
