@@ -24,6 +24,7 @@ type Config struct {
 	BotToken        string       `yaml:"botToken"`
 	ParolaChannelID string       `yaml:"parolaChannelID"`
 	Users           []UserConfig `yaml:"users"`
+	Banlist         []string     `yaml:"banlist"`
 }
 
 func Load() error {

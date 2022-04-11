@@ -43,7 +43,7 @@ func main() {
 	}
 
 	user.InitUsers(c.Users)
-	handlers.MessageConfigInit(c.Users, c.ParolaChannelID)
+	handlers.MessageConfigInit(c.Users, c.ParolaChannelID, c.Banlist)
 
 	// Add handlers for message and reaction events.
 	dg.AddHandler(handlers.MessageCreate)

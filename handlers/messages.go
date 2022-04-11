@@ -16,6 +16,7 @@ var (
 	fykMsgConf      *MessageInfo
 	userNames       []string
 	parolaChannelID string
+	banlist         []string
 )
 
 type MessageInfo struct {
@@ -23,16 +24,16 @@ type MessageInfo struct {
 	UserID    string
 }
 
-func MessageConfigInit(users []configuration.UserConfig, parolaChannel string) {
+func MessageConfigInit(users []configuration.UserConfig, parolaChannel string, blacklist []string) {
 	parolaChannelID = parolaChannel
 	for _, u := range users {
-		switch u.Username {
-		case "Pad":
+		switch strings.ToLower(u.Username) {
+		case "pad":
 			padMsgConf = &MessageInfo{
 				UserID:    u.UserID,
 				ChannelID: u.ChannelID,
 			}
-		case "Fyk":
+		case "fyk":
 			fykMsgConf = &MessageInfo{
 				UserID:    u.UserID,
 				ChannelID: u.ChannelID,
@@ -40,6 +41,7 @@ func MessageConfigInit(users []configuration.UserConfig, parolaChannel string) {
 		}
 		userNames = append(userNames, u.Username)
 	}
+	banlist = blacklist
 }
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -49,12 +51,23 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	serveBanlist(m, s)
 	checkAndRespond(m, s)
 	checkForUser(m, s)
 	checkForParola(m, s)
 	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
 	checkForBetQuery(m, s)
 	checkForBetSumQuery(m, s)
+}
+
+func serveBanlist(m *discordgo.MessageCreate, s *discordgo.Session) {
+	if m.Content == "!banlist" {
+		var result string
+		for _, banword := range banlist {
+			result = result + banword + "\n"
+		}
+		s.ChannelMessageSend(m.ChannelID, result)
+	}
 }
 
 func checkForParola(m *discordgo.MessageCreate, s *discordgo.Session) {
