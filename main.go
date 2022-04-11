@@ -14,6 +14,7 @@ import (
 	"github.com/meximonster/go-discordbot/bet"
 	"github.com/meximonster/go-discordbot/configuration"
 	"github.com/meximonster/go-discordbot/handlers"
+	"github.com/meximonster/go-discordbot/user"
 )
 
 func init() {
@@ -41,7 +42,8 @@ func main() {
 		log.Fatal("error creating session: ", err)
 	}
 
-	handlers.MessageConfigInit(c.Pad.ChannelID, c.Pad.UserID, c.Fyk.ChannelID, c.Fyk.UserID, c.ParolaChannelID)
+	user.InitUsers(c.Users)
+	handlers.MessageConfigInit(c.Users, c.ParolaChannelID)
 
 	// Add handlers for message and reaction events.
 	dg.AddHandler(handlers.MessageCreate)

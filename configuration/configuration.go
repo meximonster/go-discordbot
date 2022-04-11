@@ -8,16 +8,22 @@ import (
 
 var appConfig *Config
 
-type userConfig struct {
-	ChannelID string `yaml:"channelID"`
-	UserID    string `yaml:"userID"`
+type ImageInfo struct {
+	Text string `yaml:"text"`
+	Url  string `yaml:"url"`
+}
+
+type UserConfig struct {
+	Username  string      `yaml:"name"`
+	UserID    string      `yaml:"userID"`
+	ChannelID string      `yaml:"channelID"`
+	Images    []ImageInfo `yaml:"images"`
 }
 
 type Config struct {
-	BotToken        string     `yaml:"botToken"`
-	Pad             userConfig `yaml:"pad"`
-	Fyk             userConfig `yaml:"fyk"`
-	ParolaChannelID string     `yaml:"parolaChannelID"`
+	BotToken        string       `yaml:"botToken"`
+	ParolaChannelID string       `yaml:"parolaChannelID"`
+	Users           []UserConfig `yaml:"users"`
 }
 
 func Load() error {

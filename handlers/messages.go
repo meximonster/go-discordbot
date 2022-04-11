@@ -2,17 +2,19 @@ package handlers
 
 import (
 	"fmt"
-	"math/rand"
 	"strings"
 
 	"github.com/bwmarrin/discordgo"
 	bet "github.com/meximonster/go-discordbot/bet"
+	"github.com/meximonster/go-discordbot/configuration"
 	"github.com/meximonster/go-discordbot/queries"
+	"github.com/meximonster/go-discordbot/user"
 )
 
 var (
 	padMsgConf      *MessageInfo
 	fykMsgConf      *MessageInfo
+	userNames       []string
 	parolaChannelID string
 )
 
@@ -21,16 +23,23 @@ type MessageInfo struct {
 	UserID    string
 }
 
-func MessageConfigInit(padChannel string, padID string, fykChannel string, fykID string, parolaChannel string) {
-	padMsgConf = &MessageInfo{
-		ChannelID: padChannel,
-		UserID:    padID,
-	}
-	fykMsgConf = &MessageInfo{
-		ChannelID: fykChannel,
-		UserID:    fykID,
-	}
+func MessageConfigInit(users []configuration.UserConfig, parolaChannel string) {
 	parolaChannelID = parolaChannel
+	for _, u := range users {
+		switch u.Username {
+		case "Pad":
+			padMsgConf = &MessageInfo{
+				UserID:    u.UserID,
+				ChannelID: u.ChannelID,
+			}
+		case "Fyk":
+			fykMsgConf = &MessageInfo{
+				UserID:    u.UserID,
+				ChannelID: u.ChannelID,
+			}
+		}
+		userNames = append(userNames, u.Username)
+	}
 }
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -41,6 +50,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	checkAndRespond(m, s)
+	checkForUser(m, s)
 	checkForParola(m, s)
 	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
 	checkForBetQuery(m, s)
@@ -69,6 +79,15 @@ func checkForBet(channel string, author string, content string, s *discordgo.Ses
 	}
 }
 
+func checkForUser(m *discordgo.MessageCreate, s *discordgo.Session) {
+	str := strings.TrimPrefix(m.Content, "!")
+	for _, uname := range userNames {
+		if str == strings.ToLower(uname) {
+			respondWithRandomImage(uname, m.ChannelID, s)
+		}
+	}
+}
+
 func checkAndRespond(m *discordgo.MessageCreate, s *discordgo.Session) {
 	content := strings.ToLower(m.Content)
 
@@ -77,45 +96,9 @@ func checkAndRespond(m *discordgo.MessageCreate, s *discordgo.Session) {
 		s.ChannelMessageSend(m.ChannelID, "https://github.com/meximonster/go-discordbot")
 	}
 
-	if m.Content == "!giannakis" {
-		rng := rand.Intn(10)
-		var image, text string
-		if rng < 3 {
-			image = "https://i.imgur.com/VocVxhr.jpg"
-			text = "mpainei ez"
-		} else if rng >= 3 && rng < 7 {
-			image = "https://i.imgur.com/yBw8qEU.jpg"
-			text = "eixame"
-		} else {
-			image = "https://i.imgur.com/vfyPcEB.jpg"
-			text = "irtha kai to vazw"
-		}
-		respondWithImage(m.ChannelID, text, image, s)
-	}
-
-	// Check for goal.
-	if m.ChannelID == padMsgConf.ChannelID && bet.IsGoal(m.Content) {
-		s.ChannelMessageSend(padMsgConf.ChannelID, "GOOOOOOOAAAAAAAAAAAAAAAALLLLL !!!!")
-	}
-
-	// Check for messages related to aalesund.
-	if strings.Contains(content, "alesund") {
-		s.ChannelMessageSend(m.ChannelID, ":sweat_drops:")
-	}
-
-	// Check for messages related to begging for something.
-	if strings.Contains(content, "please") || strings.Contains(content, "plz") || strings.Contains(content, "pliz") {
-		s.MessageReactionAdd(m.ChannelID, m.ID, "🙏")
-	}
-
 	// Check for messages related to covid.
 	if strings.Contains(content, "corona") || strings.Contains(content, "korona") || strings.Contains(content, "covid") {
 		respondWithImage(m.ChannelID, "covid ????", "https://i.imgur.com/Ydm7d7l.jpg", s)
-	}
-
-	// Check for messages related to kouvas.
-	if strings.Contains(content, "kouvas") || strings.Contains(content, "κουβας") || strings.Contains(content, "κουβά") {
-		respondWithImage(m.ChannelID, "mia zwh kouvas", "https://i.imgur.com/XccIGz2.jpg", s)
 	}
 
 	// Check for messages related to panagia.
@@ -158,6 +141,12 @@ func checkForBetSumQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
 		res := bet.FormatBetsSum(sum)
 		s.ChannelMessageSend(m.ChannelID, res)
 	}
+}
+
+func respondWithRandomImage(name string, channel string, s *discordgo.Session) {
+	u := user.GetUserByName(name)
+	img := u.RandomImage()
+	respondWithImage(channel, img.Text, img.Url, s)
 }
 
 func respondWithImage(channel string, title string, imageURL string, s *discordgo.Session) {
