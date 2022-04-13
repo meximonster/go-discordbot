@@ -11,10 +11,11 @@ import (
 var users = map[string]*User{}
 
 type User struct {
-	Username  string
-	Id        string
-	ChannelID string
-	Images    []configuration.ImageInfo
+	Username           string
+	Id                 string
+	ChannelID          string
+	Images             []configuration.ImageInfo
+	LastImageURLServed string
 }
 
 func InitUsers(usrConfig []configuration.UserConfig) {
@@ -44,7 +45,15 @@ func (u *User) RandomImage() (configuration.ImageInfo, error) {
 	if len(u.Images) == 0 {
 		return configuration.ImageInfo{}, fmt.Errorf("no images for %s", u.Username)
 	}
+	var rng int
 	rand.Seed(time.Now().UnixNano())
-	rng := rand.Intn(len(u.Images))
+	flag := true
+	for flag {
+		rng = rand.Intn(len(u.Images))
+		if u.Images[rng].Url != u.LastImageURLServed {
+			flag = false
+		}
+	}
+	u.LastImageURLServed = u.Images[rng].Url
 	return u.Images[rng], nil
 }
