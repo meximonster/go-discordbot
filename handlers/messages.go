@@ -53,7 +53,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	serveBanlist(m, s)
 	serveUsers(m, s)
-	checkAndRespond(m, s)
 	checkForUser(m, s)
 	checkForParola(m, s)
 	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
@@ -117,25 +116,6 @@ func checkForUser(m *discordgo.MessageCreate, s *discordgo.Session) {
 		if str == strings.ToLower(uname) {
 			respondWithRandomImage(uname, m.ChannelID, s)
 		}
-	}
-}
-
-func checkAndRespond(m *discordgo.MessageCreate, s *discordgo.Session) {
-	content := strings.ToLower(m.Content)
-
-	// return repo url.
-	if m.Content == "!git" {
-		s.ChannelMessageSend(m.ChannelID, "https://github.com/meximonster/go-discordbot")
-	}
-
-	// Check for messages related to covid.
-	if strings.Contains(content, "corona") || strings.Contains(content, "korona") || strings.Contains(content, "covid") {
-		respondWithImage(m.ChannelID, "covid ????", "https://i.imgur.com/Ydm7d7l.jpg", s)
-	}
-
-	// Check for messages related to panagia.
-	if strings.Contains(content, "panagia") || strings.Contains(content, "παναγία") || strings.Contains(content, "παναγια") {
-		respondWithImage(m.ChannelID, "gamw thn panagia", "https://i.imgur.com/eypNquJ.png", s)
 	}
 }
 
