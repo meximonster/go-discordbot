@@ -53,6 +53,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	serveBanlist(m, s)
 	serveUsers(m, s)
+	servePets(m, s)
 	checkForUser(m, s)
 	checkForParola(m, s)
 	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
@@ -62,7 +63,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func serveUsers(m *discordgo.MessageCreate, s *discordgo.Session) {
 	if m.Content == "!users" {
-		users := user.GetAll()
+		users := user.GetUsers()
 		if len(users) == 0 {
 			s.ChannelMessageSend(m.ChannelID, "no users configured")
 			return
@@ -74,6 +75,24 @@ func serveUsers(m *discordgo.MessageCreate, s *discordgo.Session) {
 			cnt++
 		}
 		result := "Configured users are:\n" + str
+		s.ChannelMessageSend(m.ChannelID, result)
+	}
+}
+
+func servePets(m *discordgo.MessageCreate, s *discordgo.Session) {
+	if m.Content == "!pets" {
+		pets := user.GetPets()
+		if len(pets) == 0 {
+			s.ChannelMessageSend(m.ChannelID, "no users configured")
+			return
+		}
+		var str string
+		cnt := 0
+		for _, u := range pets {
+			str = str + fmt.Sprintf("%d. %s\n", cnt+1, u.Username)
+			cnt++
+		}
+		result := "Configured pets are:\n" + str
 		s.ChannelMessageSend(m.ChannelID, result)
 	}
 }

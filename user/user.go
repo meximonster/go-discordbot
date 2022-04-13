@@ -14,6 +14,9 @@ type User struct {
 	Username           string
 	Id                 string
 	ChannelID          string
+	IsHuman            bool
+	IsPet              bool
+	Variety            bool
 	Images             []configuration.ImageInfo
 	LastImageURLServed string
 }
@@ -24,14 +27,33 @@ func InitUsers(usrConfig []configuration.UserConfig) {
 		u.Username = us.Username
 		u.Id = us.UserID
 		u.ChannelID = us.ChannelID
+		u.IsHuman = us.IsHuman
+		u.IsPet = us.IsPet
+		u.Variety = us.Variety
 		u.Images = us.Images
 
 		users[u.Username] = u
 	}
 }
 
-func GetAll() map[string]*User {
-	return users
+func GetUsers() map[string]*User {
+	m := make(map[string]*User, len(users))
+	for _, u := range users {
+		if u.IsHuman {
+			m[u.Username] = u
+		}
+	}
+	return m
+}
+
+func GetPets() map[string]*User {
+	m := make(map[string]*User, len(users))
+	for _, u := range users {
+		if u.IsPet {
+			m[u.Username] = u
+		}
+	}
+	return m
 }
 
 func GetByName(name string) (*User, error) {

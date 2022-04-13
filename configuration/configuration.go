@@ -17,6 +17,9 @@ type UserConfig struct {
 	Username  string      `yaml:"name"`
 	UserID    string      `yaml:"userID"`
 	ChannelID string      `yaml:"channelID"`
+	IsHuman   bool        `yaml:"isHuman"`
+	IsPet     bool        `yaml:"isPet"`
+	Variety   bool        `yaml:"variety"`
 	Images    []ImageInfo `yaml:"images"`
 }
 
