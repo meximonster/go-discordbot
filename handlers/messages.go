@@ -83,7 +83,7 @@ func servePets(m *discordgo.MessageCreate, s *discordgo.Session) {
 	if m.Content == "!pets" {
 		pets := user.GetPets()
 		if len(pets) == 0 {
-			s.ChannelMessageSend(m.ChannelID, "no users configured")
+			s.ChannelMessageSend(m.ChannelID, "no pets configured")
 			return
 		}
 		var str string
