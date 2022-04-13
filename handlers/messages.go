@@ -51,6 +51,10 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	if m.Content == "!git" {
+		s.ChannelMessageSend(m.ChannelID, "https://github.com/meximonster/go-discordbot")
+	}
+
 	serveBanlist(m, s)
 	serveUsers(m, s)
 	servePets(m, s)
