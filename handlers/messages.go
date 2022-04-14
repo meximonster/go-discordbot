@@ -134,10 +134,12 @@ func checkForBet(channel string, author string, content string, s *discordgo.Ses
 }
 
 func checkForUser(m *discordgo.MessageCreate, s *discordgo.Session) {
-	str := strings.TrimPrefix(m.Content, "!")
-	for _, uname := range userNames {
-		if str == strings.ToLower(uname) {
-			respondWithRandomImage(uname, m.ChannelID, s)
+	if strings.HasPrefix(m.Content, "!") {
+		str := strings.TrimPrefix(m.Content, "!")
+		for _, uname := range userNames {
+			if str == strings.ToLower(uname) {
+				respondWithRandomImage(uname, m.ChannelID, s)
+			}
 		}
 	}
 }
