@@ -67,6 +67,9 @@ func (u *User) RandomImage() (configuration.ImageInfo, error) {
 	if len(u.Images) == 0 {
 		return configuration.ImageInfo{}, fmt.Errorf("no images for %s", u.Username)
 	}
+	if len(u.Images) == 1 {
+		return u.Images[0]
+	}
 	var rng int
 	rand.Seed(time.Now().UnixNano())
 	flag := true
