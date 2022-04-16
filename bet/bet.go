@@ -112,7 +112,7 @@ func (b *Bet) Format() string {
 }
 
 func (bs *BetSummary) Format() string {
-	return fmt.Sprintf("%d bets %s, total_units: %.2f\n", bs.Count, bs.Result, bs.Total_units)
+	return fmt.Sprintf("%d bets %s, total_units: %.1f\n", bs.Count, bs.Result, bs.Total_units)
 }
 
 func FormatBets(bets []Bet) string {
@@ -142,6 +142,6 @@ func FormatBetsSum(sum []BetSummary) string {
 	for i := range sumFormats {
 		result = result + sumFormats[i]
 	}
-	result = result + fmt.Sprintf("profit/loss: %.2f", net)
+	result = result + fmt.Sprintf("profit/loss: %.1f", net)
 	return result
 }
