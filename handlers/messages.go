@@ -55,21 +55,21 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "https://github.com/meximonster/go-discordbot")
 	}
 
-	serveBanlist(m, s)
-	serveUsers(m, s)
-	servePets(m, s)
-	checkForUser(m, s)
-	checkForParola(m, s)
+	serveBanlist(m.Content, m.ChannelID, s)
+	serveUsers(m.Content, m.ChannelID, s)
+	servePets(m.Content, m.ChannelID, s)
+	checkForUser(m.Content, m.ChannelID, s)
+	checkForParola(m.Content, m.ChannelID, m.Attachments, s)
 	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
-	checkForBetQuery(m, s)
-	checkForBetSumQuery(m, s)
+	checkForBetQuery(m.Content, m.ChannelID, s)
+	checkForBetSumQuery(m.Content, m.ChannelID, s)
 }
 
-func serveUsers(m *discordgo.MessageCreate, s *discordgo.Session) {
-	if m.Content == "!users" {
+func serveUsers(content string, channel string, s *discordgo.Session) {
+	if content == "!users" {
 		users := user.GetUsers()
 		if len(users) == 0 {
-			s.ChannelMessageSend(m.ChannelID, "no users configured")
+			s.ChannelMessageSend(channel, "no users configured")
 			return
 		}
 		var str string
@@ -79,15 +79,15 @@ func serveUsers(m *discordgo.MessageCreate, s *discordgo.Session) {
 			cnt++
 		}
 		result := "Configured users are:\n" + str
-		s.ChannelMessageSend(m.ChannelID, result)
+		s.ChannelMessageSend(channel, result)
 	}
 }
 
-func servePets(m *discordgo.MessageCreate, s *discordgo.Session) {
-	if m.Content == "!pets" {
+func servePets(content string, channel string, s *discordgo.Session) {
+	if content == "!pets" {
 		pets := user.GetPets()
 		if len(pets) == 0 {
-			s.ChannelMessageSend(m.ChannelID, "no pets configured")
+			s.ChannelMessageSend(channel, "no pets configured")
 			return
 		}
 		var str string
@@ -97,24 +97,24 @@ func servePets(m *discordgo.MessageCreate, s *discordgo.Session) {
 			cnt++
 		}
 		result := "Configured pets are:\n" + str
-		s.ChannelMessageSend(m.ChannelID, result)
+		s.ChannelMessageSend(channel, result)
 	}
 }
 
-func serveBanlist(m *discordgo.MessageCreate, s *discordgo.Session) {
-	if m.Content == "!banlist" {
+func serveBanlist(content string, channel string, s *discordgo.Session) {
+	if content == "!banlist" {
 		var result string
 		for i, banword := range banlist {
 			result = result + fmt.Sprintf("%d. %s\n", i+1, banword)
 		}
-		s.ChannelMessageSend(m.ChannelID, result)
+		s.ChannelMessageSend(channel, result)
 	}
 }
 
-func checkForParola(m *discordgo.MessageCreate, s *discordgo.Session) {
-	if m.ChannelID == parolaChannelID {
-		if len(m.Attachments) > 0 || strings.HasPrefix(m.Content, "https://www.stoiximan.gr/mybets/") {
-			s.ChannelMessageSend(m.ChannelID, "@everyone possible parola was just posted.")
+func checkForParola(content string, channel string, attachments []*discordgo.MessageAttachment, s *discordgo.Session) {
+	if channel == parolaChannelID {
+		if len(attachments) > 0 || strings.HasPrefix(content, "https://www.stoiximan.gr/mybets/") {
+			s.ChannelMessageSend(channel, "@everyone possible parola was just posted.")
 		}
 	}
 }
@@ -133,50 +133,50 @@ func checkForBet(channel string, author string, content string, s *discordgo.Ses
 	}
 }
 
-func checkForUser(m *discordgo.MessageCreate, s *discordgo.Session) {
-	if strings.HasPrefix(m.Content, "!") {
-		str := strings.TrimPrefix(m.Content, "!")
+func checkForUser(content string, channel string, s *discordgo.Session) {
+	if strings.HasPrefix(content, "!") {
+		str := strings.TrimPrefix(content, "!")
 		for _, uname := range userNames {
 			if str == strings.ToLower(uname) {
-				respondWithRandomImage(uname, m.ChannelID, s)
+				respondWithRandomImage(uname, channel, s)
 			}
 		}
 	}
 }
 
-func checkForBetQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
-	if (m.ChannelID == padMsgConf.ChannelID || m.ChannelID == fykMsgConf.ChannelID) && strings.HasPrefix(m.Content, "!bet ") {
-		table := tableRef(m.ChannelID)
-		q := queries.Parse(m.Content, table)
+func checkForBetQuery(content string, channel string, s *discordgo.Session) {
+	if (channel == padMsgConf.ChannelID || channel == fykMsgConf.ChannelID) && strings.HasPrefix(content, "!bet ") {
+		table := tableRef(channel)
+		q := queries.Parse(content, table)
 		bets, err := bet.GetBetsByQuery(q)
 		if err != nil {
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("error getting bets: %s", err.Error()))
+			s.ChannelMessageSend(channel, fmt.Sprintf("error getting bets: %s", err.Error()))
 			return
 		}
 		if len(bets) == 0 {
-			s.ChannelMessageSend(m.ChannelID, "no results")
+			s.ChannelMessageSend(channel, "no results")
 			return
 		}
 		res := bet.FormatBets(bets)
-		s.ChannelMessageSend(m.ChannelID, res)
+		s.ChannelMessageSend(channel, res)
 	}
 }
 
-func checkForBetSumQuery(m *discordgo.MessageCreate, s *discordgo.Session) {
-	if (m.ChannelID == padMsgConf.ChannelID || m.ChannelID == fykMsgConf.ChannelID) && strings.HasPrefix(m.Content, "!betsum ") {
-		table := tableRef(m.ChannelID)
-		q := queries.ParseSum(m.Content, table)
+func checkForBetSumQuery(content string, channel string, s *discordgo.Session) {
+	if (channel == padMsgConf.ChannelID || channel == fykMsgConf.ChannelID) && strings.HasPrefix(content, "!betsum ") {
+		table := tableRef(channel)
+		q := queries.ParseSum(content, table)
 		sum, err := bet.GetBetsSumByQuery(q)
 		if err != nil {
-			s.ChannelMessageSend(m.ChannelID, fmt.Sprintf("error getting bets: %s", err.Error()))
+			s.ChannelMessageSend(channel, fmt.Sprintf("error getting bets: %s", err.Error()))
 			return
 		}
 		if len(sum) == 0 {
-			s.ChannelMessageSend(m.ChannelID, "no results")
+			s.ChannelMessageSend(channel, "no results")
 			return
 		}
 		res := bet.FormatBetsSum(sum)
-		s.ChannelMessageSend(m.ChannelID, res)
+		s.ChannelMessageSend(channel, res)
 	}
 }
 
