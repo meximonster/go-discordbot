@@ -15,7 +15,7 @@ func Parse(content string, table string) string {
 func ParseSum(content string, table string) string {
 	q := strings.Replace(content, "!betsum ", "", 1)
 	args := dateParser(q)
-	query := fmt.Sprintf("SELECT COUNT(1), SUM(size) as total_units, result from %s WHERE %s group by 3 order by 1;", table, args)
+	query := fmt.Sprintf("SELECT count(1), sum(CASE WHEN result = 'won' THEN size*odds - size ELSE size END) as total_units, result FROM %s WHERE %s group by 3 order by 1", table, args)
 	return query
 }
 
