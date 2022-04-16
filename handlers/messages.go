@@ -12,14 +12,14 @@ import (
 )
 
 var (
-	padMsgConf      *MessageInfo
-	fykMsgConf      *MessageInfo
+	padMsgConf      *betMsgSrc
+	fykMsgConf      *betMsgSrc
 	userNames       []string
 	parolaChannelID string
 	banlist         []string
 )
 
-type MessageInfo struct {
+type betMsgSrc struct {
 	ChannelID string
 	UserID    string
 }
@@ -29,12 +29,12 @@ func MessageConfigInit(users []configuration.UserConfig, parolaChannel string, b
 	for _, u := range users {
 		switch strings.ToLower(u.Username) {
 		case "pad":
-			padMsgConf = &MessageInfo{
+			padMsgConf = &betMsgSrc{
 				UserID:    u.UserID,
 				ChannelID: u.ChannelID,
 			}
 		case "fyk":
-			fykMsgConf = &MessageInfo{
+			fykMsgConf = &betMsgSrc{
 				UserID:    u.UserID,
 				ChannelID: u.ChannelID,
 			}
