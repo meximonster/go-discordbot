@@ -30,7 +30,7 @@ type Bet struct {
 
 type BetSummary struct {
 	Count       int
-	Total_units int
+	Total_units float32
 	Result      string
 }
 
@@ -112,7 +112,7 @@ func (b *Bet) Format() string {
 }
 
 func (bs *BetSummary) Format() string {
-	return fmt.Sprintf("%d bets %s, total_units: %d\n", bs.Count, bs.Result, bs.Total_units)
+	return fmt.Sprintf("%d bets %s, total_units: %f\n", bs.Count, bs.Result, bs.Total_units)
 }
 
 func FormatBets(bets []Bet) string {
@@ -129,7 +129,7 @@ func FormatBets(bets []Bet) string {
 
 func FormatBetsSum(sum []BetSummary) string {
 	sumFormats := make([]string, len(sum))
-	var net int
+	var net float32
 	for i, s := range sum {
 		if s.Result == "won" {
 			net += s.Total_units
@@ -142,6 +142,6 @@ func FormatBetsSum(sum []BetSummary) string {
 	for i := range sumFormats {
 		result = result + sumFormats[i]
 	}
-	result = result + fmt.Sprintf("profit/loss: %d", net)
+	result = result + fmt.Sprintf("profit/loss: %f", net)
 	return result
 }
