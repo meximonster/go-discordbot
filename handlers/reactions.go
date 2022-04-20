@@ -14,6 +14,10 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 			fmt.Println("error getting message from reaction: ", err)
 			return
 		}
+		// Ignore reactions to bot messages.
+		if m.Author.ID == s.State.User.ID {
+			return
+		}
 		if bet.IsBet(m.Content) {
 			var result string
 			switch r.Emoji.Name {
