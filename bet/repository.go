@@ -12,11 +12,12 @@ func NewDB(db *sqlx.DB) {
 	dbC = db
 }
 
-func CloseDB() {
+func CloseDB() error {
 	err := dbC.Close()
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
+	return nil
 }
 
 func (b *Bet) Store(table string) error {
