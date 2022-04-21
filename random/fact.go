@@ -1,9 +1,8 @@
-package fact
+package random
 
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 )
@@ -18,7 +17,7 @@ type Fact struct {
 func GetRandomFact() (string, error) {
 	r, err := cl.Get("https://cat-fact.herokuapp.com/facts/random?animal_type=cat")
 	if err != nil {
-		log.Fatalln(err)
+		return "", fmt.Errorf("error during request: %s", err.Error())
 	}
 	defer r.Body.Close()
 	var f Fact
