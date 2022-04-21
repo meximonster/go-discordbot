@@ -7,6 +7,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	bet "github.com/meximonster/go-discordbot/bet"
 	"github.com/meximonster/go-discordbot/configuration"
+	"github.com/meximonster/go-discordbot/fact"
 	"github.com/meximonster/go-discordbot/queries"
 	"github.com/meximonster/go-discordbot/user"
 )
@@ -55,6 +56,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "https://github.com/meximonster/go-discordbot")
 	}
 
+	serverCatFact(m.Content, m.ChannelID, s)
 	serveBanlist(m.Content, m.ChannelID, s)
 	serveUsers(m.Content, m.ChannelID, s)
 	servePets(m.Content, m.ChannelID, s)
@@ -108,6 +110,17 @@ func serveBanlist(content string, channel string, s *discordgo.Session) {
 			result = result + fmt.Sprintf("%d. %s\n", i+1, banword)
 		}
 		s.ChannelMessageSend(channel, result)
+	}
+}
+
+func serverCatFact(content string, channel string, s *discordgo.Session) {
+	if content == "!fact" {
+		f, err := fact.GetRandomFact()
+		if err != nil {
+			s.ChannelMessageSend(channel, err.Error())
+			return
+		}
+		s.ChannelMessageSend(channel, f)
 	}
 }
 
