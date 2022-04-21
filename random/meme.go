@@ -11,7 +11,7 @@ type Meme struct {
 }
 
 func GetRandomMeme() (string, string, error) {
-	r, err := cl.Get("https://cat-fact.herokuapp.com/facts/random?animal_type=cat")
+	r, err := cl.Get("https://meme-api.herokuapp.com/gimme/1")
 	if err != nil {
 		return "", "", fmt.Errorf("error during request: %s", err.Error())
 	}
