@@ -10,6 +10,10 @@ var dbC *sqlx.DB
 
 func NewDB(db *sqlx.DB) {
 	dbC = db
+	_, err := dbC.Exec(`SET TIMEZONE='Europe/Athens'`)
+	if err != nil {
+		fmt.Println(err)
+	}
 }
 
 func CloseDB() error {
@@ -22,7 +26,7 @@ func CloseDB() error {
 
 func (b *Bet) Store(table string) error {
 	q := fmt.Sprintf(`INSERT INTO %s (team,prediction,size,odds,result) VALUES ($1,$2,$3,$4,$5)`, table)
-	_ = dbC.MustExec(q, b.Team, b.Prediction, b.Size, b.Odds, b.Result)
+	dbC.MustExec(q, b.Team, b.Prediction, b.Size, b.Odds, b.Result)
 	return nil
 }
 
