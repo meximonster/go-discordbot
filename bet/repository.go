@@ -10,7 +10,6 @@ var dbC *sqlx.DB
 
 func NewDB(db *sqlx.DB) {
 	dbC = db
-	dbC.Exec(`SET TIMEZONE='Europe/Athens'`)
 }
 
 func CloseDB() error {
