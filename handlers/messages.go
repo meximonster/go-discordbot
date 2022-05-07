@@ -7,8 +7,8 @@ import (
 	"github.com/bwmarrin/discordgo"
 	bet "github.com/meximonster/go-discordbot/bet"
 	"github.com/meximonster/go-discordbot/configuration"
+	"github.com/meximonster/go-discordbot/meme"
 	"github.com/meximonster/go-discordbot/queries"
-	"github.com/meximonster/go-discordbot/random"
 	"github.com/meximonster/go-discordbot/user"
 )
 
@@ -115,7 +115,7 @@ func serveBanlist(content string, channel string, s *discordgo.Session) {
 
 func serveMeme(content string, channel string, s *discordgo.Session) {
 	if content == "!meme" {
-		link, url, err := random.GetRandomMeme()
+		link, url, err := meme.Random()
 		if err != nil {
 			s.ChannelMessageSend(channel, err.Error())
 			return

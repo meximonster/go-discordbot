@@ -1,7 +1,8 @@
-package random
+package meme
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -18,7 +19,7 @@ type MemeResponse struct {
 	Memes []Meme `json:"memes"`
 }
 
-func GetRandomMeme() (string, string, error) {
+func Random() (string, string, error) {
 	r, err := cl.Get("https://meme-api.herokuapp.com/gimme/1")
 	if err != nil {
 		return "", "", fmt.Errorf("error during request: %s", err.Error())
@@ -27,6 +28,9 @@ func GetRandomMeme() (string, string, error) {
 	var m MemeResponse
 	if err := json.NewDecoder(r.Body).Decode(&m); err != nil {
 		return "", "", fmt.Errorf("error decoding response: %s", err.Error())
+	}
+	if len(m.Memes) == 0 {
+		return "", "", errors.New("error: zero length meme response")
 	}
 	return m.Memes[0].PostLink, m.Memes[0].Url, nil
 }
