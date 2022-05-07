@@ -56,7 +56,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		s.ChannelMessageSend(m.ChannelID, "https://github.com/meximonster/go-discordbot")
 	}
 
-	serveCatFact(m.Content, m.ChannelID, s)
 	serveMeme(m.Content, m.ChannelID, s)
 	serveBanlist(m.Content, m.ChannelID, s)
 	serveUsers(m.Content, m.ChannelID, s)
@@ -114,7 +113,7 @@ func serveBanlist(content string, channel string, s *discordgo.Session) {
 	}
 }
 
-func serveCatFact(content string, channel string, s *discordgo.Session) {
+func serveMeme(content string, channel string, s *discordgo.Session) {
 	if content == "!meme" {
 		link, url, err := random.GetRandomMeme()
 		if err != nil {
@@ -122,17 +121,6 @@ func serveCatFact(content string, channel string, s *discordgo.Session) {
 			return
 		}
 		respondWithImage(channel, link, url, s)
-	}
-}
-
-func serveMeme(content string, channel string, s *discordgo.Session) {
-	if content == "!fact" {
-		f, err := random.GetRandomFact()
-		if err != nil {
-			s.ChannelMessageSend(channel, err.Error())
-			return
-		}
-		s.ChannelMessageSend(channel, f)
 	}
 }
 

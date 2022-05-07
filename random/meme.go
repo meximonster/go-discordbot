@@ -3,7 +3,11 @@ package random
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"time"
 )
+
+var cl = &http.Client{Timeout: 10 * time.Second}
 
 type Meme struct {
 	PostLink string `json:"postLink"`
