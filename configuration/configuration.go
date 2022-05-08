@@ -13,8 +13,8 @@ type ImageInfo struct {
 	Url  string `yaml:"url"`
 }
 
-type UserConfig struct {
-	Username  string      `yaml:"name"`
+type CntConfig struct {
+	Name      string      `yaml:"name"`
 	UserID    string      `yaml:"userID"`
 	ChannelID string      `yaml:"channelID"`
 	IsHuman   bool        `yaml:"isHuman"`
@@ -24,10 +24,10 @@ type UserConfig struct {
 }
 
 type Config struct {
-	BotToken        string       `yaml:"botToken"`
-	ParolaChannelID string       `yaml:"parolaChannelID"`
-	Users           []UserConfig `yaml:"users"`
-	Banlist         []string     `yaml:"banlist"`
+	BotToken        string      `yaml:"botToken"`
+	ParolaChannelID string      `yaml:"parolaChannelID"`
+	Content         []CntConfig `yaml:"content"`
+	Banlist         []string    `yaml:"banlist"`
 }
 
 func Load() error {

@@ -7,9 +7,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 	bet "github.com/meximonster/go-discordbot/bet"
 	"github.com/meximonster/go-discordbot/configuration"
+	cnt "github.com/meximonster/go-discordbot/content"
 	"github.com/meximonster/go-discordbot/meme"
 	"github.com/meximonster/go-discordbot/queries"
-	"github.com/meximonster/go-discordbot/user"
 )
 
 var (
@@ -25,22 +25,22 @@ type betMsgSrc struct {
 	UserID    string
 }
 
-func MessageConfigInit(users []configuration.UserConfig, parolaChannel string, blacklist []string) {
+func MessageConfigInit(content []configuration.CntConfig, parolaChannel string, blacklist []string) {
 	parolaChannelID = parolaChannel
-	for _, u := range users {
-		switch strings.ToLower(u.Username) {
+	for _, c := range content {
+		switch strings.ToLower(c.Name) {
 		case "pad":
 			padMsgConf = &betMsgSrc{
-				UserID:    u.UserID,
-				ChannelID: u.ChannelID,
+				UserID:    c.UserID,
+				ChannelID: c.ChannelID,
 			}
 		case "fyk":
 			fykMsgConf = &betMsgSrc{
-				UserID:    u.UserID,
-				ChannelID: u.ChannelID,
+				UserID:    c.UserID,
+				ChannelID: c.ChannelID,
 			}
 		}
-		userNames = append(userNames, u.Username)
+		userNames = append(userNames, c.Name)
 	}
 	banlist = blacklist
 }
@@ -52,10 +52,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if m.Content == "!git" {
-		s.ChannelMessageSend(m.ChannelID, "https://github.com/meximonster/go-discordbot")
-	}
-
+	serverGitURL(m.Content, m.ChannelID, s)
 	serveMeme(m.Content, m.ChannelID, s)
 	serveBanlist(m.Content, m.ChannelID, s)
 	serveUsers(m.Content, m.ChannelID, s)
@@ -67,9 +64,15 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	checkForBetSumQuery(m.Content, m.ChannelID, s)
 }
 
+func serverGitURL(content string, channel string, s *discordgo.Session) {
+	if content == "!git" {
+		s.ChannelMessageSend(channel, "https://github.com/meximonster/go-discordbot")
+	}
+}
+
 func serveUsers(content string, channel string, s *discordgo.Session) {
 	if content == "!users" {
-		users := user.GetUsers()
+		users := cnt.GetUsers()
 		if len(users) == 0 {
 			s.ChannelMessageSend(channel, "no users configured")
 			return
@@ -77,7 +80,7 @@ func serveUsers(content string, channel string, s *discordgo.Session) {
 		var str string
 		cnt := 0
 		for _, u := range users {
-			str = str + fmt.Sprintf("%d. %s\n", cnt+1, u.Username)
+			str = str + fmt.Sprintf("%d. %s\n", cnt+1, u.Name)
 			cnt++
 		}
 		result := "Configured users are:\n" + str
@@ -87,7 +90,7 @@ func serveUsers(content string, channel string, s *discordgo.Session) {
 
 func servePets(content string, channel string, s *discordgo.Session) {
 	if content == "!pets" {
-		pets := user.GetPets()
+		pets := cnt.GetPets()
 		if len(pets) == 0 {
 			s.ChannelMessageSend(channel, "no pets configured")
 			return
@@ -95,7 +98,7 @@ func servePets(content string, channel string, s *discordgo.Session) {
 		var str string
 		cnt := 0
 		for _, u := range pets {
-			str = str + fmt.Sprintf("%d. %s\n", cnt+1, u.Username)
+			str = str + fmt.Sprintf("%d. %s\n", cnt+1, u.Name)
 			cnt++
 		}
 		result := "Configured pets are:\n" + str
@@ -194,7 +197,7 @@ func checkForBetSumQuery(content string, channel string, s *discordgo.Session) {
 }
 
 func respondWithRandomImage(name string, channel string, s *discordgo.Session) {
-	u, err := user.GetByName(name)
+	u, err := cnt.GetByName(name)
 	if err != nil {
 		s.ChannelMessageSend(channel, err.Error())
 		return
