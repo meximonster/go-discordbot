@@ -67,21 +67,24 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 func AddImage(content string, channel string, s *discordgo.Session) {
 	if strings.HasPrefix(content, "!add") {
-		input := strings.Split(content, " ")
-		if len(input) < 4 {
+		text := strings.Split(content, "'")
+		if len(text) != 2 {
+			s.ChannelMessageSend(channel, "wrong parameters")
+			return
+		}
+		imgText := text[1]
+		replace := " '" + imgText + "'"
+		str := strings.Replace(content, replace, "", 1)
+		input := strings.Split(str, " ")
+		if len(input) < 3 {
 			s.ChannelMessageSend(channel, "not enough parameters")
 			return
 		}
-		if len(input) > 4 {
+		if len(input) > 3 {
 			s.ChannelMessageSend(channel, "too many parameters")
 			return
 		}
-		if !strings.HasPrefix(input[2], "'") || !strings.HasSuffix(input[2], "'") {
-			s.ChannelMessageSend(channel, "image text should be enclosed by single quotes")
-			return
-		}
-		imageText := strings.Replace(input[2], "'", "", 2)
-		err := cnt.AddImage(input[1], imageText, input[3])
+		err := cnt.AddImage(input[1], imgText, input[2])
 		if err != nil {
 			s.ChannelMessageSend(channel, err.Error())
 		}
