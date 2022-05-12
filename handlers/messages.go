@@ -68,7 +68,8 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 func AddImage(content string, channel string, s *discordgo.Session) {
 	if strings.HasPrefix(content, "!add") {
 		text := strings.Split(content, "'")
-		if len(text) != 2 {
+		fmt.Println(len(text))
+		if len(text) != 3 {
 			s.ChannelMessageSend(channel, "wrong parameters")
 			return
 		}
