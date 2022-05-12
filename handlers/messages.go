@@ -52,7 +52,8 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	serverGitURL(m.Content, m.ChannelID, s)
+	AddImage(m.Content, m.ChannelID, s)
+	serveGitURL(m.Content, m.ChannelID, s)
 	serveMeme(m.Content, m.ChannelID, s)
 	serveBanlist(m.Content, m.ChannelID, s)
 	serveUsers(m.Content, m.ChannelID, s)
@@ -64,7 +65,30 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	checkForBetSumQuery(m.Content, m.ChannelID, s)
 }
 
-func serverGitURL(content string, channel string, s *discordgo.Session) {
+func AddImage(content string, channel string, s *discordgo.Session) {
+	if strings.HasPrefix(content, "!add") {
+		input := strings.Split(content, " ")
+		if len(input) < 4 {
+			s.ChannelMessageSend(channel, "not enough parameters")
+			return
+		}
+		if len(input) > 4 {
+			s.ChannelMessageSend(channel, "too many parameters")
+			return
+		}
+		if !strings.HasPrefix(input[2], "'") || !strings.HasSuffix(input[2], "'") {
+			s.ChannelMessageSend(channel, "image text should be enclosed by single quotes")
+			return
+		}
+		imageText := strings.Replace(input[2], "'", "", 2)
+		err := cnt.AddImage(input[1], imageText, input[3])
+		if err != nil {
+			s.ChannelMessageSend(channel, err.Error())
+		}
+	}
+}
+
+func serveGitURL(content string, channel string, s *discordgo.Session) {
 	if content == "!git" {
 		s.ChannelMessageSend(channel, "https://github.com/meximonster/go-discordbot")
 	}

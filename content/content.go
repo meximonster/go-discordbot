@@ -38,9 +38,9 @@ func InitCnt(cntConfig []configuration.CntConfig) {
 
 func GetUsers() map[string]*Content {
 	m := make(map[string]*Content, len(cnt))
-	for _, u := range cnt {
-		if u.IsHuman {
-			m[u.Name] = u
+	for _, c := range cnt {
+		if c.IsHuman {
+			m[c.Name] = c
 		}
 	}
 	return m
@@ -48,37 +48,62 @@ func GetUsers() map[string]*Content {
 
 func GetPets() map[string]*Content {
 	m := make(map[string]*Content, len(cnt))
-	for _, u := range cnt {
-		if u.IsPet {
-			m[u.Name] = u
+	for _, c := range cnt {
+		if c.IsPet {
+			m[c.Name] = c
 		}
 	}
 	return m
 }
 
 func GetByName(name string) (*Content, error) {
-	if u, ok := cnt[name]; ok {
-		return u, nil
+	if c, ok := cnt[name]; ok {
+		return c, nil
 	}
 	return nil, fmt.Errorf("%s not found", name)
 }
 
-func (u *Content) RandomImage() (configuration.ImageInfo, error) {
-	if len(u.Images) == 0 {
-		return configuration.ImageInfo{}, fmt.Errorf("no images for %s", u.Name)
+func (c *Content) RandomImage() (configuration.ImageInfo, error) {
+	if len(c.Images) == 0 {
+		return configuration.ImageInfo{}, fmt.Errorf("no images for %s", c.Name)
 	}
-	if len(u.Images) == 1 {
-		return u.Images[0], nil
+	if len(c.Images) == 1 {
+		return c.Images[0], nil
 	}
 	var rng int
 	rand.Seed(time.Now().UnixNano())
 	flag := true
 	for flag {
-		rng = rand.Intn(len(u.Images))
-		if u.Images[rng].Url != u.LastImageURLServed {
+		rng = rand.Intn(len(c.Images))
+		if c.Images[rng].Url != c.LastImageURLServed {
 			flag = false
 		}
 	}
-	u.LastImageURLServed = u.Images[rng].Url
-	return u.Images[rng], nil
+	c.LastImageURLServed = c.Images[rng].Url
+	return c.Images[rng], nil
+}
+
+func AddImage(name string, text string, url string) error {
+	cfg := configuration.Read()
+	for i, c := range cfg.Content {
+		if c.Name == name {
+			index := i
+			newImage := configuration.ImageInfo{
+				Text: text,
+				Url:  url,
+			}
+			c.Images = append(c.Images, newImage)
+			cfg.Content[index].Images = c.Images
+			for _, cn := range cnt {
+				if cn.Name == name {
+					cn.Images = append(cn.Images, newImage)
+				}
+			}
+		}
+	}
+	err := configuration.Write(cfg)
+	if err != nil {
+		return err
+	}
+	return nil
 }

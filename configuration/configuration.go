@@ -47,3 +47,11 @@ func Load() error {
 func Read() *Config {
 	return appConfig
 }
+
+func Write(c *Config) error {
+	newEnv, err := yaml.Marshal(&c)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(".env", newEnv, 0)
+}
