@@ -99,13 +99,27 @@ func AddImage(name string, text string, url string) error {
 			}
 		}
 	}
-	err := configuration.Write(cfg)
-	if err != nil {
-		return err
-	}
-	return nil
+	return configuration.Write(cfg)
 }
 
-func Set(name string, cntType string) {
-
+func Set(name string, cntType string) error {
+	var human, pet bool
+	cfg := configuration.Read()
+	if cntType == "human" {
+		human = true
+	} else {
+		pet = true
+	}
+	newCnt := configuration.CntConfig{
+		Name:    name,
+		IsHuman: human,
+		IsPet:   pet,
+	}
+	cfg.Content = append(cfg.Content, newCnt)
+	cnt[name] = &Content{
+		Name:    name,
+		IsHuman: human,
+		IsPet:   pet,
+	}
+	return configuration.Write(cfg)
 }

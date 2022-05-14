@@ -52,7 +52,8 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	AddImage(m.Content, m.ChannelID, s)
+	setContent(m.Content, m.ChannelID, s)
+	addImage(m.Content, m.ChannelID, s)
 	serveGitURL(m.Content, m.ChannelID, s)
 	serveMeme(m.Content, m.ChannelID, s)
 	serveBanlist(m.Content, m.ChannelID, s)
@@ -65,7 +66,39 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	checkForBetSumQuery(m.Content, m.ChannelID, s)
 }
 
-func AddImage(content string, channel string, s *discordgo.Session) {
+func setContent(content string, channel string, s *discordgo.Session) {
+	if strings.HasPrefix(content, "!set") {
+		input := strings.Split(content, " ")
+		if len(input) != 3 {
+			s.ChannelMessageSend(channel, "wrong parameters")
+			return
+		}
+		name := input[1]
+		cntType := input[2]
+		if cntType == "human" {
+			users := cnt.GetUsers()
+			if _, ok := users[name]; !ok {
+				s.ChannelMessageSend(channel, fmt.Sprintf("user %s already exists", name))
+				return
+			}
+		} else if cntType == "pet" {
+			pets := cnt.GetPets()
+			if _, ok := pets[name]; !ok {
+				s.ChannelMessageSend(channel, fmt.Sprintf("user %s already exists", name))
+				return
+			}
+		} else {
+			s.ChannelMessageSend(channel, "content type should be either human or pet")
+			return
+		}
+		err := cnt.Set(name, cntType)
+		if err != nil {
+			s.ChannelMessageSend(channel, err.Error())
+		}
+	}
+}
+
+func addImage(content string, channel string, s *discordgo.Session) {
 	if strings.HasPrefix(content, "!add") {
 		text := strings.Split(content, "'")
 		fmt.Println(len(text))
