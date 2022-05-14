@@ -84,7 +84,6 @@ func (c *Content) RandomImage() (configuration.ImageInfo, error) {
 }
 
 func AddImage(name string, text string, url string) error {
-	exist := false
 	cfg := configuration.Read()
 	newImage := configuration.ImageInfo{
 		Text: text,
@@ -92,7 +91,6 @@ func AddImage(name string, text string, url string) error {
 	}
 	for i, c := range cfg.Content {
 		if c.Name == name {
-			exist = true
 			index := i
 			c.Images = append(c.Images, newImage)
 			cfg.Content[index].Images = c.Images
@@ -101,18 +99,13 @@ func AddImage(name string, text string, url string) error {
 			}
 		}
 	}
-	if !exist {
-		cfg.Content = append(cfg.Content, configuration.CntConfig{
-			Name: name,
-			Images: []configuration.ImageInfo{{
-				Text: text,
-				Url:  url,
-			}},
-		})
-	}
 	err := configuration.Write(cfg)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func Set(name string, cntType string) {
+
 }
