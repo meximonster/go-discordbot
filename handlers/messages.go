@@ -77,13 +77,13 @@ func setContent(content string, channel string, s *discordgo.Session) {
 		cntType := input[2]
 		if cntType == "human" {
 			users := cnt.GetUsers()
-			if _, ok := users[name]; !ok {
+			if _, ok := users[name]; ok {
 				s.ChannelMessageSend(channel, fmt.Sprintf("user %s already exists", name))
 				return
 			}
 		} else if cntType == "pet" {
 			pets := cnt.GetPets()
-			if _, ok := pets[name]; !ok {
+			if _, ok := pets[name]; ok {
 				s.ChannelMessageSend(channel, fmt.Sprintf("user %s already exists", name))
 				return
 			}
