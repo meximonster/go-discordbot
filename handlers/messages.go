@@ -84,7 +84,7 @@ func setContent(content string, channel string, s *discordgo.Session) {
 		} else if cntType == "pet" {
 			pets := cnt.GetPets()
 			if _, ok := pets[name]; ok {
-				s.ChannelMessageSend(channel, fmt.Sprintf("user %s already exists", name))
+				s.ChannelMessageSend(channel, fmt.Sprintf("pet %s already exists", name))
 				return
 			}
 		} else {
