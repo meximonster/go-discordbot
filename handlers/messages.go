@@ -99,7 +99,6 @@ func setContent(content string, channel string, s *discordgo.Session) {
 func addImage(content string, channel string, s *discordgo.Session) {
 	if strings.HasPrefix(content, "!add") {
 		text := strings.Split(content, "'")
-		fmt.Println(len(text))
 		if len(text) != 3 {
 			s.ChannelMessageSend(channel, "wrong parameters")
 			return
