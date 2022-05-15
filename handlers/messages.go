@@ -13,9 +13,8 @@ import (
 )
 
 var (
-	padMsgConf *betMsgSrc
-	fykMsgConf *betMsgSrc
-	// userNames       []string
+	padMsgConf      *betMsgSrc
+	fykMsgConf      *betMsgSrc
 	parolaChannelID string
 	banlist         []string
 )
@@ -40,7 +39,6 @@ func MessageConfigInit(content []configuration.CntConfig, parolaChannel string, 
 				ChannelID: c.ChannelID,
 			}
 		}
-		// userNames = append(userNames, c.Name)
 	}
 	banlist = blacklist
 }
@@ -213,10 +211,7 @@ func checkForBet(channel string, author string, content string, s *discordgo.Ses
 func checkForUser(content string, channel string, s *discordgo.Session) {
 	if strings.HasPrefix(content, "!") {
 		str := strings.TrimPrefix(content, "!")
-		c, err := cnt.Get()
-		if err != nil {
-			return
-		}
+		c := cnt.Get()
 		if _, ok := c[str]; ok {
 			respondWithRandomImage(str, channel, s)
 		}
