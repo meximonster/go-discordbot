@@ -1,6 +1,7 @@
 package content
 
 import (
+	"errors"
 	"fmt"
 	"math/rand"
 	"time"
@@ -34,6 +35,13 @@ func InitCnt(cntConfig []configuration.CntConfig) {
 
 		cnt[c.Name] = c
 	}
+}
+
+func Get() (map[string]*Content, error) {
+	if len(cnt) > 0 {
+		return cnt, nil
+	}
+	return nil, errors.New("no content found")
 }
 
 func GetUsers() map[string]*Content {
