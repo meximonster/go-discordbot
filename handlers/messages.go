@@ -54,6 +54,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	serveMeme(m.Content, m.ChannelID, s)
 	serveUsers(m.Content, m.ChannelID, s)
 	servePets(m.Content, m.ChannelID, s)
+	serveArtists(m.Content, m.ChannelID, s)
 	checkForContent(m.Content, m.ChannelID, s)
 	checkForParola(m.Content, m.ChannelID, m.Attachments, s)
 	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
@@ -80,6 +81,12 @@ func setContent(content string, channel string, s *discordgo.Session) {
 			pets := cnt.GetPets()
 			if _, ok := pets[name]; ok {
 				s.ChannelMessageSend(channel, fmt.Sprintf("pet %s already exists", name))
+				return
+			}
+		} else if cntType == "artist" {
+			artists := cnt.GetArtists()
+			if _, ok := artists[name]; ok {
+				s.ChannelMessageSend(channel, fmt.Sprintf("artist %s already exists", name))
 				return
 			}
 		} else {
@@ -157,6 +164,24 @@ func servePets(content string, channel string, s *discordgo.Session) {
 			cnt++
 		}
 		result := "Configured pets are:\n" + str
+		s.ChannelMessageSend(channel, result)
+	}
+}
+
+func serveArtists(content string, channel string, s *discordgo.Session) {
+	if content == "!artists" {
+		artists := cnt.GetArtists()
+		if len(artists) == 0 {
+			s.ChannelMessageSend(channel, "no artists configured")
+			return
+		}
+		var str string
+		cnt := 0
+		for _, a := range artists {
+			str = str + fmt.Sprintf("%d. %s\n", cnt+1, a.Name)
+			cnt++
+		}
+		result := "Configured artists are:\n" + str
 		s.ChannelMessageSend(channel, result)
 	}
 }

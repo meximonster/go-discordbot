@@ -16,6 +16,7 @@ type Content struct {
 	ChannelID          string
 	IsHuman            bool
 	IsPet              bool
+	IsArtist           bool
 	Variety            bool
 	Images             []configuration.ImageInfo
 	LastImageURLServed string
@@ -29,6 +30,7 @@ func Load(cntConfig []configuration.CntConfig) {
 		c.ChannelID = cfg.ChannelID
 		c.IsHuman = cfg.IsHuman
 		c.IsPet = cfg.IsPet
+		c.IsArtist = cfg.IsArtist
 		c.Variety = cfg.Variety
 		c.Images = cfg.Images
 
@@ -54,6 +56,16 @@ func GetPets() map[string]*Content {
 	m := make(map[string]*Content, len(cnt))
 	for _, c := range cnt {
 		if c.IsPet {
+			m[c.Name] = c
+		}
+	}
+	return m
+}
+
+func GetArtists() map[string]*Content {
+	m := make(map[string]*Content, len(cnt))
+	for _, c := range cnt {
+		if c.IsArtist {
 			m[c.Name] = c
 		}
 	}
@@ -107,23 +119,27 @@ func AddImage(name string, text string, url string) error {
 }
 
 func Set(name string, cntType string) error {
-	var human, pet bool
+	var human, pet, artist bool
 	cfg := configuration.Read()
 	if cntType == "human" {
 		human = true
-	} else {
+	} else if cntType == "pet" {
 		pet = true
+	} else {
+		artist = true
 	}
 	newCnt := configuration.CntConfig{
-		Name:    name,
-		IsHuman: human,
-		IsPet:   pet,
+		Name:     name,
+		IsHuman:  human,
+		IsPet:    pet,
+		IsArtist: artist,
 	}
 	cfg.Content = append(cfg.Content, newCnt)
 	cnt[name] = &Content{
-		Name:    name,
-		IsHuman: human,
-		IsPet:   pet,
+		Name:     name,
+		IsHuman:  human,
+		IsPet:    pet,
+		IsArtist: artist,
 	}
 	return configuration.Write(cfg)
 }

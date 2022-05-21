@@ -19,6 +19,7 @@ type CntConfig struct {
 	ChannelID string      `yaml:"channelID"`
 	IsHuman   bool        `yaml:"isHuman"`
 	IsPet     bool        `yaml:"isPet"`
+	IsArtist  bool        `yaml:"isArtist"`
 	Variety   bool        `yaml:"variety"`
 	Images    []ImageInfo `yaml:"images"`
 }
