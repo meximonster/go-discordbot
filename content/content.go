@@ -21,7 +21,7 @@ type Content struct {
 	LastImageURLServed string
 }
 
-func InitCnt(cntConfig []configuration.CntConfig) {
+func Load(cntConfig []configuration.CntConfig) {
 	for _, cfg := range cntConfig {
 		c := new(Content)
 		c.Name = cfg.Name

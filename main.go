@@ -42,7 +42,7 @@ func main() {
 		log.Fatal("error creating session: ", err)
 	}
 
-	cnt.InitCnt(c.Content)
+	cnt.Load(c.Content)
 	handlers.MessageConfigInit(c.Content, c.ParolaChannelID)
 
 	// Add handlers for message and reaction events.
