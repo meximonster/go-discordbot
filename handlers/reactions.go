@@ -8,7 +8,7 @@ import (
 )
 
 func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
-	if (r.ChannelID == padMsgConf.ChannelID || r.ChannelID == fykMsgConf.ChannelID) && (r.Emoji.Name == "✅" || r.Emoji.Name == "❌") {
+	if (r.ChannelID == betMsgConf.ChannelID || r.ChannelID == poloMsgConf.ChannelID) && (r.Emoji.Name == "✅" || r.Emoji.Name == "❌") {
 		m, err := s.ChannelMessage(r.ChannelID, r.MessageID)
 		if err != nil {
 			fmt.Println("error getting message from reaction: ", err)

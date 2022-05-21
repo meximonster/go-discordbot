@@ -13,10 +13,9 @@ import (
 )
 
 var (
-	padMsgConf      *betMsgSrc
-	fykMsgConf      *betMsgSrc
+	betMsgConf      *betMsgSrc
+	poloMsgConf     *betMsgSrc
 	parolaChannelID string
-	banlist         []string
 )
 
 type betMsgSrc struct {
@@ -24,23 +23,22 @@ type betMsgSrc struct {
 	UserID    string
 }
 
-func MessageConfigInit(content []configuration.CntConfig, parolaChannel string, blacklist []string) {
+func MessageConfigInit(content []configuration.CntConfig, parolaChannel string) {
 	parolaChannelID = parolaChannel
 	for _, c := range content {
 		switch strings.ToLower(c.Name) {
 		case "pad":
-			padMsgConf = &betMsgSrc{
+			betMsgConf = &betMsgSrc{
 				UserID:    c.UserID,
 				ChannelID: c.ChannelID,
 			}
 		case "fyk":
-			fykMsgConf = &betMsgSrc{
+			poloMsgConf = &betMsgSrc{
 				UserID:    c.UserID,
 				ChannelID: c.ChannelID,
 			}
 		}
 	}
-	banlist = blacklist
 }
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -54,7 +52,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	addImage(m.Content, m.ChannelID, s)
 	serveGitURL(m.Content, m.ChannelID, s)
 	serveMeme(m.Content, m.ChannelID, s)
-	serveBanlist(m.Content, m.ChannelID, s)
 	serveUsers(m.Content, m.ChannelID, s)
 	servePets(m.Content, m.ChannelID, s)
 	checkForUser(m.Content, m.ChannelID, s)
@@ -164,16 +161,6 @@ func servePets(content string, channel string, s *discordgo.Session) {
 	}
 }
 
-func serveBanlist(content string, channel string, s *discordgo.Session) {
-	if content == "!banlist" {
-		var result string
-		for i, banword := range banlist {
-			result = result + fmt.Sprintf("%d. %s\n", i+1, banword)
-		}
-		s.ChannelMessageSend(channel, result)
-	}
-}
-
 func serveMeme(content string, channel string, s *discordgo.Session) {
 	if content == "!meme" {
 		link, url, err := meme.Random()
@@ -194,7 +181,7 @@ func checkForParola(content string, channel string, attachments []*discordgo.Mes
 }
 
 func checkForBet(channel string, author string, content string, s *discordgo.Session) {
-	if (channel == padMsgConf.ChannelID && author == padMsgConf.UserID) || (channel == fykMsgConf.ChannelID && author == fykMsgConf.UserID) {
+	if (channel == betMsgConf.ChannelID && author == betMsgConf.UserID) || (channel == poloMsgConf.ChannelID && author == poloMsgConf.UserID) {
 		if bet.IsBet(content) {
 			table := tableRef(channel)
 			b, err := bet.Decouple(content, "", table)
@@ -218,7 +205,7 @@ func checkForUser(content string, channel string, s *discordgo.Session) {
 }
 
 func checkForBetQuery(content string, channel string, s *discordgo.Session) {
-	if (channel == padMsgConf.ChannelID || channel == fykMsgConf.ChannelID) && strings.HasPrefix(content, "!bet ") {
+	if (channel == betMsgConf.ChannelID || channel == poloMsgConf.ChannelID) && strings.HasPrefix(content, "!bet ") {
 		table := tableRef(channel)
 		q := queries.Parse(content, table)
 		bets, err := bet.GetBetsByQuery(q)
@@ -236,7 +223,7 @@ func checkForBetQuery(content string, channel string, s *discordgo.Session) {
 }
 
 func checkForBetSumQuery(content string, channel string, s *discordgo.Session) {
-	if (channel == padMsgConf.ChannelID || channel == fykMsgConf.ChannelID) && strings.HasPrefix(content, "!betsum ") {
+	if (channel == betMsgConf.ChannelID || channel == poloMsgConf.ChannelID) && strings.HasPrefix(content, "!betsum ") {
 		table := tableRef(channel)
 		q := queries.ParseSum(content, table)
 		sum, err := bet.GetBetsSumByQuery(q)
@@ -281,7 +268,7 @@ func respondWithImage(channel string, title string, imageURL string, s *discordg
 
 func tableRef(channel string) string {
 	var table string
-	if channel == padMsgConf.ChannelID {
+	if channel == betMsgConf.ChannelID {
 		table = "bets"
 	} else {
 		table = "polo_bets"
