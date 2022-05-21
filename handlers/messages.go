@@ -54,7 +54,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	serveMeme(m.Content, m.ChannelID, s)
 	serveUsers(m.Content, m.ChannelID, s)
 	servePets(m.Content, m.ChannelID, s)
-	checkForUser(m.Content, m.ChannelID, s)
+	checkForContent(m.Content, m.ChannelID, s)
 	checkForParola(m.Content, m.ChannelID, m.Attachments, s)
 	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
 	checkForBetQuery(m.Content, m.ChannelID, s)
@@ -194,7 +194,7 @@ func checkForBet(channel string, author string, content string, s *discordgo.Ses
 	}
 }
 
-func checkForUser(content string, channel string, s *discordgo.Session) {
+func checkForContent(content string, channel string, s *discordgo.Session) {
 	if strings.HasPrefix(content, "!") {
 		str := strings.TrimPrefix(content, "!")
 		c := cnt.Get()
