@@ -76,7 +76,7 @@ func rng(content string, channel string, s *discordgo.Session) {
 		strNum := input[1]
 		max, err := strconv.Atoi(strNum)
 		if err != nil {
-			s.ChannelMessageSend(channel, "number must be integer")
+			s.ChannelMessageSend(channel, "number must be an integer")
 			return
 		}
 		rand.Seed(time.Now().UnixNano())
