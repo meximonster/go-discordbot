@@ -34,7 +34,11 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 				s.ChannelMessageSend(r.ChannelID, err.Error())
 				return
 			}
-			_ = bet.Store(b, table)
+			err = bet.Store(b, table)
+			if err != nil {
+				s.ChannelMessageSend(r.ChannelID, err.Error())
+				return
+			}
 		}
 	}
 }
