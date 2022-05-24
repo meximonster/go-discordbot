@@ -2,7 +2,10 @@ package handlers
 
 import (
 	"fmt"
+	"math/rand"
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/bwmarrin/discordgo"
 	bet "github.com/meximonster/go-discordbot/bet"
@@ -48,6 +51,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	rng(m.Content, m.ChannelID, s)
 	setContent(m.Content, m.ChannelID, s)
 	addImage(m.Content, m.ChannelID, s)
 	serveGitURL(m.Content, m.ChannelID, s)
@@ -60,6 +64,24 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
 	checkForBetQuery(m.Content, m.ChannelID, s)
 	checkForBetSumQuery(m.Content, m.ChannelID, s)
+}
+
+func rng(content string, channel string, s *discordgo.Session) {
+	if strings.HasPrefix(content, "!roll") {
+		input := strings.Split(content, " ")
+		if len(input) != 2 {
+			s.ChannelMessageSend(channel, "usage: !roll <number>, result will be in range [1, <number>]")
+			return
+		}
+		strNum := input[1]
+		max, err := strconv.Atoi(strNum)
+		if err != nil {
+			s.ChannelMessageSend(channel, "number must be integer")
+			return
+		}
+		rand.Seed(time.Now().UnixNano())
+		s.ChannelMessageSend(channel, fmt.Sprintf("%d", rand.Intn(max)+1))
+	}
 }
 
 func setContent(content string, channel string, s *discordgo.Session) {
