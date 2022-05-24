@@ -51,7 +51,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	rng(m.Content, m.ChannelID, s)
+	rng(m.Author.Username, m.Content, m.ChannelID, s)
 	setContent(m.Content, m.ChannelID, s)
 	addImage(m.Content, m.ChannelID, s)
 	serveGitURL(m.Content, m.ChannelID, s)
@@ -66,7 +66,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	checkForBetSumQuery(m.Content, m.ChannelID, s)
 }
 
-func rng(content string, channel string, s *discordgo.Session) {
+func rng(username string, content string, channel string, s *discordgo.Session) {
 	if strings.HasPrefix(content, "!roll") {
 		input := strings.Split(content, " ")
 		if len(input) != 2 {
@@ -80,7 +80,7 @@ func rng(content string, channel string, s *discordgo.Session) {
 			return
 		}
 		rand.Seed(time.Now().UnixNano())
-		s.ChannelMessageSend(channel, fmt.Sprintf("%d", rand.Intn(max)+1))
+		s.ChannelMessageSend(channel, fmt.Sprintf("%s rolled %d", username, rand.Intn(max)+1))
 	}
 }
 
