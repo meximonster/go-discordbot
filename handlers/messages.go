@@ -79,6 +79,10 @@ func rng(username string, content string, channel string, s *discordgo.Session) 
 			s.ChannelMessageSend(channel, "number must be an integer")
 			return
 		}
+		if max == 0 || max == 1 {
+			s.ChannelMessageSend(channel, "no rng here")
+			return
+		}
 		rand.Seed(time.Now().UnixNano())
 		s.ChannelMessageSend(channel, fmt.Sprintf("%s rolled %d", username, rand.Intn(max)+1))
 	}
