@@ -131,20 +131,23 @@ func AddImage(name string, text string, url string) error {
 }
 
 func Set(name string, cntType string) error {
-	var human, pet, artist bool
+	var human, pet, artist, emote bool
 	cfg := configuration.Read()
 	if cntType == "human" {
 		human = true
 	} else if cntType == "pet" {
 		pet = true
-	} else {
+	} else if cntType == "artist" {
 		artist = true
+	} else {
+		emote = true
 	}
 	newCnt := configuration.CntConfig{
 		Name:     name,
 		IsHuman:  human,
 		IsPet:    pet,
 		IsArtist: artist,
+		IsEmote:  emote,
 	}
 	cfg.Content = append(cfg.Content, newCnt)
 	cnt[name] = &Content{
@@ -152,6 +155,7 @@ func Set(name string, cntType string) error {
 		IsHuman:  human,
 		IsPet:    pet,
 		IsArtist: artist,
+		IsEmote:  emote,
 	}
 	return configuration.Write(cfg)
 }
