@@ -122,7 +122,7 @@ func setContent(content string, channel string, s *discordgo.Session) {
 				return
 			}
 		} else {
-			s.ChannelMessageSend(channel, "content type should be either human or pet")
+			s.ChannelMessageSend(channel, "content type should be either human,pet,artist or emote")
 			return
 		}
 		err := cnt.Set(name, cntType)
