@@ -115,6 +115,12 @@ func setContent(content string, channel string, s *discordgo.Session) {
 				s.ChannelMessageSend(channel, fmt.Sprintf("artist %s already exists", name))
 				return
 			}
+		} else if cntType == "emote" {
+			emotes := cnt.GetEmotes()
+			if _, ok := emotes[name]; ok {
+				s.ChannelMessageSend(channel, fmt.Sprintf("emote %s already exists", name))
+				return
+			}
 		} else {
 			s.ChannelMessageSend(channel, "content type should be either human or pet")
 			return

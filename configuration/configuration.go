@@ -20,6 +20,7 @@ type CntConfig struct {
 	IsHuman   bool        `yaml:"isHuman"`
 	IsPet     bool        `yaml:"isPet"`
 	IsArtist  bool        `yaml:"isArtist"`
+	IsEmote   bool        `yaml:"isEmote"`
 	Variety   bool        `yaml:"variety"`
 	Images    []ImageInfo `yaml:"images"`
 }

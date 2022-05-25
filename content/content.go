@@ -17,6 +17,7 @@ type Content struct {
 	IsHuman            bool
 	IsPet              bool
 	IsArtist           bool
+	IsEmote            bool
 	Variety            bool
 	Images             []configuration.ImageInfo
 	LastImageURLServed string
@@ -31,6 +32,7 @@ func Load(cntConfig []configuration.CntConfig) {
 		c.IsHuman = cfg.IsHuman
 		c.IsPet = cfg.IsPet
 		c.IsArtist = cfg.IsArtist
+		c.IsEmote = cfg.IsEmote
 		c.Variety = cfg.Variety
 		c.Images = cfg.Images
 
@@ -66,6 +68,16 @@ func GetArtists() map[string]*Content {
 	m := make(map[string]*Content, len(cnt))
 	for _, c := range cnt {
 		if c.IsArtist {
+			m[c.Name] = c
+		}
+	}
+	return m
+}
+
+func GetEmotes() map[string]*Content {
+	m := make(map[string]*Content, len(cnt))
+	for _, c := range cnt {
+		if c.IsEmote {
 			m[c.Name] = c
 		}
 	}
