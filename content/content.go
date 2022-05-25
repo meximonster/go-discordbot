@@ -18,7 +18,6 @@ type Content struct {
 	IsPet              bool
 	IsArtist           bool
 	IsEmote            bool
-	Variety            bool
 	Images             []configuration.ImageInfo
 	LastImageURLServed string
 }
