@@ -33,7 +33,6 @@ func Load(cntConfig []configuration.CntConfig) {
 		c.IsPet = cfg.IsPet
 		c.IsArtist = cfg.IsArtist
 		c.IsEmote = cfg.IsEmote
-		c.Variety = cfg.Variety
 		c.Images = cfg.Images
 
 		cnt[c.Name] = c

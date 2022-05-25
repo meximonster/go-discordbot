@@ -59,6 +59,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	serveUsers(m.Content, m.ChannelID, s)
 	servePets(m.Content, m.ChannelID, s)
 	serveArtists(m.Content, m.ChannelID, s)
+	serveEmotes(m.Content, m.ChannelID, s)
 	checkForContent(m.Content, m.ChannelID, s)
 	checkForParola(m.Content, m.ChannelID, m.Attachments, s)
 	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
@@ -214,6 +215,24 @@ func serveArtists(content string, channel string, s *discordgo.Session) {
 			cnt++
 		}
 		result := "Configured artists are:\n" + str
+		s.ChannelMessageSend(channel, result)
+	}
+}
+
+func serveEmotes(content string, channel string, s *discordgo.Session) {
+	if content == "!emotes" {
+		emotes := cnt.GetEmotes()
+		if len(emotes) == 0 {
+			s.ChannelMessageSend(channel, "no emotes configured")
+			return
+		}
+		var str string
+		cnt := 0
+		for _, a := range emotes {
+			str = str + fmt.Sprintf("%d. %s\n", cnt+1, a.Name)
+			cnt++
+		}
+		result := "Configured emotes are:\n" + str
 		s.ChannelMessageSend(channel, result)
 	}
 }
