@@ -51,6 +51,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	tts(m.Content, m.ChannelID, s)
 	rng(m.Author.Username, m.Content, m.ChannelID, s)
 	setContent(m.Content, m.ChannelID, s)
 	addImage(m.Content, m.ChannelID, s)
@@ -65,6 +66,16 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
 	checkForBetQuery(m.Content, m.ChannelID, s)
 	checkForBetSumQuery(m.Content, m.ChannelID, s)
+}
+
+func tts(content string, channel string, s *discordgo.Session) {
+	if strings.HasPrefix(content, "!tts") {
+		tts := strings.Replace(content, "!tts ", "", 1)
+		s.ChannelMessageSendComplex(channel, &discordgo.MessageSend{
+			Content: tts,
+			TTS:     true,
+		})
+	}
 }
 
 func rng(username string, content string, channel string, s *discordgo.Session) {
