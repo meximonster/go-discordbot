@@ -20,6 +20,26 @@ func CloseDB() error {
 	return nil
 }
 
+func SelectAll(tables ...string) ([]Content, error) {
+	var origin = `SELECT * FROM `
+	q := origin
+	for i, table := range tables {
+
+		if i+1 == len(tables) {
+			q += table + ";"
+			break
+		}
+
+		q += table + " UNION " + origin
+	}
+	var c []Content
+	err := dbC.Select(&c, q)
+	if err != nil {
+		return nil, err
+	}
+	return c, nil
+}
+
 func Store(table string, name string, images []byte) error {
 	q := fmt.Sprintf(`INSERT INTO %s (alias,images) VALUES ($1,$2)`, table)
 	dbC.MustExec(q, name, images)

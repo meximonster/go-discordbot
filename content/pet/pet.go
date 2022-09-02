@@ -14,6 +14,10 @@ func (p *Pet) Type() string {
 	return "pet"
 }
 
+func (p *Pet) GetName() string {
+	return p.Name
+}
+
 func (p *Pet) AddImage(text string, url string) error {
 	return content.AddImage("pets", text, url)
 }

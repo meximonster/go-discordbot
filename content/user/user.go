@@ -14,6 +14,10 @@ func (u *User) Type() string {
 	return "user"
 }
 
+func (u *User) GetName() string {
+	return u.Name
+}
+
 func (u *User) AddImage(text string, url string) error {
 	return content.AddImage("users", text, url)
 }

@@ -14,6 +14,10 @@ func (e *Emote) Type() string {
 	return "emote"
 }
 
+func (e *Emote) GetName() string {
+	return e.Name
+}
+
 func (e *Emote) AddImage(text string, url string) error {
 	return content.AddImage("emotes", text, url)
 }

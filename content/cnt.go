@@ -6,6 +6,7 @@ var cnt map[string]Content
 
 type Content interface {
 	Type() string
+	GetName() string
 	AddImage(text string, url string) error
 	RandomImage() (Image, error)
 	Store() error
@@ -18,6 +19,13 @@ type ContentBase struct {
 }
 
 func Load() error {
+	s, err := SelectAll("users", "pets", "emotes")
+	if err != nil {
+		return err
+	}
+	for _, content := range s {
+		cnt[content.GetName()] = content
+	}
 	return nil
 }
 
