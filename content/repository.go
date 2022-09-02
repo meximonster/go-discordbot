@@ -27,7 +27,7 @@ func Store(table string, name string, images []byte) error {
 }
 
 func StoreImage(table string, name string, image string) error {
-	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE name = %s`, table, image, name)
+	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = %s`, table, image, name)
 	dbC.MustExec(q, table, image, name)
 	return nil
 }
