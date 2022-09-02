@@ -31,6 +31,12 @@ func init() {
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(25)
 	db.SetConnMaxLifetime(5 * time.Minute)
+
+	err = content.Load()
+	if err != nil {
+		log.Fatal("error loading content: ", err)
+	}
+
 }
 
 func main() {
@@ -42,7 +48,6 @@ func main() {
 		log.Fatal("error creating session: ", err)
 	}
 
-	content.Load()
 	handlers.MessageConfigInit(c.GeneralBetAdmin, c.PoloBetAdmin, c.GeneralBetChannel, c.PoloBetChannel, c.ParolesOnlyChannel)
 
 	// Add handlers for message and reaction events.
