@@ -43,7 +43,7 @@ func main() {
 	}
 
 	content.Load()
-	handlers.MessageConfigInit(c.Content, c.ParolaChannelID)
+	handlers.MessageConfigInit(c.GeneralBetAdmin, c.PoloBetAdmin, c.GeneralBetChannel, c.PoloBetChannel, c.ParolesOnlyChannel)
 
 	// Add handlers for message and reaction events.
 	dg.AddHandler(handlers.MessageCreate)

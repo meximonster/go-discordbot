@@ -9,16 +9,15 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	bet "github.com/meximonster/go-discordbot/bet"
-	"github.com/meximonster/go-discordbot/configuration"
 	cnt "github.com/meximonster/go-discordbot/content"
 	"github.com/meximonster/go-discordbot/meme"
 	"github.com/meximonster/go-discordbot/queries"
 )
 
 var (
-	betMsgConf      *betMsgSrc
-	poloMsgConf     *betMsgSrc
-	parolaChannelID string
+	generalBetMsgConf  *betMsgSrc
+	poloMsgConf        *betMsgSrc
+	parolesOnlyChannel string
 )
 
 type betMsgSrc struct {
@@ -26,22 +25,16 @@ type betMsgSrc struct {
 	UserID    string
 }
 
-func MessageConfigInit(content []configuration.CntConfig, parolaChannel string) {
-	parolaChannelID = parolaChannel
-	for _, c := range content {
-		switch strings.ToLower(c.Name) {
-		case "pad":
-			betMsgConf = &betMsgSrc{
-				UserID:    c.UserID,
-				ChannelID: c.ChannelID,
-			}
-		case "fyk":
-			poloMsgConf = &betMsgSrc{
-				UserID:    c.UserID,
-				ChannelID: c.ChannelID,
-			}
-		}
+func MessageConfigInit(generalBetAdmin string, poloBetAdmin string, generalBetChannel string, poloBetChannel string, parolesChannel string) {
+	generalBetMsgConf = &betMsgSrc{
+		ChannelID: generalBetChannel,
+		UserID:    generalBetAdmin,
 	}
+	poloMsgConf = &betMsgSrc{
+		ChannelID: poloBetChannel,
+		UserID:    poloBetAdmin,
+	}
+	parolesOnlyChannel = parolesChannel
 }
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -51,52 +44,104 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	tts(m.Content, m.ChannelID, s)
-	rng(m.Author.Username, m.Content, m.ChannelID, s)
-	setContent(m.Content, m.ChannelID, s)
-	addImage(m.Content, m.ChannelID, s)
-	serveGitURL(m.Content, m.ChannelID, s)
-	serveMeme(m.Content, m.ChannelID, s)
-	serveUsers(m.Content, m.ChannelID, s)
-	servePets(m.Content, m.ChannelID, s)
-	serveEmotes(m.Content, m.ChannelID, s)
-	checkForContent(m.Content, m.ChannelID, s)
-	checkForParola(m.Content, m.ChannelID, m.Attachments, s)
-	checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
-	checkForBetQuery(m.Content, m.ChannelID, s)
-	checkForBetSumQuery(m.Content, m.ChannelID, s)
+	if strings.HasPrefix(m.Content, "!tts") {
+		tts(m.Content, m.ChannelID, s)
+		return
+	}
+
+	if strings.HasPrefix(m.Content, "!roll") {
+		rng(m.Author.Username, m.Content, m.ChannelID, s)
+		return
+	}
+
+	if strings.HasPrefix(m.Content, "!add") {
+		addImage(m.Content, m.ChannelID, s)
+		return
+	}
+
+	if m.Content == "!git" {
+		serveGitURL(m.Content, m.ChannelID, s)
+		return
+	}
+
+	if m.Content == "!meme" {
+		serveMeme(m.Content, m.ChannelID, s)
+		return
+	}
+
+	if m.Content == "!users" {
+		serveUsers(m.Content, m.ChannelID, s)
+		return
+	}
+
+	if m.Content == "!pets" {
+		servePets(m.Content, m.ChannelID, s)
+		return
+	}
+
+	if m.Content == "!emotes" {
+		serveEmotes(m.Content, m.ChannelID, s)
+		return
+	}
+
+	if m.ChannelID == parolesOnlyChannel {
+		checkForParola(m.Content, m.ChannelID, m.Attachments, s)
+		return
+	}
+
+	if (m.ChannelID == generalBetMsgConf.ChannelID && m.Author.ID == generalBetMsgConf.UserID) || (m.ChannelID == poloMsgConf.ChannelID && m.Author.ID == poloMsgConf.UserID) {
+		checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
+		return
+	}
+
+	if strings.HasPrefix(m.Content, "!") {
+		checkForContent(m.Content, m.ChannelID, s)
+		return
+	}
+
+	if (m.ChannelID == generalBetMsgConf.ChannelID || m.ChannelID == poloMsgConf.ChannelID) && strings.HasPrefix(m.Content, "!bet ") {
+		checkForBetQuery(m.Content, m.ChannelID, s)
+		return
+	}
+
+	if (m.ChannelID == generalBetMsgConf.ChannelID || m.ChannelID == poloMsgConf.ChannelID) && strings.HasPrefix(m.Content, "!betsum ") {
+		checkForBetSumQuery(m.Content, m.ChannelID, s)
+		return
+	}
+
+	if strings.HasPrefix(m.Content, "!set") {
+		setContent(m.Content, m.ChannelID, s)
+		return
+	}
+
 }
 
 func tts(content string, channel string, s *discordgo.Session) {
-	if strings.HasPrefix(content, "!tts") {
-		tts := strings.Replace(content, "!tts ", "", 1)
-		s.ChannelMessageSendComplex(channel, &discordgo.MessageSend{
-			Content: tts,
-			TTS:     true,
-		})
-	}
+	tts := strings.Replace(content, "!tts ", "", 1)
+	s.ChannelMessageSendComplex(channel, &discordgo.MessageSend{
+		Content: tts,
+		TTS:     true,
+	})
 }
 
 func rng(username string, content string, channel string, s *discordgo.Session) {
-	if strings.HasPrefix(content, "!roll") {
-		input := strings.Split(content, " ")
-		if len(input) != 2 {
-			s.ChannelMessageSend(channel, "usage: !roll <number>, result will be in range [1, <number>]")
-			return
-		}
-		strNum := input[1]
-		max, err := strconv.Atoi(strNum)
-		if err != nil {
-			s.ChannelMessageSend(channel, "number must be an integer")
-			return
-		}
-		if max == 0 || max == 1 {
-			s.ChannelMessageSend(channel, "no rng here")
-			return
-		}
-		rand.Seed(time.Now().UnixNano())
-		s.ChannelMessageSend(channel, fmt.Sprintf("%s rolled %d", username, rand.Intn(max)+1))
+	input := strings.Split(content, " ")
+	if len(input) != 2 {
+		s.ChannelMessageSend(channel, "usage: !roll <number>, result will be in range [1, <number>]")
+		return
 	}
+	strNum := input[1]
+	max, err := strconv.Atoi(strNum)
+	if err != nil {
+		s.ChannelMessageSend(channel, "number must be an integer")
+		return
+	}
+	if max == 0 || max == 1 {
+		s.ChannelMessageSend(channel, "no rng here")
+		return
+	}
+	rand.Seed(time.Now().UnixNano())
+	s.ChannelMessageSend(channel, fmt.Sprintf("%s rolled %d", username, rand.Intn(max)+1))
 }
 
 func setContent(content string, channel string, s *discordgo.Session) {
@@ -104,168 +149,151 @@ func setContent(content string, channel string, s *discordgo.Session) {
 }
 
 func addImage(content string, channel string, s *discordgo.Session) {
-	if strings.HasPrefix(content, "!add") {
-		text := strings.Split(content, "'")
-		if len(text) != 3 {
-			s.ChannelMessageSend(channel, "wrong parameters")
-			return
-		}
-		imgText := text[1]
-		replace := " '" + imgText + "'"
-		str := strings.Replace(content, replace, "", 1)
-		input := strings.Split(str, " ")
-		if len(input) < 3 {
-			s.ChannelMessageSend(channel, "not enough parameters")
-			return
-		}
-		if len(input) > 3 {
-			s.ChannelMessageSend(channel, "too many parameters")
-			return
-		}
-		err := cnt.AddImage(input[1], imgText, input[2])
-		if err != nil {
-			s.ChannelMessageSend(channel, err.Error())
-		}
+	text := strings.Split(content, "'")
+	if len(text) != 3 {
+		s.ChannelMessageSend(channel, "wrong parameters")
+		return
+	}
+	imgText := text[1]
+	replace := " '" + imgText + "'"
+	str := strings.Replace(content, replace, "", 1)
+	input := strings.Split(str, " ")
+	if len(input) < 3 {
+		s.ChannelMessageSend(channel, "not enough parameters")
+		return
+	}
+	if len(input) > 3 {
+		s.ChannelMessageSend(channel, "too many parameters")
+		return
+	}
+	c, err := cnt.GetOne(input[1])
+	if err != nil {
+		s.ChannelMessageSend(channel, err.Error())
+		return
+	}
+	err = c.AddImage(imgText, input[2])
+	if err != nil {
+		s.ChannelMessageSend(channel, err.Error())
 	}
 }
 
 func serveGitURL(content string, channel string, s *discordgo.Session) {
-	if content == "!git" {
-		s.ChannelMessageSend(channel, "https://github.com/meximonster/go-discordbot")
-	}
+	s.ChannelMessageSend(channel, "https://github.com/meximonster/go-discordbot")
 }
 
 func serveUsers(content string, channel string, s *discordgo.Session) {
-	if content == "!users" {
-		users := cnt.List("user")
-		if len(users) == 0 {
-			s.ChannelMessageSend(channel, "no users configured")
-			return
-		}
-		var str string
-		cnt := 0
-		for _, u := range users {
-			str = str + fmt.Sprintf("%d. %s\n", cnt+1, u)
-			cnt++
-		}
-		result := "Configured users are:\n" + str
-		s.ChannelMessageSend(channel, result)
+	users := cnt.List("user")
+	if len(users) == 0 {
+		s.ChannelMessageSend(channel, "no users configured")
+		return
 	}
+	var str string
+	cnt := 0
+	for _, u := range users {
+		str = str + fmt.Sprintf("%d. %s\n", cnt+1, u)
+		cnt++
+	}
+	result := "Configured users are:\n" + str
+	s.ChannelMessageSend(channel, result)
 }
 
 func servePets(content string, channel string, s *discordgo.Session) {
-	if content == "!pets" {
-		pets := cnt.List("pet")
-		if len(pets) == 0 {
-			s.ChannelMessageSend(channel, "no pets configured")
-			return
-		}
-		var str string
-		cnt := 0
-		for _, p := range pets {
-			str = str + fmt.Sprintf("%d. %s\n", cnt+1, p)
-			cnt++
-		}
-		result := "Configured pets are:\n" + str
-		s.ChannelMessageSend(channel, result)
+	pets := cnt.List("pet")
+	if len(pets) == 0 {
+		s.ChannelMessageSend(channel, "no pets configured")
+		return
 	}
+	var str string
+	cnt := 0
+	for _, p := range pets {
+		str = str + fmt.Sprintf("%d. %s\n", cnt+1, p)
+		cnt++
+	}
+	result := "Configured pets are:\n" + str
+	s.ChannelMessageSend(channel, result)
 }
 
 func serveEmotes(content string, channel string, s *discordgo.Session) {
-	if content == "!emotes" {
-		emotes := cnt.List("emote")
-		if len(emotes) == 0 {
-			s.ChannelMessageSend(channel, "no emotes configured")
-			return
-		}
-		var str string
-		cnt := 0
-		for _, e := range emotes {
-			str = str + fmt.Sprintf("%d. %s\n", cnt+1, e)
-			cnt++
-		}
-		result := "Configured emotes are:\n" + str
-		s.ChannelMessageSend(channel, result)
+	emotes := cnt.List("emote")
+	if len(emotes) == 0 {
+		s.ChannelMessageSend(channel, "no emotes configured")
+		return
 	}
+	var str string
+	cnt := 0
+	for _, e := range emotes {
+		str = str + fmt.Sprintf("%d. %s\n", cnt+1, e)
+		cnt++
+	}
+	result := "Configured emotes are:\n" + str
+	s.ChannelMessageSend(channel, result)
 }
 
 func serveMeme(content string, channel string, s *discordgo.Session) {
-	if content == "!meme" {
-		link, url, err := meme.Random()
-		if err != nil {
-			s.ChannelMessageSend(channel, err.Error())
-			return
-		}
-		respondWithImage(channel, link, url, s)
+	link, url, err := meme.Random()
+	if err != nil {
+		s.ChannelMessageSend(channel, err.Error())
+		return
 	}
+	respondWithEmbed(channel, link, url, s)
 }
 
 func checkForParola(content string, channel string, attachments []*discordgo.MessageAttachment, s *discordgo.Session) {
-	if channel == parolaChannelID {
-		if len(attachments) > 0 || strings.HasPrefix(content, "https://www.stoiximan.gr/mybets/") {
-			s.ChannelMessageSend(channel, "@everyone possible parola was just posted.")
-		}
+	if len(attachments) > 0 || strings.HasPrefix(content, "https://www.stoiximan.gr/mybets/") {
+		s.ChannelMessageSend(channel, "@everyone possible parola was just posted.")
 	}
 }
 
 func checkForBet(channel string, author string, content string, s *discordgo.Session) {
-	if (channel == betMsgConf.ChannelID && author == betMsgConf.UserID) || (channel == poloMsgConf.ChannelID && author == poloMsgConf.UserID) {
-		if bet.IsBet(content) {
-			table := tableRef(channel)
-			b, err := bet.Decouple(content, "", table)
-			if err != nil {
-				s.ChannelMessageSend(channel, err.Error())
-				return
-			}
-			s.ChannelMessageSend(channel, fmt.Sprintf("%s %s %du @everyone", b.Team, b.Prediction, b.Size))
+	if bet.IsBet(content) {
+		table := tableRef(channel)
+		b, err := bet.Decouple(content, "", table)
+		if err != nil {
+			s.ChannelMessageSend(channel, err.Error())
+			return
 		}
+		s.ChannelMessageSend(channel, fmt.Sprintf("%s %s %du @everyone", b.Team, b.Prediction, b.Size))
 	}
 }
 
 func checkForContent(content string, channel string, s *discordgo.Session) {
-	if strings.HasPrefix(content, "!") {
-		str := strings.TrimPrefix(content, "!")
-		c := cnt.Get()
-		if _, ok := c[str]; ok {
-			respondWithRandomImage(str, channel, s)
-		}
+	str := strings.TrimPrefix(content, "!")
+	c := cnt.Get()
+	if _, ok := c[str]; ok {
+		respondWithRandomImage(str, channel, s)
 	}
 }
 
 func checkForBetQuery(content string, channel string, s *discordgo.Session) {
-	if (channel == betMsgConf.ChannelID || channel == poloMsgConf.ChannelID) && strings.HasPrefix(content, "!bet ") {
-		table := tableRef(channel)
-		q := queries.Parse(content, table)
-		bets, err := bet.GetBetsByQuery(q)
-		if err != nil {
-			s.ChannelMessageSend(channel, fmt.Sprintf("error getting bets: %s", err.Error()))
-			return
-		}
-		if len(bets) == 0 {
-			s.ChannelMessageSend(channel, "no results")
-			return
-		}
-		res := bet.FormatBets(bets)
-		s.ChannelMessageSend(channel, res)
+	table := tableRef(channel)
+	q := queries.Parse(content, table)
+	bets, err := bet.GetBetsByQuery(q)
+	if err != nil {
+		s.ChannelMessageSend(channel, fmt.Sprintf("error getting bets: %s", err.Error()))
+		return
 	}
+	if len(bets) == 0 {
+		s.ChannelMessageSend(channel, "no results")
+		return
+	}
+	res := bet.FormatBets(bets)
+	s.ChannelMessageSend(channel, res)
 }
 
 func checkForBetSumQuery(content string, channel string, s *discordgo.Session) {
-	if (channel == betMsgConf.ChannelID || channel == poloMsgConf.ChannelID) && strings.HasPrefix(content, "!betsum ") {
-		table := tableRef(channel)
-		q := queries.ParseSum(content, table)
-		sum, err := bet.GetBetsSumByQuery(q)
-		if err != nil {
-			s.ChannelMessageSend(channel, fmt.Sprintf("error getting bets: %s", err.Error()))
-			return
-		}
-		if len(sum) == 0 {
-			s.ChannelMessageSend(channel, "no results")
-			return
-		}
-		res := bet.FormatBetsSum(sum)
-		s.ChannelMessageSend(channel, res)
+	table := tableRef(channel)
+	q := queries.ParseSum(content, table)
+	sum, err := bet.GetBetsSumByQuery(q)
+	if err != nil {
+		s.ChannelMessageSend(channel, fmt.Sprintf("error getting bets: %s", err.Error()))
+		return
 	}
+	if len(sum) == 0 {
+		s.ChannelMessageSend(channel, "no results")
+		return
+	}
+	res := bet.FormatBetsSum(sum)
+	s.ChannelMessageSend(channel, res)
 }
 
 func respondWithRandomImage(name string, channel string, s *discordgo.Session) {
@@ -279,10 +307,10 @@ func respondWithRandomImage(name string, channel string, s *discordgo.Session) {
 		s.ChannelMessageSend(channel, err.Error())
 		return
 	}
-	respondWithImage(channel, img.Text, img.Url, s)
+	respondWithEmbed(channel, img.Text, img.Url, s)
 }
 
-func respondWithImage(channel string, title string, imageURL string, s *discordgo.Session) {
+func respondWithEmbed(channel string, title string, imageURL string, s *discordgo.Session) {
 	_, err := s.ChannelMessageSendEmbed(channel, &discordgo.MessageEmbed{
 		Title: title,
 		Image: &discordgo.MessageEmbedImage{
@@ -296,7 +324,7 @@ func respondWithImage(channel string, title string, imageURL string, s *discordg
 
 func tableRef(channel string) string {
 	var table string
-	if channel == betMsgConf.ChannelID {
+	if channel == generalBetMsgConf.ChannelID {
 		table = "bets"
 	} else {
 		table = "polo_bets"

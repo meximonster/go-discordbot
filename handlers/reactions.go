@@ -13,7 +13,7 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		return
 	}
 
-	if !(r.ChannelID == betMsgConf.ChannelID || r.ChannelID == poloMsgConf.ChannelID) {
+	if !(r.ChannelID == generalBetMsgConf.ChannelID || r.ChannelID == poloMsgConf.ChannelID) {
 		return
 	}
 
