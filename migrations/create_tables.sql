@@ -24,7 +24,6 @@ CREATE TABLE users
 (
     id            serial PRIMARY KEY,
     alias         VARCHAR(20) NOT NULL,
-    discord_id    VARCHAR(50) NOT NULL,
     images        jsonb
 );
 
@@ -44,6 +43,6 @@ CREATE TABLE emotes
 
 CREATE INDEX idx_bets_date ON bets (posted_at);
 CREATE INDEX idx_polo_bets_date ON polo_bets (posted_at);
-CREATE INDEX idx_users ON users (nickname);
+CREATE INDEX idx_users ON users (alias);
 CREATE INDEX idx_pets ON pets (alias);
 CREATE INDEX idx_emotes ON emotes (alias);
