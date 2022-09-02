@@ -13,7 +13,7 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/meximonster/go-discordbot/bet"
 	"github.com/meximonster/go-discordbot/configuration"
-	cnt "github.com/meximonster/go-discordbot/content"
+	"github.com/meximonster/go-discordbot/content"
 	"github.com/meximonster/go-discordbot/handlers"
 )
 
@@ -42,7 +42,7 @@ func main() {
 		log.Fatal("error creating session: ", err)
 	}
 
-	cnt.Load(c.Content)
+	content.Load()
 	handlers.MessageConfigInit(c.Content, c.ParolaChannelID)
 
 	// Add handlers for message and reaction events.

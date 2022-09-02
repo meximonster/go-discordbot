@@ -8,7 +8,6 @@ import (
 
 type User struct {
 	content.ContentBase
-	DiscordID string
 }
 
 func (u *User) Type() string {
@@ -16,15 +15,7 @@ func (u *User) Type() string {
 }
 
 func (u *User) AddImage(text string, url string) error {
-	img := content.Image{
-		Text: text,
-		Url:  url,
-	}
-	image, err := json.Marshal(img)
-	if err != nil {
-		return err
-	}
-	return content.AddImages("users", u.Name, string(image))
+	return content.AddImage("users", text, url)
 }
 
 func (u *User) RandomImage(text string, url string) (content.Image, error) {
@@ -41,5 +32,5 @@ func (u *User) Store() error {
 	if err != nil {
 		return err
 	}
-	return content.Store("users", u.Name, images, u.DiscordID)
+	return content.Store("users", u.Name, images)
 }

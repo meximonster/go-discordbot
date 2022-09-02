@@ -1,12 +1,15 @@
 package content
 
 import (
+	"encoding/json"
 	"fmt"
 	"math/rand"
 	"time"
 )
 
-type Cnt interface {
+var cnt map[string]Content
+
+type Content interface {
 	Type() string
 	AddImage(text string, url string) error
 	RandomImage() (Image, error)
@@ -22,6 +25,22 @@ type ContentBase struct {
 type Image struct {
 	Text string
 	Url  string
+}
+
+func Load() error {
+	return nil
+}
+
+func AddImage(table string, text string, url string) error {
+	img := Image{
+		Text: text,
+		Url:  url,
+	}
+	image, err := json.Marshal(img)
+	if err != nil {
+		return err
+	}
+	return StoreImage(table, text, string(image))
 }
 
 func RandomImage(images []Image, lastImageURLServed string) (Image, error) {

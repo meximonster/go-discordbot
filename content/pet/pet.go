@@ -15,15 +15,7 @@ func (p *Pet) Type() string {
 }
 
 func (p *Pet) AddImage(text string, url string) error {
-	img := content.Image{
-		Text: text,
-		Url:  url,
-	}
-	image, err := json.Marshal(img)
-	if err != nil {
-		return err
-	}
-	return content.AddImages("users", p.Name, string(image))
+	return content.AddImage("pets", text, url)
 }
 
 func (p *Pet) RandomImage(text string, url string) (content.Image, error) {
@@ -40,5 +32,5 @@ func (p *Pet) Store() error {
 	if err != nil {
 		return err
 	}
-	return content.Store("users", p.Name, images, "")
+	return content.Store("pets", p.Name, images)
 }

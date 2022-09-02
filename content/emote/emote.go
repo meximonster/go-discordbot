@@ -15,15 +15,7 @@ func (e *Emote) Type() string {
 }
 
 func (e *Emote) AddImage(text string, url string) error {
-	img := content.Image{
-		Text: text,
-		Url:  url,
-	}
-	image, err := json.Marshal(img)
-	if err != nil {
-		return err
-	}
-	return content.AddImages("users", e.Name, string(image))
+	return content.AddImage("emotes", text, url)
 }
 
 func (e *Emote) RandomImage(text string, url string) (content.Image, error) {
@@ -40,5 +32,5 @@ func (e *Emote) Store() error {
 	if err != nil {
 		return err
 	}
-	return content.Store("users", e.Name, images, "")
+	return content.Store("users", e.Name, images)
 }
