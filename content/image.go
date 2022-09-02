@@ -9,8 +9,8 @@ import (
 )
 
 type Image struct {
-	Text string
-	Url  string
+	Text string `json:"text"`
+	Url  string `json:"url"`
 }
 
 func (i *Image) Validate() error {

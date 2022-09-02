@@ -2,7 +2,7 @@ package content
 
 import "fmt"
 
-var cnt map[string]Content
+var Cnt map[string]Content
 
 type Content interface {
 	Type() string
@@ -19,30 +19,23 @@ type ContentBase struct {
 }
 
 func Load() error {
-	s, err := SelectAll("users", "pets", "emotes")
-	if err != nil {
-		return err
-	}
-	for _, content := range s {
-		cnt[content.GetName()] = content
-	}
 	return nil
 }
 
 func Get() map[string]Content {
-	return cnt
+	return Cnt
 }
 
 func GetOne(name string) (Content, error) {
-	if _, ok := cnt[name]; !ok {
+	if _, ok := Cnt[name]; !ok {
 		return nil, fmt.Errorf("%s doesn't exist", name)
 	}
-	return cnt[name], nil
+	return Cnt[name], nil
 }
 
 func List(contentType string) []string {
 	var s []string
-	for k, v := range cnt {
+	for k, v := range Cnt {
 		if contentType == v.Type() {
 			s = append(s, k)
 		}
