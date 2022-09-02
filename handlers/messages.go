@@ -59,7 +59,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	serveMeme(m.Content, m.ChannelID, s)
 	serveUsers(m.Content, m.ChannelID, s)
 	servePets(m.Content, m.ChannelID, s)
-	serveArtists(m.Content, m.ChannelID, s)
 	serveEmotes(m.Content, m.ChannelID, s)
 	checkForContent(m.Content, m.ChannelID, s)
 	checkForParola(m.Content, m.ChannelID, m.Attachments, s)
@@ -101,47 +100,7 @@ func rng(username string, content string, channel string, s *discordgo.Session) 
 }
 
 func setContent(content string, channel string, s *discordgo.Session) {
-	if strings.HasPrefix(content, "!set") {
-		input := strings.Split(content, " ")
-		if len(input) != 3 {
-			s.ChannelMessageSend(channel, "wrong parameters")
-			return
-		}
-		name := input[1]
-		cntType := input[2]
-		if cntType == "human" {
-			users := cnt.GetUsers()
-			if _, ok := users[name]; ok {
-				s.ChannelMessageSend(channel, fmt.Sprintf("user %s already exists", name))
-				return
-			}
-		} else if cntType == "pet" {
-			pets := cnt.GetPets()
-			if _, ok := pets[name]; ok {
-				s.ChannelMessageSend(channel, fmt.Sprintf("pet %s already exists", name))
-				return
-			}
-		} else if cntType == "artist" {
-			artists := cnt.GetArtists()
-			if _, ok := artists[name]; ok {
-				s.ChannelMessageSend(channel, fmt.Sprintf("artist %s already exists", name))
-				return
-			}
-		} else if cntType == "emote" {
-			emotes := cnt.GetEmotes()
-			if _, ok := emotes[name]; ok {
-				s.ChannelMessageSend(channel, fmt.Sprintf("emote %s already exists", name))
-				return
-			}
-		} else {
-			s.ChannelMessageSend(channel, "content type should be either human,pet,artist or emote")
-			return
-		}
-		err := cnt.Set(name, cntType)
-		if err != nil {
-			s.ChannelMessageSend(channel, err.Error())
-		}
-	}
+
 }
 
 func addImage(content string, channel string, s *discordgo.Session) {
@@ -178,7 +137,7 @@ func serveGitURL(content string, channel string, s *discordgo.Session) {
 
 func serveUsers(content string, channel string, s *discordgo.Session) {
 	if content == "!users" {
-		users := cnt.GetUsers()
+		users := cnt.List("user")
 		if len(users) == 0 {
 			s.ChannelMessageSend(channel, "no users configured")
 			return
@@ -186,7 +145,7 @@ func serveUsers(content string, channel string, s *discordgo.Session) {
 		var str string
 		cnt := 0
 		for _, u := range users {
-			str = str + fmt.Sprintf("%d. %s\n", cnt+1, u.Name)
+			str = str + fmt.Sprintf("%d. %s\n", cnt+1, u)
 			cnt++
 		}
 		result := "Configured users are:\n" + str
@@ -196,15 +155,15 @@ func serveUsers(content string, channel string, s *discordgo.Session) {
 
 func servePets(content string, channel string, s *discordgo.Session) {
 	if content == "!pets" {
-		pets := cnt.GetPets()
+		pets := cnt.List("pet")
 		if len(pets) == 0 {
 			s.ChannelMessageSend(channel, "no pets configured")
 			return
 		}
 		var str string
 		cnt := 0
-		for _, u := range pets {
-			str = str + fmt.Sprintf("%d. %s\n", cnt+1, u.Name)
+		for _, p := range pets {
+			str = str + fmt.Sprintf("%d. %s\n", cnt+1, p)
 			cnt++
 		}
 		result := "Configured pets are:\n" + str
@@ -212,35 +171,17 @@ func servePets(content string, channel string, s *discordgo.Session) {
 	}
 }
 
-func serveArtists(content string, channel string, s *discordgo.Session) {
-	if content == "!artists" {
-		artists := cnt.GetArtists()
-		if len(artists) == 0 {
-			s.ChannelMessageSend(channel, "no artists configured")
-			return
-		}
-		var str string
-		cnt := 0
-		for _, a := range artists {
-			str = str + fmt.Sprintf("%d. %s\n", cnt+1, a.Name)
-			cnt++
-		}
-		result := "Configured artists are:\n" + str
-		s.ChannelMessageSend(channel, result)
-	}
-}
-
 func serveEmotes(content string, channel string, s *discordgo.Session) {
 	if content == "!emotes" {
-		emotes := cnt.GetEmotes()
+		emotes := cnt.List("emote")
 		if len(emotes) == 0 {
 			s.ChannelMessageSend(channel, "no emotes configured")
 			return
 		}
 		var str string
 		cnt := 0
-		for _, a := range emotes {
-			str = str + fmt.Sprintf("%d. %s\n", cnt+1, a.Name)
+		for _, e := range emotes {
+			str = str + fmt.Sprintf("%d. %s\n", cnt+1, e)
 			cnt++
 		}
 		result := "Configured emotes are:\n" + str
@@ -328,12 +269,12 @@ func checkForBetSumQuery(content string, channel string, s *discordgo.Session) {
 }
 
 func respondWithRandomImage(name string, channel string, s *discordgo.Session) {
-	u, err := cnt.GetByName(name)
+	c, err := cnt.GetOne(name)
 	if err != nil {
 		s.ChannelMessageSend(channel, err.Error())
 		return
 	}
-	img, err := u.RandomImage()
+	img, err := c.RandomImage()
 	if err != nil {
 		s.ChannelMessageSend(channel, err.Error())
 		return

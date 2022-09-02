@@ -20,10 +20,8 @@ func CloseDB() error {
 	return nil
 }
 
-func GetContent() {}
-
 func Store(table string, name string, images []byte) error {
-	q := fmt.Sprintf(`INSERT INTO %s (alias,images,discord_id) VALUES ($1,$2,$3)`, table)
+	q := fmt.Sprintf(`INSERT INTO %s (alias,images) VALUES ($1,$2)`, table)
 	dbC.MustExec(q, name, images)
 	return nil
 }
