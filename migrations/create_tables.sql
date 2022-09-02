@@ -25,21 +25,21 @@ CREATE TABLE users
     id            serial PRIMARY KEY,
     alias         VARCHAR(20) NOT NULL,
     discord_id    VARCHAR(50) NOT NULL,
-    images        jsonb,
+    images        jsonb
 );
 
 CREATE TABLE pets
 (
     id            serial PRIMARY KEY,
     alias         VARCHAR(20) NOT NULL,
-    images       jsonb,
+    images       jsonb
 );
 
 CREATE TABLE emotes
 (
     id            serial PRIMARY KEY,
     alias         VARCHAR(20) NOT NULL,
-    images        jsonb,
+    images        jsonb
 );
 
 CREATE INDEX idx_bets_date ON bets (posted_at);
