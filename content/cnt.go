@@ -1,6 +1,13 @@
 package content
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/meximonster/go-discordbot/content/emote"
+	"github.com/meximonster/go-discordbot/content/pet"
+	"github.com/meximonster/go-discordbot/content/user"
+	"github.com/meximonster/go-discordbot/image"
+)
 
 var Cnt map[string]Content
 
@@ -8,17 +15,26 @@ type Content interface {
 	Type() string
 	GetName() string
 	AddImage(text string, url string) error
-	RandomImage() (Image, error)
+	RandomImage() (image.Image, error)
 	Store() error
 }
 
-type ContentBase struct {
-	Name               string
-	Images             []Image
-	LastImageURLServed string
-}
-
 func Load() error {
+	users := user.GetAll()
+	for _, u := range users {
+		o := &u
+		Cnt[u.Name] = o
+	}
+	pets := pet.GetAll()
+	for _, p := range pets {
+		o := &p
+		Cnt[p.Name] = o
+	}
+	emotes := emote.GetAll()
+	for _, e := range emotes {
+		o := &e
+		Cnt[e.Name] = o
+	}
 	return nil
 }
 

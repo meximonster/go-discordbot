@@ -1,4 +1,4 @@
-package content
+package image
 
 import (
 	"encoding/json"
@@ -13,7 +13,7 @@ type Image struct {
 	Url  string `json:"url"`
 }
 
-func (i *Image) Validate() error {
+func (i *Image) validateURL() error {
 	_, err := url.ParseRequestURI(i.Url)
 	if err != nil {
 		return err
@@ -21,20 +21,20 @@ func (i *Image) Validate() error {
 	return nil
 }
 
-func AddImage(table string, text string, url string) error {
+func ValidateImage(table string, text string, url string) ([]byte, error) {
 	img := Image{
 		Text: text,
 		Url:  url,
 	}
-	err := img.Validate()
+	err := img.validateURL()
 	if err != nil {
-		return err
+		return nil, err
 	}
 	image, err := json.Marshal(img)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return StoreImage(table, text, string(image))
+	return image, nil
 }
 
 func RandomImage(images []Image, lastImageURLServed string) (Image, error) {

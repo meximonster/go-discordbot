@@ -14,6 +14,9 @@ import (
 	"github.com/meximonster/go-discordbot/bet"
 	"github.com/meximonster/go-discordbot/configuration"
 	"github.com/meximonster/go-discordbot/content"
+	"github.com/meximonster/go-discordbot/content/emote"
+	"github.com/meximonster/go-discordbot/content/pet"
+	"github.com/meximonster/go-discordbot/content/user"
 	"github.com/meximonster/go-discordbot/handlers"
 )
 
@@ -27,7 +30,12 @@ func init() {
 	if err != nil {
 		log.Fatal("error connecting to db: ", err)
 	}
+
 	bet.NewDB(db)
+	user.NewDB(db)
+	pet.NewDB(db)
+	emote.NewDB(db)
+
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(25)
 	db.SetConnMaxLifetime(5 * time.Minute)
