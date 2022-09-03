@@ -1,7 +1,6 @@
 package emote
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
@@ -41,12 +40,8 @@ func (e *Emote) RandomImage() (image.Image, error) {
 }
 
 func (e *Emote) Store() error {
-	images, err := json.Marshal(e.Images)
-	if err != nil {
-		return err
-	}
-	q := fmt.Sprintf(`INSERT INTO %s (Name,images) VALUES ($1,$2)`, table)
-	dbC.MustExec(q, e.Alias, images)
+	q := fmt.Sprintf(`INSERT INTO %s (alias) VALUES ($1)`, table)
+	dbC.MustExec(q, e.Alias)
 	return nil
 }
 
@@ -55,13 +50,18 @@ func (e *Emote) AddImage(text string, url string) error {
 	if err != nil {
 		return err
 	}
-	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE Name = %s`, table, string(img), e.Alias)
+	all, err := image.AddImage(e.Images, img)
+	if err != nil {
+		return err
+	}
+	e.Images = all
+	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = %s`, table, string(img), e.Alias)
 	dbC.MustExec(q)
 	return nil
 }
 
-func GetAll() ([]Emote, error) {
-	emotes := []Emote{}
+func GetAll() ([]*Emote, error) {
+	emotes := []*Emote{}
 	err := dbC.Select(&emotes, `SELECT alias, images FROM emotes`)
 	if err != nil {
 		return nil, err

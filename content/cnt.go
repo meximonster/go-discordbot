@@ -25,24 +25,21 @@ func Load() error {
 		return err
 	}
 	for _, u := range users {
-		o := &u
-		Cnt[u.Alias] = o
+		Cnt[u.Alias] = u
 	}
 	pets, err := pet.GetAll()
 	if err != nil {
 		return err
 	}
 	for _, p := range pets {
-		o := &p
-		Cnt[p.Alias] = o
+		Cnt[p.Alias] = p
 	}
 	emotes, err := emote.GetAll()
 	if err != nil {
 		return err
 	}
 	for _, e := range emotes {
-		o := &e
-		Cnt[e.Alias] = o
+		Cnt[e.Alias] = e
 	}
 	return nil
 }
@@ -66,4 +63,37 @@ func List(contentType string) []string {
 		}
 	}
 	return s
+}
+
+func Set(name string, contentType string) error {
+	var c Content
+	switch contentType {
+	case "user":
+		users := List(contentType)
+		for _, u := range users {
+			if u == name {
+				return fmt.Errorf("user %s already exists", name)
+			}
+		}
+		c = &user.User{Alias: name, Images: []byte{}}
+	case "pet":
+		pets := List(contentType)
+		for _, p := range pets {
+			if p == name {
+				return fmt.Errorf("pet %s already exists", name)
+			}
+		}
+		c = &pet.Pet{Alias: name, Images: []byte{}}
+	case "emote":
+		emotes := List(contentType)
+		for _, e := range emotes {
+			if e == name {
+				return fmt.Errorf("emote %s already exists", name)
+			}
+		}
+		c = &emote.Emote{Alias: name, Images: []byte{}}
+	}
+	c.Store()
+	Cnt[c.GetName()] = c
+	return nil
 }

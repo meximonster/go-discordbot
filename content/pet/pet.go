@@ -1,7 +1,6 @@
 package pet
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
@@ -41,12 +40,8 @@ func (p *Pet) RandomImage() (image.Image, error) {
 }
 
 func (p *Pet) Store() error {
-	images, err := json.Marshal(p.Images)
-	if err != nil {
-		return err
-	}
-	q := fmt.Sprintf(`INSERT INTO %s (alias,images) VALUES ($1,$2)`, table)
-	dbC.MustExec(q, p.Alias, images)
+	q := fmt.Sprintf(`INSERT INTO %s (alias) VALUES ($1)`, table)
+	dbC.MustExec(q, p.Alias)
 	return nil
 }
 
@@ -55,13 +50,18 @@ func (p *Pet) AddImage(text string, url string) error {
 	if err != nil {
 		return err
 	}
+	all, err := image.AddImage(p.Images, img)
+	if err != nil {
+		return err
+	}
+	p.Images = all
 	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = %s`, table, string(img), p.Alias)
 	dbC.MustExec(q)
 	return nil
 }
 
-func GetAll() ([]Pet, error) {
-	pets := []Pet{}
+func GetAll() ([]*Pet, error) {
+	pets := []*Pet{}
 	err := dbC.Select(&pets, `SELECT alias, images FROM pets`)
 	if err != nil {
 		return nil, err

@@ -60,3 +60,22 @@ func RandomImage(images []byte, lastImageURLServed string) (Image, error) {
 	}
 	return imgs[rng], nil
 }
+
+func AddImage(previous []byte, new []byte) ([]byte, error) {
+	var imgs []Image
+	err := json.Unmarshal(previous, &imgs)
+	if err != nil {
+		return nil, err
+	}
+	var img Image
+	err = json.Unmarshal(new, &img)
+	if err != nil {
+		return nil, err
+	}
+	imgs = append(imgs, img)
+	all, err := json.Marshal(imgs)
+	if err != nil {
+		return nil, err
+	}
+	return all, nil
+}

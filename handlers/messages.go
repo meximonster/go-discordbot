@@ -94,11 +94,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if strings.HasPrefix(m.Content, "!") {
-		checkForContent(m.Content, m.ChannelID, s)
-		return
-	}
-
 	if (m.ChannelID == generalBetMsgConf.ChannelID || m.ChannelID == poloMsgConf.ChannelID) && strings.HasPrefix(m.Content, "!bet ") {
 		checkForBetQuery(m.Content, m.ChannelID, s)
 		return
@@ -112,6 +107,10 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if strings.HasPrefix(m.Content, "!set") {
 		setContent(m.Content, m.ChannelID, s)
 		return
+	}
+
+	if strings.HasPrefix(m.Content, "!") {
+		checkForContent(m.Content, m.ChannelID, s)
 	}
 
 }
@@ -145,7 +144,14 @@ func rng(username string, content string, channel string, s *discordgo.Session) 
 }
 
 func setContent(content string, channel string, s *discordgo.Session) {
-
+	input := strings.Split(content, " ")
+	if len(input) != 3 {
+		s.ChannelMessageSend(channel, "wrong parameters")
+		return
+	}
+	name := input[1]
+	cntType := input[2]
+	cnt.Set(name, cntType)
 }
 
 func addImage(content string, channel string, s *discordgo.Session) {
@@ -259,9 +265,10 @@ func checkForBet(channel string, author string, content string, s *discordgo.Ses
 func checkForContent(content string, channel string, s *discordgo.Session) {
 	str := strings.TrimPrefix(content, "!")
 	c := cnt.Get()
-	if _, ok := c[str]; ok {
-		respondWithRandomImage(str, channel, s)
+	if _, ok := c[str]; !ok {
+		return
 	}
+	respondWithRandomImage(str, channel, s)
 }
 
 func checkForBetQuery(content string, channel string, s *discordgo.Session) {

@@ -1,7 +1,6 @@
 package user
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
@@ -41,12 +40,8 @@ func (u *User) RandomImage() (image.Image, error) {
 }
 
 func (u *User) Store() error {
-	images, err := json.Marshal(u.Images)
-	if err != nil {
-		return err
-	}
-	q := fmt.Sprintf(`INSERT INTO %s (alias,images) VALUES ($1,$2)`, table)
-	dbC.MustExec(q, u.Alias, images)
+	q := fmt.Sprintf(`INSERT INTO %s (alias) VALUES ($1)`, table)
+	dbC.MustExec(q, u.Alias)
 	return nil
 }
 
@@ -55,13 +50,18 @@ func (u *User) AddImage(text string, url string) error {
 	if err != nil {
 		return err
 	}
-	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = %s`, table, string(img), u.Alias)
+	all, err := image.AddImage(u.Images, img)
+	if err != nil {
+		return err
+	}
+	u.Images = all
+	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = '%s'`, table, string(img), u.Alias)
 	dbC.MustExec(q)
 	return nil
 }
 
-func GetAll() ([]User, error) {
-	users := []User{}
+func GetAll() ([]*User, error) {
+	users := []*User{}
 	err := dbC.Select(&users, `SELECT alias, images FROM users`)
 	if err != nil {
 		return nil, err
