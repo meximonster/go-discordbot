@@ -37,21 +37,26 @@ func ValidateImage(table string, text string, url string) ([]byte, error) {
 	return image, nil
 }
 
-func RandomImage(images []Image, lastImageURLServed string) (Image, error) {
-	if len(images) == 0 {
+func RandomImage(images []byte, lastImageURLServed string) (Image, error) {
+	var imgs []Image
+	err := json.Unmarshal(images, &imgs)
+	if err != nil {
+		return Image{}, fmt.Errorf("cannot unmasrhal images: %s", err.Error())
+	}
+	if len(imgs) == 0 {
 		return Image{}, fmt.Errorf("no images found")
 	}
-	if len(images) == 1 {
-		return images[0], nil
+	if len(imgs) == 1 {
+		return imgs[0], nil
 	}
 	var rng int
 	rand.Seed(time.Now().UnixNano())
 	flag := true
 	for flag {
-		rng = rand.Intn(len(images))
-		if images[rng].Url != lastImageURLServed {
+		rng = rand.Intn(len(imgs))
+		if imgs[rng].Url != lastImageURLServed {
 			flag = false
 		}
 	}
-	return images[rng], nil
+	return imgs[rng], nil
 }

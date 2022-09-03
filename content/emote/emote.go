@@ -14,8 +14,8 @@ var (
 )
 
 type Emote struct {
-	Name               string
-	Images             []image.Image
+	Alias              string `db:"alias"`
+	Images             []byte `db:"images"`
 	LastImageURLServed string
 }
 
@@ -28,7 +28,7 @@ func (e *Emote) Type() string {
 }
 
 func (e *Emote) GetName() string {
-	return e.Name
+	return e.Alias
 }
 
 func (e *Emote) RandomImage() (image.Image, error) {
@@ -45,8 +45,8 @@ func (e *Emote) Store() error {
 	if err != nil {
 		return err
 	}
-	q := fmt.Sprintf(`INSERT INTO %s (alias,images) VALUES ($1,$2)`, table)
-	dbC.MustExec(q, e.Name, images)
+	q := fmt.Sprintf(`INSERT INTO %s (Name,images) VALUES ($1,$2)`, table)
+	dbC.MustExec(q, e.Alias, images)
 	return nil
 }
 
@@ -55,13 +55,16 @@ func (e *Emote) AddImage(text string, url string) error {
 	if err != nil {
 		return err
 	}
-	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = %s`, table, string(img), e.Name)
+	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE Name = %s`, table, string(img), e.Alias)
 	dbC.MustExec(q)
 	return nil
 }
 
-func GetAll() []Emote {
+func GetAll() ([]Emote, error) {
 	emotes := []Emote{}
-	dbC.Select(&emotes, `SELECT * FROM emotes`)
-	return emotes
+	err := dbC.Select(&emotes, `SELECT alias, images FROM emotes`)
+	if err != nil {
+		return nil, err
+	}
+	return emotes, nil
 }

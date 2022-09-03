@@ -9,7 +9,7 @@ import (
 	"github.com/meximonster/go-discordbot/image"
 )
 
-var Cnt map[string]Content
+var Cnt = make(map[string]Content)
 
 type Content interface {
 	Type() string
@@ -20,20 +20,29 @@ type Content interface {
 }
 
 func Load() error {
-	users := user.GetAll()
+	users, err := user.GetAll()
+	if err != nil {
+		return err
+	}
 	for _, u := range users {
 		o := &u
-		Cnt[u.Name] = o
+		Cnt[u.Alias] = o
 	}
-	pets := pet.GetAll()
+	pets, err := pet.GetAll()
+	if err != nil {
+		return err
+	}
 	for _, p := range pets {
 		o := &p
-		Cnt[p.Name] = o
+		Cnt[p.Alias] = o
 	}
-	emotes := emote.GetAll()
+	emotes, err := emote.GetAll()
+	if err != nil {
+		return err
+	}
 	for _, e := range emotes {
 		o := &e
-		Cnt[e.Name] = o
+		Cnt[e.Alias] = o
 	}
 	return nil
 }

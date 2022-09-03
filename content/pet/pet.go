@@ -14,8 +14,8 @@ var (
 )
 
 type Pet struct {
-	Name               string
-	Images             []image.Image
+	Alias              string `db:"alias"`
+	Images             []byte `db:"images"`
 	LastImageURLServed string
 }
 
@@ -28,7 +28,7 @@ func (p *Pet) Type() string {
 }
 
 func (p *Pet) GetName() string {
-	return p.Name
+	return p.Alias
 }
 
 func (p *Pet) RandomImage() (image.Image, error) {
@@ -46,7 +46,7 @@ func (p *Pet) Store() error {
 		return err
 	}
 	q := fmt.Sprintf(`INSERT INTO %s (alias,images) VALUES ($1,$2)`, table)
-	dbC.MustExec(q, p.Name, images)
+	dbC.MustExec(q, p.Alias, images)
 	return nil
 }
 
@@ -55,13 +55,16 @@ func (p *Pet) AddImage(text string, url string) error {
 	if err != nil {
 		return err
 	}
-	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = %s`, table, string(img), p.Name)
+	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = %s`, table, string(img), p.Alias)
 	dbC.MustExec(q)
 	return nil
 }
 
-func GetAll() []Pet {
+func GetAll() ([]Pet, error) {
 	pets := []Pet{}
-	dbC.Select(&pets, `SELECT * FROM pets`)
-	return pets
+	err := dbC.Select(&pets, `SELECT alias, images FROM pets`)
+	if err != nil {
+		return nil, err
+	}
+	return pets, nil
 }
