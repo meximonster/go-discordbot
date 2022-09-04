@@ -22,6 +22,14 @@ func NewDB(db *sqlx.DB) {
 	dbC = db
 }
 
+func CloseDB() error {
+	err := dbC.Close()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (u *User) Type() string {
 	return "user"
 }

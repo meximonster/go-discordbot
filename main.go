@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"os/signal"
@@ -20,13 +21,17 @@ import (
 	"github.com/meximonster/go-discordbot/handlers"
 )
 
+var c *configuration.Config
+
 func init() {
 	err := configuration.Load()
 	if err != nil {
 		log.Fatal("error loading configuration: ", err)
 	}
 
-	db, err := sqlx.Connect("postgres", "postgres://127.0.0.1/postgres?sslmode=disable&user=postgres&password=postgres")
+	c = configuration.Read()
+
+	db, err := sqlx.Connect("postgres", fmt.Sprintf("postgres://127.0.0.1/postgres?sslmode=disable&user=postgres&password=%s", c.POSTGRES_PASS))
 	if err != nil {
 		log.Fatal("error connecting to db: ", err)
 	}
@@ -48,7 +53,6 @@ func init() {
 }
 
 func main() {
-	c := configuration.Read()
 
 	// Create a new session.
 	dg, err := discordgo.New("Bot " + c.BotToken)
@@ -77,5 +81,8 @@ func main() {
 
 	// Gracefully stop session and close db connection.
 	bet.CloseDB()
+	user.CloseDB()
+	pet.CloseDB()
+	emote.CloseDB()
 	dg.Close()
 }

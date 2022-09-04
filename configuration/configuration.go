@@ -1,7 +1,7 @@
 package configuration
 
 import (
-	"io/ioutil"
+	"os"
 
 	"gopkg.in/yaml.v2"
 )
@@ -15,11 +15,12 @@ type Config struct {
 	PoloBetAdmin       string `yaml:"poloBetAdmin"`
 	PoloBetChannel     string `yaml:"poloBetChannel"`
 	ParolesOnlyChannel string `yaml:"parolesOnlyChannel"`
+	POSTGRES_PASS      string `yaml:"postgres_password"`
 }
 
 func Load() error {
 	var c Config
-	ymlFile, err := ioutil.ReadFile(".env")
+	ymlFile, err := os.ReadFile(".env")
 	if err != nil {
 		return err
 	}

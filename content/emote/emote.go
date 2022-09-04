@@ -22,6 +22,14 @@ func NewDB(db *sqlx.DB) {
 	dbC = db
 }
 
+func CloseDB() error {
+	err := dbC.Close()
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 func (e *Emote) Type() string {
 	return "emote"
 }
