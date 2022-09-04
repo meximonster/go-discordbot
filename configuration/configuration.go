@@ -8,26 +8,13 @@ import (
 
 var appConfig *Config
 
-type ImageInfo struct {
-	Text string `yaml:"text"`
-	Url  string `yaml:"url"`
-}
-
-type CntConfig struct {
-	Name      string      `yaml:"name"`
-	UserID    string      `yaml:"userID"`
-	ChannelID string      `yaml:"channelID"`
-	IsHuman   bool        `yaml:"isHuman"`
-	IsPet     bool        `yaml:"isPet"`
-	IsArtist  bool        `yaml:"isArtist"`
-	IsEmote   bool        `yaml:"isEmote"`
-	Images    []ImageInfo `yaml:"images"`
-}
-
 type Config struct {
-	BotToken        string      `yaml:"botToken"`
-	ParolaChannelID string      `yaml:"parolaChannelID"`
-	Content         []CntConfig `yaml:"content"`
+	BotToken           string `yaml:"botToken"`
+	GeneralBetAdmin    string `yaml:"GeneralBetAdmin"`
+	GeneralBetChannel  string `yaml:"generalBetChannel"`
+	PoloBetAdmin       string `yaml:"poloBetAdmin"`
+	PoloBetChannel     string `yaml:"poloBetChannel"`
+	ParolesOnlyChannel string `yaml:"parolesOnlyChannel"`
 }
 
 func Load() error {
@@ -46,12 +33,4 @@ func Load() error {
 
 func Read() *Config {
 	return appConfig
-}
-
-func Write(c *Config) error {
-	newEnv, err := yaml.Marshal(&c)
-	if err != nil {
-		return err
-	}
-	return ioutil.WriteFile(".env", newEnv, 0)
 }

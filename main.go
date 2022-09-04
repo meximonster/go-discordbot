@@ -13,7 +13,10 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/meximonster/go-discordbot/bet"
 	"github.com/meximonster/go-discordbot/configuration"
-	cnt "github.com/meximonster/go-discordbot/content"
+	"github.com/meximonster/go-discordbot/content"
+	"github.com/meximonster/go-discordbot/content/emote"
+	"github.com/meximonster/go-discordbot/content/pet"
+	"github.com/meximonster/go-discordbot/content/user"
 	"github.com/meximonster/go-discordbot/handlers"
 )
 
@@ -27,10 +30,21 @@ func init() {
 	if err != nil {
 		log.Fatal("error connecting to db: ", err)
 	}
+
 	bet.NewDB(db)
+	user.NewDB(db)
+	pet.NewDB(db)
+	emote.NewDB(db)
+
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(25)
 	db.SetConnMaxLifetime(5 * time.Minute)
+
+	err = content.Load()
+	if err != nil {
+		log.Fatal("error loading content: ", err)
+	}
+
 }
 
 func main() {
@@ -42,8 +56,7 @@ func main() {
 		log.Fatal("error creating session: ", err)
 	}
 
-	cnt.Load(c.Content)
-	handlers.MessageConfigInit(c.Content, c.ParolaChannelID)
+	handlers.MessageConfigInit(c.GeneralBetAdmin, c.PoloBetAdmin, c.GeneralBetChannel, c.PoloBetChannel, c.ParolesOnlyChannel)
 
 	// Add handlers for message and reaction events.
 	dg.AddHandler(handlers.MessageCreate)
