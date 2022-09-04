@@ -31,7 +31,7 @@ func (u *User) GetName() string {
 }
 
 func (u *User) RandomImage() (image.Image, error) {
-	img, err := image.RandomImage(u.Images, u.LastImageURLServed)
+	img, err := image.Random(u.Images, u.LastImageURLServed)
 	if err != nil {
 		return image.Image{}, err
 	}
@@ -46,11 +46,11 @@ func (u *User) Store() error {
 }
 
 func (u *User) AddImage(text string, url string) error {
-	img, err := image.ValidateImage(table, text, url)
+	img, err := image.Validate(table, text, url)
 	if err != nil {
 		return err
 	}
-	all, err := image.AddImage(u.Images, img)
+	all, err := image.Add(u.Images, img)
 	if err != nil {
 		return err
 	}

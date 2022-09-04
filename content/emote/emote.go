@@ -31,7 +31,7 @@ func (e *Emote) GetName() string {
 }
 
 func (e *Emote) RandomImage() (image.Image, error) {
-	img, err := image.RandomImage(e.Images, e.LastImageURLServed)
+	img, err := image.Random(e.Images, e.LastImageURLServed)
 	if err != nil {
 		return image.Image{}, err
 	}
@@ -46,11 +46,11 @@ func (e *Emote) Store() error {
 }
 
 func (e *Emote) AddImage(text string, url string) error {
-	img, err := image.ValidateImage(table, text, url)
+	img, err := image.Validate(table, text, url)
 	if err != nil {
 		return err
 	}
-	all, err := image.AddImage(e.Images, img)
+	all, err := image.Add(e.Images, img)
 	if err != nil {
 		return err
 	}

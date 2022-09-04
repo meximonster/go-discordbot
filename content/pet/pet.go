@@ -31,7 +31,7 @@ func (p *Pet) GetName() string {
 }
 
 func (p *Pet) RandomImage() (image.Image, error) {
-	img, err := image.RandomImage(p.Images, p.LastImageURLServed)
+	img, err := image.Random(p.Images, p.LastImageURLServed)
 	if err != nil {
 		return image.Image{}, err
 	}
@@ -46,16 +46,20 @@ func (p *Pet) Store() error {
 }
 
 func (p *Pet) AddImage(text string, url string) error {
-	img, err := image.ValidateImage(table, text, url)
+	var concat string
+	img, err := image.Validate(table, text, url)
 	if err != nil {
 		return err
 	}
-	all, err := image.AddImage(p.Images, img)
+	all, err := image.Add(p.Images, img)
 	if err != nil {
 		return err
+	}
+	if len(p.Images) != 0 {
+		concat = "images ||"
 	}
 	p.Images = all
-	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = %s`, table, string(img), p.Alias)
+	q := fmt.Sprintf(`UPDATE %s SET images = %s '%s'::jsonb WHERE alias = '%s'`, table, concat, string(img), p.Alias)
 	dbC.MustExec(q)
 	return nil
 }
