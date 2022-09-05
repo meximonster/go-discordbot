@@ -10,7 +10,7 @@ var appConfig *Config
 
 type Config struct {
 	BotToken           string `yaml:"botToken"`
-	GeneralBetAdmin    string `yaml:"GeneralBetAdmin"`
+	GeneralBetAdmin    string `yaml:"generalBetAdmin"`
 	GeneralBetChannel  string `yaml:"generalBetChannel"`
 	PoloBetAdmin       string `yaml:"poloBetAdmin"`
 	PoloBetChannel     string `yaml:"poloBetChannel"`
