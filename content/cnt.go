@@ -3,6 +3,7 @@ package content
 import (
 	"fmt"
 
+	"github.com/jmoiron/sqlx"
 	"github.com/meximonster/go-discordbot/content/emote"
 	"github.com/meximonster/go-discordbot/content/pet"
 	"github.com/meximonster/go-discordbot/content/user"
@@ -96,4 +97,24 @@ func Set(name string, contentType string) error {
 	c.Store()
 	Cnt[c.GetName()] = c
 	return nil
+}
+
+func AddImage(c Content, text string, url string) error {
+	return c.AddImage(text, url)
+}
+
+func RandomImage(c Content) (image.Image, error) {
+	return c.RandomImage()
+}
+
+func NewDB(db *sqlx.DB) {
+	user.NewDB(db)
+	pet.NewDB(db)
+	emote.NewDB(db)
+}
+
+func CloseDB() {
+	user.CloseDB()
+	pet.CloseDB()
+	emote.CloseDB()
 }

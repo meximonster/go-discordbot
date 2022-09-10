@@ -177,7 +177,7 @@ func addImage(content string, channel string, s *discordgo.Session) {
 		s.ChannelMessageSend(channel, err.Error())
 		return
 	}
-	err = c.AddImage(imgText, input[2])
+	err = cnt.AddImage(c, imgText, input[2])
 	if err != nil {
 		s.ChannelMessageSend(channel, err.Error())
 	}
@@ -309,7 +309,7 @@ func respondWithRandomImage(name string, channel string, s *discordgo.Session) {
 		s.ChannelMessageSend(channel, err.Error())
 		return
 	}
-	img, err := c.RandomImage()
+	img, err := cnt.RandomImage(c)
 	if err != nil {
 		s.ChannelMessageSend(channel, err.Error())
 		return

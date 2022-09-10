@@ -15,9 +15,6 @@ import (
 	"github.com/meximonster/go-discordbot/bet"
 	"github.com/meximonster/go-discordbot/configuration"
 	"github.com/meximonster/go-discordbot/content"
-	"github.com/meximonster/go-discordbot/content/emote"
-	"github.com/meximonster/go-discordbot/content/pet"
-	"github.com/meximonster/go-discordbot/content/user"
 	"github.com/meximonster/go-discordbot/handlers"
 )
 
@@ -37,9 +34,7 @@ func init() {
 	}
 
 	bet.NewDB(db)
-	user.NewDB(db)
-	pet.NewDB(db)
-	emote.NewDB(db)
+	content.NewDB(db)
 
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(25)
@@ -79,10 +74,8 @@ func main() {
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
 
-	// Gracefully stop session and close db connection.
+	// Gracefully stop session and close db connections.
 	bet.CloseDB()
-	user.CloseDB()
-	pet.CloseDB()
-	emote.CloseDB()
+	content.CloseDB()
 	dg.Close()
 }
