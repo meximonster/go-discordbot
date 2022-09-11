@@ -94,9 +94,8 @@ func Set(name string, contentType string) error {
 		}
 		c = &emote.Emote{Alias: name, Images: []byte{}}
 	}
-	c.Store()
 	Cnt[c.GetName()] = c
-	return nil
+	return c.Store()
 }
 
 func AddImage(c Content, text string, url string) error {

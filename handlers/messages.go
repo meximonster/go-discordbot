@@ -151,7 +151,10 @@ func setContent(content string, channel string, s *discordgo.Session) {
 	}
 	name := input[1]
 	cntType := input[2]
-	cnt.Set(name, cntType)
+	err := cnt.Set(name, cntType)
+	if err != nil {
+		s.ChannelMessageSend(channel, err.Error())
+	}
 }
 
 func addImage(content string, channel string, s *discordgo.Session) {

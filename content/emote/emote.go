@@ -49,8 +49,8 @@ func (e *Emote) RandomImage() (image.Image, error) {
 
 func (e *Emote) Store() error {
 	q := fmt.Sprintf(`INSERT INTO %s (alias) VALUES ($1)`, table)
-	dbC.MustExec(q, e.Alias)
-	return nil
+	_, err := dbC.Exec(q, e.Alias)
+	return err
 }
 
 func (e *Emote) AddImage(text string, url string) error {
@@ -64,8 +64,8 @@ func (e *Emote) AddImage(text string, url string) error {
 	}
 	e.Images = all
 	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = %s`, table, string(img), e.Alias)
-	dbC.MustExec(q)
-	return nil
+	_, err = dbC.Exec(q)
+	return err
 }
 
 func GetAll() ([]*Emote, error) {

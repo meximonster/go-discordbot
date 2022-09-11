@@ -98,11 +98,7 @@ func Decouple(content string, result string, table string) (Bet, error) {
 }
 
 func Store(b Bet, table string) error {
-	err := b.Store(table)
-	if err != nil {
-		return err
-	}
-	return nil
+	return b.Store(table)
 }
 
 func (b *Bet) Format() string {

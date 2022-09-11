@@ -22,8 +22,8 @@ func CloseDB() error {
 
 func (b *Bet) Store(table string) error {
 	q := fmt.Sprintf(`INSERT INTO %s (team,prediction,size,odds,result) VALUES ($1,$2,$3,$4,$5)`, table)
-	dbC.MustExec(q, b.Team, b.Prediction, b.Size, b.Odds, b.Result)
-	return nil
+	_, err := dbC.Exec(q, b.Team, b.Prediction, b.Size, b.Odds, b.Result)
+	return err
 }
 
 func GetBetsByQuery(query string) ([]Bet, error) {
