@@ -26,13 +26,13 @@ type BetsPerMonth struct {
 func Graphs(w http.ResponseWriter, _ *http.Request) {
 	page := components.NewPage()
 	page.AddCharts(
-		Line(),
-		Pie(),
+		line(),
+		pie(),
 	)
 	page.Render(w)
 }
 
-func Line() *charts.Line {
+func line() *charts.Line {
 
 	r, err := getUnitsPerMonth()
 	if err != nil {
@@ -68,7 +68,7 @@ func Line() *charts.Line {
 	return line
 }
 
-func Pie() *charts.Pie {
+func pie() *charts.Pie {
 	r, err := getBetsPerMonth()
 	if err != nil {
 		log.Println(err)
