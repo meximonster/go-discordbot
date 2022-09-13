@@ -43,3 +43,12 @@ func GetBetsSumByQuery(query string) ([]BetSummary, error) {
 	}
 	return sum, nil
 }
+
+func getUnitsPerMonth() ([]UnitsPerMonth, error) {
+	r := []UnitsPerMonth{}
+	err := dbC.Select(&r, unitPerMonthQuery)
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
+}

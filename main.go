@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -68,6 +69,11 @@ func main() {
 	if err != nil {
 		log.Fatal("error opening connection: ", err)
 	}
+
+	go func() {
+		http.HandleFunc("/", bet.Graph)
+		http.ListenAndServe(":9999", nil)
+	}()
 
 	// Create signaling for process termination.
 	sc := make(chan os.Signal, 1)

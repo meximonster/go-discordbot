@@ -4,6 +4,7 @@ go 1.19
 
 require (
 	github.com/bwmarrin/discordgo v0.24.0
+	github.com/go-echarts/go-echarts/v2 v2.2.4
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/lib/pq v1.2.0
 	gopkg.in/yaml.v2 v2.4.0
