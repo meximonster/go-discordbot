@@ -71,7 +71,7 @@ func main() {
 	}
 
 	go func() {
-		http.HandleFunc("/", bet.Graph)
+		http.HandleFunc("/", bet.Graphs)
 		http.ListenAndServe(":9999", nil)
 	}()
 

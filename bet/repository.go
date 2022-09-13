@@ -52,3 +52,12 @@ func getUnitsPerMonth() ([]UnitsPerMonth, error) {
 	}
 	return r, nil
 }
+
+func getBetsPerMonth() ([]BetsPerMonth, error) {
+	r := []BetsPerMonth{}
+	err := dbC.Select(&r, betsPerMonthQuery)
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
+}
