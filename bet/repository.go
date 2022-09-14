@@ -61,3 +61,12 @@ func getBetsPerMonth() ([]BetsPerMonth, error) {
 	}
 	return r, nil
 }
+
+func getPercentBySize() ([]PercentPerSize, error) {
+	r := []PercentPerSize{}
+	err := dbC.Select(&r, percentPerSizeQuery)
+	if err != nil {
+		return nil, err
+	}
+	return r, nil
+}
