@@ -95,6 +95,7 @@ func unitsPerMonthGraph(upm []UnitsPerMonth) (*charts.Line, *charts.Bar) {
 		charts.WithYAxisOpts(opts.YAxis{
 			Name: "units",
 		}),
+		charts.WithTooltipOpts(opts.Tooltip{Show: true}),
 	)
 
 	line.SetXAxis(m).
