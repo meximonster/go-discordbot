@@ -1,7 +1,7 @@
 package bet
 
 import (
-	"log"
+	"fmt"
 	"net/http"
 
 	"github.com/go-echarts/go-echarts/v2/charts"
@@ -24,29 +24,35 @@ type BetsPerMonth struct {
 }
 
 func Graphs(w http.ResponseWriter, _ *http.Request) {
+
+	// query results should be cached
+	upm, err := getUnitsPerMonth()
+	if err != nil {
+		fmt.Fprint(w, err.Error())
+	}
+	bpm, err := getBetsPerMonth()
+	if err != nil {
+		fmt.Fprint(w, err.Error())
+	}
+
 	page := components.NewPage()
 	page.AddCharts(
-		line(),
-		pie(),
+		unitsPerMonthGraph(upm),
+		betsPerMonthGraph(bpm),
 	)
 	page.Render(w)
 }
 
-func line() *charts.Line {
+func unitsPerMonthGraph(upm []UnitsPerMonth) *charts.Line {
 
-	r, err := getUnitsPerMonth()
-	if err != nil {
-		log.Println(err)
-	}
-
-	u := make([]opts.LineData, 0, len(r))
-	m := make([]string, 0, len(r))
+	u := make([]opts.LineData, 0, len(upm))
+	m := make([]string, 0, len(upm))
 
 	var sum float64
-	for i := range r {
-		sum += r[i].Units
+	for i := range upm {
+		sum += upm[i].Units
 		u = append(u, opts.LineData{Value: sum})
-		m = append(m, r[i].Month)
+		m = append(m, upm[i].Month)
 	}
 
 	line := charts.NewLine()
@@ -68,15 +74,11 @@ func line() *charts.Line {
 	return line
 }
 
-func pie() *charts.Pie {
-	r, err := getBetsPerMonth()
-	if err != nil {
-		log.Println(err)
-	}
+func betsPerMonthGraph(bpm []BetsPerMonth) *charts.Pie {
 
 	items := make([]opts.PieData, 0)
-	for i := range r {
-		items = append(items, opts.PieData{Name: r[i].Month, Value: r[i].Bets})
+	for i := range bpm {
+		items = append(items, opts.PieData{Name: bpm[i].Month, Value: bpm[i].Bets})
 	}
 	pie := charts.NewPie()
 	pie.SetGlobalOptions(
@@ -86,7 +88,7 @@ func pie() *charts.Pie {
 		}),
 	)
 
-	pie.AddSeries("pie", items).
+	pie.AddSeries("bets", items).
 		SetSeriesOptions(
 			charts.WithLabelOpts(opts.Label{
 				Show:      true,
