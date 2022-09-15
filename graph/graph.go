@@ -2,6 +2,7 @@ package graph
 
 import (
 	"io"
+	"math"
 	"os"
 
 	"github.com/go-echarts/go-echarts/v2/charts"
@@ -24,8 +25,13 @@ func Generate() error {
 	if err != nil {
 		return err
 	}
+	wpt, err := bet.WonPerType()
+	if err != nil {
+		return err
+	}
 
 	unitsperMonthCum, unitsPerMonthAbs := unitsPerMonthGraph(upm)
+	wptBar := wonPerType(wpt)
 
 	page := components.NewPage()
 	page.Initialization.PageTitle = "LE GROUP"
@@ -33,6 +39,7 @@ func Generate() error {
 	page.AddCharts(
 		unitsperMonthCum,
 		unitsPerMonthAbs,
+		wptBar,
 		percentBySize(prc),
 		betsPerMonthGraph(bpm),
 	)
@@ -144,6 +151,40 @@ func percentBySize(prc []bet.PercentPerSize) *charts.Bar {
 		charts.WithTooltipOpts(opts.Tooltip{Show: true}),
 	)
 	bar.SetXAxis(u).
+		AddSeries("percentage", p).
+		SetSeriesOptions(
+			charts.WithLabelOpts(opts.Label{
+				Show:     true,
+				Color:    "black",
+				Position: "top",
+			}),
+		)
+	return bar
+}
+
+func wonPerType(args [][]float64) *charts.Bar {
+
+	types := []string{"over", "ck", "combo", "pregame/hc"}
+
+	p := make([]opts.BarData, 0, len(types))
+	for _, arg := range args {
+		pcr := math.Round((arg[0] / arg[1]) * 100)
+		p = append(p, opts.BarData{Value: pcr})
+	}
+
+	bar := charts.NewBar()
+	bar.SetGlobalOptions(
+		charts.WithTitleOpts(opts.Title{Title: "win percentage by bet type"}),
+		charts.WithInitializationOpts(opts.Initialization{Theme: "wonderland"}),
+		charts.WithXAxisOpts(opts.XAxis{
+			Name: "types",
+		}),
+		charts.WithYAxisOpts(opts.YAxis{
+			Name: "percentage",
+		}),
+		charts.WithTooltipOpts(opts.Tooltip{Show: true}),
+	)
+	bar.SetXAxis(types).
 		AddSeries("percentage", p).
 		SetSeriesOptions(
 			charts.WithLabelOpts(opts.Label{

@@ -23,6 +23,18 @@ var percentPerSizeQuery = `SELECT CAST((CAST(won_bets AS DECIMAL(7,2)) / total_b
 INNER JOIN 
 (SELECT count(1) as won_bets, size as won_size FROM bets where result = 'won' GROUP BY 2) b 
 ON a.size = b.won_size) c ORDER BY size;`
+var OverQuery = `select count(1) from bets where prediction like 'o%' 
+and prediction not like '%ck%' and result = 'won' 
+UNION 
+select count(1) from bets where prediction like 'o%' and prediction not like '%ck%';`
+var ckQuery = `select count(1) from bets where prediction like '%ck%' and result = 'won' 
+UNION 
+select count(1) from bets where prediction like '%ck%';`
+var comboQuery = `select count(1) from bets where prediction like '%combo%' and result = 'won' UNION select count(1) from bets where prediction like '%combo%';`
+var hcQuery = `select count(1) from bets where result = 'won' and prediction not like '%ck%' and prediction not like 'o%' and prediction not like '%combo%' 
+UNION 
+select count(1) from bets where prediction not like '%ck%' and prediction not like 'o%' and prediction not like '%combo%';`
+var typeQueries = []string{OverQuery, ckQuery, comboQuery, hcQuery}
 
 func NewDB(db *sqlx.DB) {
 	dbC = db
@@ -82,6 +94,16 @@ func GetPercentBySize() ([]PercentPerSize, error) {
 	r := []PercentPerSize{}
 	err := dbC.Select(&r, percentPerSizeQuery)
 	if err != nil {
+		return nil, err
+	}
+	return r, nil
+}
+
+func GetWonPerType(q string) ([]float64, error) {
+	r := make([]float64, 0, 2)
+	err := dbC.Select(&r, q)
+	if err != nil {
+		fmt.Println(q)
 		return nil, err
 	}
 	return r, nil

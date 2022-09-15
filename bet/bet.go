@@ -155,3 +155,18 @@ func FormatBetsSum(sum []BetSummary) string {
 	result = result + fmt.Sprintf("profit/loss: %.1f", net)
 	return result
 }
+
+func WonPerType() ([][]float64, error) {
+	all := make([][]float64, 0, len(typeQueries))
+	for _, q := range typeQueries {
+		r, err := GetWonPerType(q)
+		if err != nil {
+			return nil, err
+		}
+		if len(r) != 2 {
+			return nil, fmt.Errorf("slice length: %d, query: %s", len(r), q)
+		}
+		all = append(all, r)
+	}
+	return all, nil
+}
