@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
@@ -16,7 +15,9 @@ import (
 	"github.com/meximonster/go-discordbot/bet"
 	"github.com/meximonster/go-discordbot/configuration"
 	"github.com/meximonster/go-discordbot/content"
+	"github.com/meximonster/go-discordbot/graph"
 	"github.com/meximonster/go-discordbot/handlers"
+	"github.com/meximonster/go-discordbot/server"
 )
 
 var c *configuration.Config
@@ -71,16 +72,22 @@ func main() {
 	}
 
 	go func() {
-		http.HandleFunc("/", bet.Graphs)
-		http.ListenAndServe(":9999", nil)
+		err := server.Run()
+		if err != nil {
+			log.Fatal("http server returned error: ", err)
+		}
 	}()
+
+	go graph.Generate()
 
 	// Create signaling for process termination.
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
 	<-sc
 
-	// Gracefully stop session and close db connections.
+	// Gracefully stop session and close db connections and running routines.
+	graph.Done()
+	server.Close()
 	bet.CloseDB()
 	content.CloseDB()
 	dg.Close()

@@ -4,3 +4,7 @@
 # postgres data
 
 **/postgres-data
+
+# html
+
+html/*

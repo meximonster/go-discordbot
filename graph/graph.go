@@ -1,60 +1,28 @@
-package bet
+package graph
 
 import (
-	"fmt"
-	"net/http"
+	"io"
+	"os"
 
 	"github.com/go-echarts/go-echarts/v2/charts"
 	"github.com/go-echarts/go-echarts/v2/components"
 	"github.com/go-echarts/go-echarts/v2/opts"
+	"github.com/meximonster/go-discordbot/bet"
 )
 
-var sqlCase string = `CASE WHEN month = '01' then 'Jan' WHEN month = '02' then 'Feb' WHEN month = '03' then 'Mar' 
-WHEN month = '04' then 'Apr' WHEN month = '05' then 'May' WHEN month = '06' then 'Jun' 
-WHEN month = '07' then 'Jul' WHEN month = '08' then 'Aug' WHEN month = '09' then 'Sep' 
-WHEN month = '10' then 'Oct' WHEN month = '11' then 'Nov' ELSE 'Dec' END AS month`
-var unitPerMonthQuery = `SET TIMEZONE='Europe/Athens'; SELECT units, ` + sqlCase + ` 
-FROM (SELECT sum(CASE WHEN result = 'won' THEN size*odds - size ELSE -size END) as units, to_char(posted_at, 'mm') as month 
-FROM bets group by 2 order by 2) foo;`
-var betsPerMonthQuery = `SET TIMEZONE='Europe/Athens'; SELECT bets, ` + sqlCase + ` 
-FROM (select count(1) as bets, to_char(posted_at, 'mm') as month 
-FROM bets group by 2 order by 2) foo;`
-var percentPerSizeQuery = `SELECT CAST((CAST(won_bets AS DECIMAL(7,2)) / total_bets) * 100 AS DECIMAL(5,2)) as percentage, size, total_bets AS bets FROM 
-(SELECT * FROM (SELECT count(1) as total_bets, size FROM bets GROUP BY 2) a 
-INNER JOIN 
-(SELECT count(1) as won_bets, size as won_size FROM bets where result = 'won' GROUP BY 2) b 
-ON a.size = b.won_size) c ORDER BY size;`
+func generate() error {
 
-type UnitsPerMonth struct {
-	Units float64
-	Month string
-}
-
-type BetsPerMonth struct {
-	Bets  int32
-	Month string
-}
-
-type PercentPerSize struct {
-	Percentage float64
-	Size       int32
-	Bets       int32
-}
-
-func Graphs(w http.ResponseWriter, _ *http.Request) {
-
-	// query results should be cached
-	upm, err := getUnitsPerMonth()
+	upm, err := bet.GetUnitsPerMonth()
 	if err != nil {
-		fmt.Fprint(w, err.Error())
+		return err
 	}
-	bpm, err := getBetsPerMonth()
+	bpm, err := bet.GetBetsPerMonth()
 	if err != nil {
-		fmt.Fprint(w, err.Error())
+		return err
 	}
-	prc, err := getPercentBySize()
+	prc, err := bet.GetPercentBySize()
 	if err != nil {
-		fmt.Fprint(w, err.Error())
+		return err
 	}
 
 	unitsperMonthCum, unitsPerMonthAbs := unitsPerMonthGraph(upm)
@@ -66,10 +34,14 @@ func Graphs(w http.ResponseWriter, _ *http.Request) {
 		percentBySize(prc),
 		betsPerMonthGraph(bpm),
 	)
-	page.Render(w)
+	f, err := os.Create("./html/index.html")
+	if err != nil {
+		return err
+	}
+	return page.Render(io.MultiWriter(f))
 }
 
-func unitsPerMonthGraph(upm []UnitsPerMonth) (*charts.Line, *charts.Bar) {
+func unitsPerMonthGraph(upm []bet.UnitsPerMonth) (*charts.Line, *charts.Bar) {
 
 	u := make([]opts.LineData, 0, len(upm))
 	uAbs := make([]opts.BarData, 0, len(upm))
@@ -121,7 +93,7 @@ func unitsPerMonthGraph(upm []UnitsPerMonth) (*charts.Line, *charts.Bar) {
 	return line, bar
 }
 
-func betsPerMonthGraph(bpm []BetsPerMonth) *charts.Pie {
+func betsPerMonthGraph(bpm []bet.BetsPerMonth) *charts.Pie {
 
 	items := make([]opts.PieData, 0)
 	for i := range bpm {
@@ -147,7 +119,7 @@ func betsPerMonthGraph(bpm []BetsPerMonth) *charts.Pie {
 	return pie
 }
 
-func percentBySize(prc []PercentPerSize) *charts.Bar {
+func percentBySize(prc []bet.PercentPerSize) *charts.Bar {
 
 	p := make([]opts.BarData, 0, len(prc))
 	u := make([]int32, 0, len(prc))
