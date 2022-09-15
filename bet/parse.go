@@ -1,4 +1,4 @@
-package queries
+package bet
 
 import (
 	"fmt"

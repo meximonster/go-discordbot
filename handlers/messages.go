@@ -11,7 +11,6 @@ import (
 	bet "github.com/meximonster/go-discordbot/bet"
 	cnt "github.com/meximonster/go-discordbot/content"
 	"github.com/meximonster/go-discordbot/meme"
-	"github.com/meximonster/go-discordbot/queries"
 )
 
 var (
@@ -276,7 +275,7 @@ func checkForContent(content string, channel string, s *discordgo.Session) {
 
 func checkForBetQuery(content string, channel string, s *discordgo.Session) {
 	table := tableRef(channel)
-	q := queries.Parse(content, table)
+	q := bet.Parse(content, table)
 	bets, err := bet.GetBetsByQuery(q)
 	if err != nil {
 		s.ChannelMessageSend(channel, fmt.Sprintf("error getting bets: %s", err.Error()))
@@ -292,7 +291,7 @@ func checkForBetQuery(content string, channel string, s *discordgo.Session) {
 
 func checkForBetSumQuery(content string, channel string, s *discordgo.Session) {
 	table := tableRef(channel)
-	q := queries.ParseSum(content, table)
+	q := bet.ParseSum(content, table)
 	sum, err := bet.GetBetsSumByQuery(q)
 	if err != nil {
 		s.ChannelMessageSend(channel, fmt.Sprintf("error getting bets: %s", err.Error()))
