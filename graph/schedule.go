@@ -11,18 +11,14 @@ func Done() {
 	done <- true
 }
 
-func Generate() {
-	err := generate()
-	if err != nil {
-		log.Println("error creating graphs: ", err)
-	}
+func Schedule() {
 	ticker := time.NewTicker(5 * time.Minute)
 	for {
 		select {
 		case <-done:
 			return
 		case <-ticker.C:
-			err := generate()
+			err := Generate()
 			if err != nil {
 				log.Println("error creating graphs: ", err)
 			}

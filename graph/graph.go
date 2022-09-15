@@ -10,7 +10,7 @@ import (
 	"github.com/meximonster/go-discordbot/bet"
 )
 
-func generate() error {
+func Generate() error {
 
 	upm, err := bet.GetUnitsPerMonth()
 	if err != nil {

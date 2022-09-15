@@ -42,6 +42,11 @@ func init() {
 	db.SetMaxIdleConns(25)
 	db.SetConnMaxLifetime(5 * time.Minute)
 
+	err = graph.Generate()
+	if err != nil {
+		log.Fatal("error generating graphs: ", err)
+	}
+
 	err = content.Load()
 	if err != nil {
 		log.Fatal("error loading content: ", err)
@@ -78,7 +83,7 @@ func main() {
 		}
 	}()
 
-	go graph.Generate()
+	go graph.Schedule()
 
 	// Create signaling for process termination.
 	sc := make(chan os.Signal, 1)
