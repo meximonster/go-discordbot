@@ -30,6 +30,15 @@ func Generate() error {
 		return err
 	}
 
+	cbt, err := bet.GetCountByType()
+	if err != nil {
+		return err
+	}
+	cbs, err := bet.GetCountBySize()
+	if err != nil {
+		return err
+	}
+
 	unitsperMonthCum, unitsPerMonthAbs := unitsPerMonthGraph(upm)
 	wptBar := wonPerType(wpt)
 
@@ -41,6 +50,8 @@ func Generate() error {
 		unitsPerMonthAbs,
 		wptBar,
 		percentBySize(prc),
+		countByType(cbt),
+		countBySize(cbs),
 		betsPerMonthGraph(bpm),
 	)
 	f, err := os.Create("./html/index.html")
@@ -131,7 +142,7 @@ func betsPerMonthGraph(bpm []bet.BetsPerMonth) *charts.Pie {
 func percentBySize(prc []bet.PercentPerSize) *charts.Bar {
 
 	p := make([]opts.BarData, 0, len(prc))
-	u := make([]int32, 0, len(prc))
+	u := make([]string, 0, len(prc))
 
 	for i := range prc {
 		p = append(p, opts.BarData{Value: prc[i].Percentage})
@@ -193,5 +204,75 @@ func wonPerType(args [][]float64) *charts.Bar {
 				Position: "top",
 			}),
 		)
+	return bar
+}
+
+func countBySize(s []bet.CountBySize) *charts.Bar {
+
+	b := make([]opts.BarData, 0, len(s))
+	u := make([]string, 0, len(s))
+
+	for i := range s {
+		u = append(u, s[i].Units)
+		b = append(b, opts.BarData{Value: s[i].Bets})
+	}
+
+	bar := charts.NewBar()
+	bar.SetGlobalOptions(
+		charts.WithTitleOpts(opts.Title{Title: "bet count by size"}),
+		charts.WithInitializationOpts(opts.Initialization{Theme: "macarons"}),
+		charts.WithXAxisOpts(opts.XAxis{
+			Name: "units",
+		}),
+		charts.WithYAxisOpts(opts.YAxis{
+			Name: "bets",
+		}),
+		charts.WithTooltipOpts(opts.Tooltip{Show: true}),
+	)
+	bar.SetXAxis(u).
+		AddSeries("percentage", b).
+		SetSeriesOptions(
+			charts.WithLabelOpts(opts.Label{
+				Show:     true,
+				Color:    "black",
+				Position: "right",
+			}),
+		)
+	bar.XYReversal()
+	return bar
+}
+
+func countByType(s []bet.CountByType) *charts.Bar {
+
+	b := make([]opts.BarData, 0, len(s))
+	t := make([]string, 0, len(s))
+
+	for i := range s {
+		t = append(t, s[i].Type)
+		b = append(b, opts.BarData{Value: s[i].Bets})
+	}
+
+	bar := charts.NewBar()
+	bar.SetGlobalOptions(
+		charts.WithTitleOpts(opts.Title{Title: "bet count by type"}),
+		charts.WithInitializationOpts(opts.Initialization{Theme: "macarons"}),
+		charts.WithXAxisOpts(opts.XAxis{
+			Name: "units",
+		}),
+		charts.WithYAxisOpts(opts.YAxis{
+			Name: "bets",
+		}),
+		charts.WithTooltipOpts(opts.Tooltip{Show: true}),
+	)
+	bar.SetXAxis(t).
+		AddSeries("percentage", b).
+		SetSeriesOptions(
+			charts.WithLabelOpts(opts.Label{
+				Show:     true,
+				Color:    "black",
+				Position: "right",
+			}),
+		)
+	bar.XYReversal()
 	return bar
 }

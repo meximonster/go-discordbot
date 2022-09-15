@@ -44,8 +44,18 @@ type BetsPerMonth struct {
 
 type PercentPerSize struct {
 	Percentage float64
-	Size       int32
+	Size       string
 	Bets       int32
+}
+
+type CountBySize struct {
+	Bets  int32
+	Units string
+}
+
+type CountByType struct {
+	Bets int32
+	Type string
 }
 
 func IsBet(content string) bool {
