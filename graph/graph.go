@@ -28,6 +28,7 @@ func Generate() error {
 	unitsperMonthCum, unitsPerMonthAbs := unitsPerMonthGraph(upm)
 
 	page := components.NewPage()
+	page.SetLayout(components.PageFlexLayout)
 	page.AddCharts(
 		unitsperMonthCum,
 		unitsPerMonthAbs,
