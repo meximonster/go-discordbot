@@ -7,12 +7,11 @@ import (
 var srv *http.Server
 
 func Run() error {
-	router := http.NewServeMux()
 	srv = &http.Server{
 		Addr: ":9999",
 	}
 
-	router.Handle("/", http.FileServer(http.Dir("./html")))
+	http.HandleFunc("/", graphHandler)
 	if err := srv.ListenAndServe(); err != nil {
 		return err
 	}
@@ -21,4 +20,8 @@ func Run() error {
 
 func Close() {
 	srv.Close()
+}
+
+func graphHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "html/index.html")
 }
