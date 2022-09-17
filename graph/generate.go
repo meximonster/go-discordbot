@@ -11,30 +11,30 @@ import (
 	"github.com/meximonster/go-discordbot/bet"
 )
 
-func Generate() error {
+func Generate(table string) error {
 
-	upm, err := bet.GetUnitsPerMonth()
+	upm, err := bet.GetUnitsPerMonth(table)
 	if err != nil {
 		return err
 	}
-	bpm, err := bet.GetBetsPerMonth()
+	bpm, err := bet.GetBetsPerMonth(table)
 	if err != nil {
 		return err
 	}
-	prc, err := bet.GetPercentBySize()
+	prc, err := bet.GetPercentBySize(table)
 	if err != nil {
 		return err
 	}
-	wpt, err := bet.WonPerType()
+	wpt, err := bet.WonPerType(table)
 	if err != nil {
 		return err
 	}
 
-	cbt, err := bet.GetCountByType()
+	cbt, err := bet.GetCountByType(table)
 	if err != nil {
 		return err
 	}
-	cbs, err := bet.GetCountBySize()
+	cbs, err := bet.GetCountBySize(table)
 	if err != nil {
 		return err
 	}

@@ -13,7 +13,7 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		return
 	}
 
-	if !(r.ChannelID == generalBetMsgConf.ChannelID || r.ChannelID == poloMsgConf.ChannelID) {
+	if !bet.IsBetChannel(r.ChannelID) {
 		return
 	}
 
@@ -42,8 +42,8 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		result = "lost"
 	}
 
-	table := tableRef(r.ChannelID)
-	b, err := bet.Decouple(m.Content, result, table)
+	table := bet.GetTableFromChannel(r.ChannelID)
+	b, err := bet.Decouple(m.Content, result)
 	if err != nil {
 		s.ChannelMessageSend(r.ChannelID, err.Error())
 		return

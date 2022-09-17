@@ -8,14 +8,18 @@ import (
 
 var appConfig *Config
 
+type AdminConfig struct {
+	Name    string `yaml:"name"`
+	Id      string `yaml:"id"`
+	Channel string `yaml:"channel"`
+	Table   string `yaml:"table"`
+}
+
 type Config struct {
-	BotToken           string `yaml:"botToken"`
-	GeneralBetAdmin    string `yaml:"generalBetAdmin"`
-	GeneralBetChannel  string `yaml:"generalBetChannel"`
-	PoloBetAdmin       string `yaml:"poloBetAdmin"`
-	PoloBetChannel     string `yaml:"poloBetChannel"`
-	ParolesOnlyChannel string `yaml:"parolesOnlyChannel"`
-	POSTGRES_PASS      string `yaml:"postgres_password"`
+	BotToken           string        `yaml:"botToken"`
+	Admins             []AdminConfig `yaml:"admins"`
+	ParolesOnlyChannel string        `yaml:"parolesOnlyChannel"`
+	POSTGRES_PASS      string        `yaml:"postgres_password"`
 }
 
 func Load() error {

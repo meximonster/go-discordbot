@@ -9,8 +9,7 @@ import (
 )
 
 var (
-	betRegexp1 = regexp.MustCompile(`(.*?)((o|over|u|under|\+|\-)[0-9]{1,2}([.]2?7?5)?|X|x|1|2|1X|1x|2x|2X|X2|x2|combo)(.*?)[0-9]{1,3}u(.*)`)
-	//betRegexp2       = regexp.MustCompile(`(.*?)[0-9]{1,3}u(.*?)((o|over|u|under|\+|\-)[0-9]{1,2}([.]2?7?5)?|X|x|1|2|1X|1x|2x|2X|X2|x2|combo)(.*)`)
+	betRegexp1       = regexp.MustCompile(`(.*?)((o|over|u|under|\+|\-)[0-9]{1,2}([.]2?7?5)?|X|x|1|2|1X|1x|2x|2X|X2|x2|combo)(.*?)[0-9]{1,3}u(.*)`)
 	unitsRegexp      = regexp.MustCompile(`^[0-9]{1,3}u(.*?)$`)
 	predictionRegexp = regexp.MustCompile(`^((o|over|u|under|\+|\-)[0-9]{1,2}([.]2?7?5)?(ck)?|X|x|1|2|1X|1x|2x|2X|X2|x2|combo)$`)
 	oddsRegexp       = regexp.MustCompile(`^@([0-9]*[.])?[0-9]+$`)
@@ -74,7 +73,7 @@ func IsUnits(word string) bool {
 	return unitsRegexp.MatchString(word)
 }
 
-func Decouple(content string, result string, table string) (Bet, error) {
+func Decouple(content string, result string) (Bet, error) {
 	var b Bet
 	words := strings.Split(content, " ")
 	var team string
@@ -166,7 +165,7 @@ func FormatBetsSum(sum []BetSummary) string {
 	return result
 }
 
-func WonPerType() ([][]float64, error) {
+func WonPerType(table string) ([][]float64, error) {
 	all := make([][]float64, 0, len(typeQueries))
 	for _, q := range typeQueries {
 		r, err := GetWonPerType(q)

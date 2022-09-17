@@ -42,16 +42,6 @@ func init() {
 	db.SetMaxIdleConns(25)
 	db.SetConnMaxLifetime(5 * time.Minute)
 
-	err = graph.Generate()
-	if err != nil {
-		log.Fatal("error generating graphs: ", err)
-	}
-
-	err = content.Load()
-	if err != nil {
-		log.Fatal("error loading content: ", err)
-	}
-
 }
 
 func main() {
@@ -61,8 +51,6 @@ func main() {
 	if err != nil {
 		log.Fatal("error creating session: ", err)
 	}
-
-	handlers.MessageConfigInit(c.GeneralBetAdmin, c.PoloBetAdmin, c.GeneralBetChannel, c.PoloBetChannel, c.ParolesOnlyChannel)
 
 	// Add handlers for message and reaction events.
 	dg.AddHandler(handlers.MessageCreate)
@@ -76,6 +64,19 @@ func main() {
 		log.Fatal("error opening connection: ", err)
 	}
 
+	bet.InitAdmins(c.Admins)
+	handlers.ParolesOnlyChannel = c.ParolesOnlyChannel
+
+	err = graph.Generate("bets")
+	if err != nil {
+		log.Fatal("error generating graphs: ", err)
+	}
+
+	err = content.Load()
+	if err != nil {
+		log.Fatal("error loading content: ", err)
+	}
+
 	go func() {
 		err := server.Run()
 		if err != nil {
@@ -83,7 +84,7 @@ func main() {
 		}
 	}()
 
-	go graph.Schedule()
+	go graph.Schedule("bets")
 
 	// Create signaling for process termination.
 	sc := make(chan os.Signal, 1)

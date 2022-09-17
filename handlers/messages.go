@@ -13,28 +13,7 @@ import (
 	"github.com/meximonster/go-discordbot/meme"
 )
 
-var (
-	generalBetMsgConf  *betMsgSrc
-	poloMsgConf        *betMsgSrc
-	parolesOnlyChannel string
-)
-
-type betMsgSrc struct {
-	ChannelID string
-	UserID    string
-}
-
-func MessageConfigInit(generalBetAdmin string, poloBetAdmin string, generalBetChannel string, poloBetChannel string, parolesChannel string) {
-	generalBetMsgConf = &betMsgSrc{
-		ChannelID: generalBetChannel,
-		UserID:    generalBetAdmin,
-	}
-	poloMsgConf = &betMsgSrc{
-		ChannelID: poloBetChannel,
-		UserID:    poloBetAdmin,
-	}
-	parolesOnlyChannel = parolesChannel
-}
+var ParolesOnlyChannel string
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
@@ -83,22 +62,22 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if m.ChannelID == parolesOnlyChannel {
+	if m.ChannelID == ParolesOnlyChannel {
 		checkForParola(m.Content, m.ChannelID, m.Attachments, s)
 		return
 	}
 
-	if (m.ChannelID == generalBetMsgConf.ChannelID && m.Author.ID == generalBetMsgConf.UserID) || (m.ChannelID == poloMsgConf.ChannelID && m.Author.ID == poloMsgConf.UserID) {
+	if bet.IsBetCandidate(m.Author.ID, m.ChannelID) {
 		checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
 		return
 	}
 
-	if (m.ChannelID == generalBetMsgConf.ChannelID || m.ChannelID == poloMsgConf.ChannelID) && strings.HasPrefix(m.Content, "!bet ") {
+	if bet.IsBetChannel(m.ChannelID) && strings.HasPrefix(m.Content, "!bet ") {
 		checkForBetQuery(m.Content, m.ChannelID, s)
 		return
 	}
 
-	if (m.ChannelID == generalBetMsgConf.ChannelID || m.ChannelID == poloMsgConf.ChannelID) && strings.HasPrefix(m.Content, "!betsum ") {
+	if bet.IsBetChannel(m.ChannelID) && strings.HasPrefix(m.Content, "!betsum ") {
 		checkForBetSumQuery(m.Content, m.ChannelID, s)
 		return
 	}
@@ -254,8 +233,7 @@ func checkForParola(content string, channel string, attachments []*discordgo.Mes
 
 func checkForBet(channel string, author string, content string, s *discordgo.Session) {
 	if bet.IsBet(content) {
-		table := tableRef(channel)
-		b, err := bet.Decouple(content, "", table)
+		b, err := bet.Decouple(content, "")
 		if err != nil {
 			s.ChannelMessageSend(channel, err.Error())
 			return
@@ -274,7 +252,7 @@ func checkForContent(content string, channel string, s *discordgo.Session) {
 }
 
 func checkForBetQuery(content string, channel string, s *discordgo.Session) {
-	table := tableRef(channel)
+	table := bet.GetTableFromChannel(channel)
 	q := bet.Parse(content, table)
 	bets, err := bet.GetBetsByQuery(q)
 	if err != nil {
@@ -290,7 +268,7 @@ func checkForBetQuery(content string, channel string, s *discordgo.Session) {
 }
 
 func checkForBetSumQuery(content string, channel string, s *discordgo.Session) {
-	table := tableRef(channel)
+	table := bet.GetTableFromChannel(channel)
 	q := bet.ParseSum(content, table)
 	sum, err := bet.GetBetsSumByQuery(q)
 	if err != nil {
@@ -329,14 +307,4 @@ func respondWithEmbed(channel string, title string, imageURL string, s *discordg
 	if err != nil {
 		fmt.Println("error sending image: ", err)
 	}
-}
-
-func tableRef(channel string) string {
-	var table string
-	if channel == generalBetMsgConf.ChannelID {
-		table = "bets"
-	} else {
-		table = "polo_bets"
-	}
-	return table
 }
