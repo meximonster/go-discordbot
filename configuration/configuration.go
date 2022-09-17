@@ -9,10 +9,11 @@ import (
 var appConfig *Config
 
 type AdminConfig struct {
-	Name    string `yaml:"name"`
-	Id      string `yaml:"id"`
-	Channel string `yaml:"channel"`
-	Table   string `yaml:"table"`
+	Name        string `yaml:"name"`
+	Id          string `yaml:"id"`
+	Channel     string `yaml:"channel"`
+	Table       string `yaml:"table"`
+	ExtraGraphs bool   `yaml:"extra_graphs"`
 }
 
 type Config struct {

@@ -11,7 +11,9 @@ import (
 	"github.com/meximonster/go-discordbot/bet"
 )
 
-func Generate(table string) error {
+func Generate(table string, extra bool) error {
+
+	charts := []components.Charter{}
 
 	upm, err := bet.GetUnitsPerMonth(table)
 	if err != nil {
@@ -30,8 +32,9 @@ func Generate(table string) error {
 		return err
 	}
 	unitsperMonthCum, unitsPerMonthAbs := unitsPerMonthGraph(upm)
+	charts = append(charts, unitsperMonthCum, unitsPerMonthAbs, percentBySize(prc), countBySize(cbs))
 
-	if table == "bets" {
+	if extra {
 		wpt, err := bet.WonPerType(table)
 		if err != nil {
 			return err
@@ -41,37 +44,15 @@ func Generate(table string) error {
 			return err
 		}
 		wptBar := wonPerType(wpt)
-		page := components.NewPage()
-		page.Initialization.PageTitle = "LE GROUP"
-		page.SetLayout(components.PageFlexLayout)
-		page.AddCharts(
-			unitsperMonthCum,
-			unitsPerMonthAbs,
-			wptBar,
-			percentBySize(prc),
-			countByType(cbt),
-			countBySize(cbs),
-			betsPerMonthGraph(bpm),
-		)
-		f, err := os.Create("./html/" + table + ".html")
-		if err != nil {
-			return err
-		}
-		return page.Render(io.MultiWriter(f))
+		charts = append(charts, wptBar, countByType(cbt))
 	}
+
+	charts = append(charts, betsPerMonthGraph(bpm))
 
 	page := components.NewPage()
 	page.Initialization.PageTitle = "LE GROUP"
 	page.SetLayout(components.PageFlexLayout)
-	page.AddCharts(
-		unitsperMonthCum,
-		unitsPerMonthAbs,
-		//wptBar,
-		percentBySize(prc),
-		//countByType(cbt),
-		countBySize(cbs),
-		betsPerMonthGraph(bpm),
-	)
+	page.AddCharts(charts...)
 	f, err := os.Create("./html/" + table + ".html")
 	if err != nil {
 		return err
