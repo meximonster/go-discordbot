@@ -168,7 +168,7 @@ func FormatBetsSum(sum []BetSummary) string {
 func WonPerType(table string) ([][]float64, error) {
 	all := make([][]float64, 0, len(typeQueries))
 	for _, q := range typeQueries {
-		r, err := GetWonPerType(q)
+		r, err := GetWonPerType(q, table)
 		if err != nil {
 			return nil, err
 		}
