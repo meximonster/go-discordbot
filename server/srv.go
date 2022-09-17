@@ -11,7 +11,9 @@ func Run() error {
 		Addr: ":9999",
 	}
 
-	http.Handle("/", http.FileServer(http.Dir("./html")))
+	http.HandleFunc("/pad", betsHandler)
+	http.HandleFunc("/fyk", poloHandler)
+	http.HandleFunc("/nick", nickHandler)
 	if err := srv.ListenAndServe(); err != nil {
 		return err
 	}
@@ -22,6 +24,14 @@ func Close() {
 	srv.Close()
 }
 
-// func graphHandler(w http.ResponseWriter, r *http.Request) {
-// 	http.ServeFile(w, r, "html/index.html")
-// }
+func betsHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "html/bets.html")
+}
+
+func poloHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "html/polo_bets.html")
+}
+
+func nickHandler(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "html/nick_bets.html")
+}
