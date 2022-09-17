@@ -67,9 +67,12 @@ func main() {
 	bet.InitAdmins(c.Admins)
 	handlers.ParolesOnlyChannel = c.ParolesOnlyChannel
 
-	err = graph.Generate("bets")
-	if err != nil {
-		log.Fatal("error generating graphs: ", err)
+	for _, adm := range c.Admins {
+		err := graph.Generate(adm.Table)
+		if err != nil {
+			log.Fatal("error generating graphs: ", err)
+		}
+		go graph.Schedule(adm.Table)
 	}
 
 	err = content.Load()
@@ -83,8 +86,6 @@ func main() {
 			log.Fatal("http server returned error: ", err)
 		}
 	}()
-
-	go graph.Schedule("bets")
 
 	// Create signaling for process termination.
 	sc := make(chan os.Signal, 1)

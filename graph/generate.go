@@ -25,22 +25,40 @@ func Generate(table string) error {
 	if err != nil {
 		return err
 	}
-	wpt, err := bet.WonPerType(table)
-	if err != nil {
-		return err
-	}
-
-	cbt, err := bet.GetCountByType(table)
-	if err != nil {
-		return err
-	}
 	cbs, err := bet.GetCountBySize(table)
 	if err != nil {
 		return err
 	}
-
 	unitsperMonthCum, unitsPerMonthAbs := unitsPerMonthGraph(upm)
-	wptBar := wonPerType(wpt)
+
+	if table == "bets" {
+		wpt, err := bet.WonPerType(table)
+		if err != nil {
+			return err
+		}
+		cbt, err := bet.GetCountByType(table)
+		if err != nil {
+			return err
+		}
+		wptBar := wonPerType(wpt)
+		page := components.NewPage()
+		page.Initialization.PageTitle = "LE GROUP"
+		page.SetLayout(components.PageFlexLayout)
+		page.AddCharts(
+			unitsperMonthCum,
+			unitsPerMonthAbs,
+			wptBar,
+			percentBySize(prc),
+			countByType(cbt),
+			countBySize(cbs),
+			betsPerMonthGraph(bpm),
+		)
+		f, err := os.Create("./html/" + table + ".html")
+		if err != nil {
+			return err
+		}
+		return page.Render(io.MultiWriter(f))
+	}
 
 	page := components.NewPage()
 	page.Initialization.PageTitle = "LE GROUP"
@@ -48,13 +66,13 @@ func Generate(table string) error {
 	page.AddCharts(
 		unitsperMonthCum,
 		unitsPerMonthAbs,
-		wptBar,
+		//wptBar,
 		percentBySize(prc),
-		countByType(cbt),
+		//countByType(cbt),
 		countBySize(cbs),
 		betsPerMonthGraph(bpm),
 	)
-	f, err := os.Create("./html/index.html")
+	f, err := os.Create("./html/" + table + ".html")
 	if err != nil {
 		return err
 	}

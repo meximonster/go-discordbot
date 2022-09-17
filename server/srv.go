@@ -11,7 +11,7 @@ func Run() error {
 		Addr: ":9999",
 	}
 
-	http.HandleFunc("/", graphHandler)
+	http.Handle("/", http.FileServer(http.Dir("./html")))
 	if err := srv.ListenAndServe(); err != nil {
 		return err
 	}
@@ -22,6 +22,6 @@ func Close() {
 	srv.Close()
 }
 
-func graphHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "html/index.html")
-}
+// func graphHandler(w http.ResponseWriter, r *http.Request) {
+// 	http.ServeFile(w, r, "html/index.html")
+// }
