@@ -11,7 +11,7 @@ import (
 	"github.com/meximonster/go-discordbot/bet"
 )
 
-func Generate(table string, extra bool) error {
+func Generate(name string, table string, extra bool) error {
 
 	charts := []components.Charter{}
 
@@ -53,7 +53,7 @@ func Generate(table string, extra bool) error {
 	page.Initialization.PageTitle = "LE GROUP"
 	page.SetLayout(components.PageFlexLayout)
 	page.AddCharts(charts...)
-	f, err := os.Create("./html/" + table + ".html")
+	f, err := os.Create("./html/" + name + ".html")
 	if err != nil {
 		return err
 	}

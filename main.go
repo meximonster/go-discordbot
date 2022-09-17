@@ -68,11 +68,11 @@ func main() {
 	handlers.ParolesOnlyChannel = c.ParolesOnlyChannel
 
 	for _, adm := range c.Admins {
-		err := graph.Generate(adm.Table, adm.ExtraGraphs)
+		err := graph.Generate(adm.Name, adm.Table, adm.ExtraGraphs)
 		if err != nil {
 			log.Fatal("error generating graphs: ", err)
 		}
-		go graph.Schedule(adm.Table, adm.ExtraGraphs)
+		go graph.Schedule(adm.Name, adm.Table, adm.ExtraGraphs)
 	}
 
 	err = content.Load()

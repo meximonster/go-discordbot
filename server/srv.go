@@ -25,13 +25,13 @@ func Close() {
 }
 
 func betsHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "html/bets.html")
+	http.ServeFile(w, r, "html/pad.html")
 }
 
 func poloHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "html/polo_bets.html")
+	http.ServeFile(w, r, "html/fyk.html")
 }
 
 func nickHandler(w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, "html/nick_bets.html")
+	http.ServeFile(w, r, "html/nick.html")
 }
