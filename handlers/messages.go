@@ -305,6 +305,6 @@ func respondWithEmbed(channel string, title string, imageURL string, s *discordg
 		},
 	})
 	if err != nil {
-		fmt.Println("error sending image: ", err)
+		s.ChannelMessageSend(channel, err.Error())
 	}
 }

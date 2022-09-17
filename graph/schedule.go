@@ -1,7 +1,7 @@
 package graph
 
 import (
-	"log"
+	"fmt"
 	"time"
 )
 
@@ -20,7 +20,7 @@ func Schedule(table string) {
 		case <-ticker.C:
 			err := Generate(table)
 			if err != nil {
-				log.Println("error creating graphs: ", err)
+				fmt.Println("error creating graphs: ", err)
 			}
 		}
 	}
