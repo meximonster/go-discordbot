@@ -1,6 +1,7 @@
 package bet
 
 import (
+	"database/sql"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -55,6 +56,10 @@ type CountBySize struct {
 type CountByType struct {
 	Bets int32
 	Type string
+}
+
+type Yield struct {
+	YieldTotal sql.NullFloat64 `db:"yield"`
 }
 
 func IsBet(content string) bool {
@@ -172,9 +177,9 @@ func WonPerType(table string) ([][]float64, error) {
 		if err != nil {
 			return nil, err
 		}
-		// if len(r) != 2 {
-		// 	return nil, fmt.Errorf("slice length: %d, query: %s", len(r), q)
-		// }
+		if len(r) != 2 {
+			return nil, fmt.Errorf("slice length: %d, query: %s", len(r), q)
+		}
 		all = append(all, r)
 	}
 	return all, nil

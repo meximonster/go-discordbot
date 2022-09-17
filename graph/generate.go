@@ -1,6 +1,7 @@
 package graph
 
 import (
+	"fmt"
 	"io"
 	"math"
 	"os"
@@ -31,6 +32,11 @@ func Generate(name string, table string, extra bool) error {
 	if err != nil {
 		return err
 	}
+	yield, err := bet.GetYield(table)
+	if err != nil {
+		return err
+	}
+
 	unitsperMonthCum, unitsPerMonthAbs := unitsPerMonthGraph(upm)
 	charts = append(charts, unitsperMonthCum, unitsPerMonthAbs, percentBySize(prc), countBySize(cbs))
 
@@ -47,7 +53,12 @@ func Generate(name string, table string, extra bool) error {
 		charts = append(charts, wptBar, countByType(cbt))
 	}
 
-	charts = append(charts, betsPerMonthGraph(bpm))
+	if len(yield) == 1 {
+		if yield[0].YieldTotal.Valid {
+			s := fmt.Sprintf("%.4f", yield[0].YieldTotal.Float64)
+			charts = append(charts, betsPerMonthGraph(bpm), newLiquid("yield", "yield", s))
+		}
+	}
 
 	page := components.NewPage()
 	page.Initialization.PageTitle = "LE GROUP"

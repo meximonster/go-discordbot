@@ -103,3 +103,13 @@ func GetCountByType(table string) ([]CountByType, error) {
 	}
 	return r, nil
 }
+
+func GetYield(table string) ([]Yield, error) {
+	q := parseGraphQuery(yieldQuery, table)
+	var yield []Yield
+	err := dbC.Select(&yield, q)
+	if err != nil {
+		return nil, err
+	}
+	return yield, nil
+}

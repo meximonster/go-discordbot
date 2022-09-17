@@ -75,3 +75,23 @@ func newPie(title string, seriesName string, data []opts.PieData) *charts.Pie {
 		)
 	return pie
 }
+
+func newLiquid(title string, seriesName string, data string) *charts.Liquid {
+	liquid := charts.NewLiquid()
+	liquid.SetGlobalOptions(
+		charts.WithTitleOpts(opts.Title{
+			Title: title,
+		}),
+	)
+
+	liquid.AddSeries(seriesName, []opts.LiquidData{{Value: data}, {Value: 0.4}, {Value: 0.5}}).
+		SetSeriesOptions(
+			charts.WithLabelOpts(opts.Label{
+				Show: true,
+			}),
+			charts.WithLiquidChartOpts(opts.LiquidChart{
+				IsWaveAnimation: true,
+			}),
+		)
+	return liquid
+}
