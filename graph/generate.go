@@ -136,7 +136,7 @@ func countBySize(s []bet.CountBySize) *charts.Bar {
 		b = append(b, opts.BarData{Value: s[i].Bets})
 	}
 
-	return newBar("bet count by size", "macarons", "units", "bets", "percentage", true, u, b, "black", "right", true)
+	return newBar("bet count by size", "macarons", "count", "units", "percentage", true, u, b, "black", "right", true)
 }
 
 func countByType(s []bet.CountByType) *charts.Bar {
@@ -149,5 +149,5 @@ func countByType(s []bet.CountByType) *charts.Bar {
 		b = append(b, opts.BarData{Value: s[i].Bets})
 	}
 
-	return newBar("bet count by type", "macarons", "units", "bets", "percentage", true, t, b, "black", "right", true)
+	return newBar("bet count by type", "macarons", "count", "type", "percentage", true, t, b, "black", "right", true)
 }
