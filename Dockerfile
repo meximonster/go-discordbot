@@ -8,6 +8,6 @@ RUN go mod download && go mod verify
 
 COPY . .
 
-RUN go build -v -o go-discordbot ./...
+RUN go build .
 
-CMD ["go-discordbot"]
+CMD ["/usr/src/app/go-discordbot"]
