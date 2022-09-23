@@ -61,7 +61,7 @@ func Generate(name string, table string, extra bool) error {
 	}
 
 	page := components.NewPage()
-	page.Initialization.PageTitle = "LE GROUP"
+	page.Initialization.PageTitle = "LE GROUP: " + name
 	page.SetLayout(components.PageFlexLayout)
 	page.AddCharts(charts...)
 	f, err := os.Create("./html/" + name + ".html")
