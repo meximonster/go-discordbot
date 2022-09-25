@@ -20,6 +20,7 @@ type Config struct {
 	BotToken           string        `yaml:"botToken"`
 	Admins             []AdminConfig `yaml:"admins"`
 	ParolesOnlyChannel string        `yaml:"parolesOnlyChannel"`
+	POSTGRES_HOST      string        `yaml:"postgres_host"`
 	POSTGRES_PASS      string        `yaml:"postgres_password"`
 }
 

@@ -20,7 +20,7 @@ services:
           retries: 5
         networks:
           app_subnet:
-            ipv4_address: 172.20.0.10
+            ipv4_address: 172.40.10.10
 
     app:
       build: ../
@@ -31,7 +31,7 @@ services:
           condition: service_healthy
       networks:
         app_subnet:
-          ipv4_address: 172.20.0.11
+          ipv4_address: 172.40.10.11
 
 volumes:
   postgres-data:
@@ -41,4 +41,4 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.20.0.0/24
+        - subnet: 172.40.10.0/24
