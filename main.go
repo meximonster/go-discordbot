@@ -30,7 +30,7 @@ func init() {
 
 	c = configuration.Read()
 
-	db, err := sqlx.Connect("postgres", fmt.Sprintf("postgres://127.0.0.1/postgres?sslmode=disable&user=postgres&password=%s", c.POSTGRES_PASS))
+	db, err := sqlx.Connect("postgres", fmt.Sprintf("postgres://172.20.0.10/postgres?sslmode=disable&user=postgres&password=%s", c.POSTGRES_PASS))
 	if err != nil {
 		log.Fatal("error connecting to db: ", err)
 	}
@@ -70,7 +70,7 @@ func main() {
 	for _, adm := range c.Admins {
 		err := graph.Generate(adm.Name, adm.Table, adm.ExtraGraphs)
 		if err != nil {
-			log.Fatal("error generating graphs ", err)
+			log.Println("error generating graphs ", err)
 		}
 		go graph.Schedule(adm.Name, adm.Table, adm.ExtraGraphs)
 	}

@@ -1,0 +1,44 @@
+version: '3.7'
+
+services:
+    postgres:
+        image: postgres:latest
+        restart: always
+        environment:
+          - POSTGRES_USER=postgres
+          - POSTGRES_PASSWORD=postgres
+        ports:
+          - '5432:5432'
+        volumes: 
+          - ../third_party/postgres/postgres-data:/var/lib/postgresql/data
+          # copy the sql script to create tables
+          - ../migrations/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
+        healthcheck:
+          test: ["CMD-SHELL", "pg_isready -U postgres"]
+          interval: 5s
+          timeout: 5s
+          retries: 5
+        networks:
+          app_subnet:
+            ipv4_address: 172.20.0.10
+
+    app:
+      build: ../
+      ports:
+        - "9999:9999"
+      depends_on:
+        postgres:
+          condition: service_healthy
+      networks:
+        app_subnet:
+          ipv4_address: 172.20.0.11
+
+volumes:
+  postgres-data:
+
+networks:
+  app_subnet:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
