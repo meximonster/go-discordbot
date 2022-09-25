@@ -83,7 +83,7 @@ func main() {
 	go func() {
 		err := server.Run()
 		if err != nil {
-			log.Fatal("http server returned error: ", err)
+			log.Println("http server returned error: ", err)
 		}
 	}()
 
