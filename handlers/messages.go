@@ -77,6 +77,16 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	if bet.IsBetChannel(m.ChannelID) && m.Content == "!open" {
+
+		return
+	}
+
+	if bet.IsBetChannel(m.ChannelID) && m.Content == "!clearbets" {
+		clearBets()
+		return
+	}
+
 	if bet.IsBetCandidate(m.Author.ID, m.ChannelID) {
 		checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
 		return
@@ -238,6 +248,7 @@ func checkForBet(channel string, author string, content string, s *discordgo.Ses
 			s.ChannelMessageSend(channel, err.Error())
 			return
 		}
+		bet.AddOpen(b)
 		s.ChannelMessageSend(channel, fmt.Sprintf("%s %s %du @everyone", b.Team, b.Prediction, b.Size))
 	}
 }
@@ -281,6 +292,20 @@ func checkForBetSumQuery(content string, channel string, s *discordgo.Session) {
 	}
 	res := bet.FormatBetsSum(sum)
 	s.ChannelMessageSend(channel, res)
+}
+
+func serverOpenBets(channel string, s *discordgo.Session) {
+	bets := bet.GetOpen()
+	if len(bets) == 0 {
+		s.ChannelMessageSend(channel, "no open bets")
+		return
+	}
+	res := bet.FormatBets(bets)
+	s.ChannelMessageSend(channel, res)
+}
+
+func clearBets() {
+	bet.ClearAll()
 }
 
 func respondWithRandomImage(name string, channel string, s *discordgo.Session) {
