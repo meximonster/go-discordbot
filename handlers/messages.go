@@ -67,11 +67,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if bet.IsBetCandidate(m.Author.ID, m.ChannelID) {
-		checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
-		return
-	}
-
 	if bet.IsBetChannel(m.ChannelID) && strings.HasPrefix(m.Content, "!bet ") {
 		checkForBetQuery(m.Content, m.ChannelID, s)
 		return
@@ -79,6 +74,11 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if bet.IsBetChannel(m.ChannelID) && strings.HasPrefix(m.Content, "!betsum ") {
 		checkForBetSumQuery(m.Content, m.ChannelID, s)
+		return
+	}
+
+	if bet.IsBetCandidate(m.Author.ID, m.ChannelID) {
+		checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
 		return
 	}
 
