@@ -55,6 +55,6 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		return
 	}
 
-	bet.Settle(b)
+	bet.Settle(m.ChannelID)
 
 }

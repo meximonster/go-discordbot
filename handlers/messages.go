@@ -248,7 +248,7 @@ func checkForBet(channel string, author string, content string, s *discordgo.Ses
 			s.ChannelMessageSend(channel, err.Error())
 			return
 		}
-		bet.AddOpen(b)
+		bet.AddOpen(channel, b)
 		s.ChannelMessageSend(channel, fmt.Sprintf("%s %s %du @everyone", b.Team, b.Prediction, b.Size))
 	}
 }
@@ -300,7 +300,7 @@ func serveOpenBets(channel string, s *discordgo.Session) {
 		s.ChannelMessageSend(channel, "no open bets")
 		return
 	}
-	res := bet.FormatBets(bets)
+	res := bet.FormatOpenBets()
 	s.ChannelMessageSend(channel, res)
 }
 

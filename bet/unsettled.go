@@ -1,25 +1,31 @@
 package bet
 
-var openBets []Bet
+var openBets map[string]Bet
 
-func AddOpen(b Bet) {
-	openBets = append(openBets, b)
+func AddOpen(messageID string, b Bet) {
+	openBets[messageID] = b
 }
 
-func GetOpen() []Bet {
+func GetOpen() map[string]Bet {
 	return openBets
 }
 
-func Settle(b Bet) {
-	for i, bet := range openBets {
-		if b.Team == bet.Team && b.Prediction == bet.Prediction && b.Size == bet.Size {
-			openBets[i] = openBets[len(openBets)-1]
-			openBets = openBets[:len(openBets)-1]
-			return
-		}
-	}
+func Settle(messageID string) {
+	delete(openBets, messageID)
 }
 
 func ClearAll() {
 	openBets = nil
+}
+
+func FormatOpenBets() string {
+	betFormats := make([]string, len(openBets))
+	for _, bet := range openBets {
+		betFormats = append(betFormats, bet.Format())
+	}
+	var result string
+	for i := range betFormats {
+		result = result + betFormats[i]
+	}
+	return result
 }
