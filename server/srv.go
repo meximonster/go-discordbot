@@ -26,8 +26,8 @@ func Run() error {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	r.HandleFunc("/{name}", handler).Methods("GET")
 	r.HandleFunc("/health", readiness).Methods("GET")
+	r.HandleFunc("/{name}", handler).Methods("GET")
 
 	if err := srv.ListenAndServe(); err != nil {
 		return err
