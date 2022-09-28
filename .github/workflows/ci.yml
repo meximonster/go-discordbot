@@ -22,6 +22,7 @@ jobs:
           cd /root/github.com/meximonster/go-discordbot/deploy
           docker-compose down
           docker container prune -f
+          docker volume rm deploy_postgres-data
           docker rmi deploy_app:latest
           git pull
           docker-compose up -d
