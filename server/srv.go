@@ -11,9 +11,9 @@ import (
 
 var srv *http.Server
 
-type health struct {
-	result      string
-	description string
+type Health struct {
+	Result      string
+	Description string
 }
 
 func Run() error {
@@ -53,9 +53,9 @@ func readiness(w http.ResponseWriter, r *http.Request) {
 		result = "FAIL"
 		description = err.Error()
 	}
-	res := health{
-		result:      result,
-		description: description,
+	res := Health{
+		Result:      result,
+		Description: description,
 	}
 	json.NewEncoder(w).Encode(res)
 }
