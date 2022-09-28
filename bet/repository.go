@@ -12,6 +12,10 @@ func NewDB(db *sqlx.DB) {
 	dbC = db
 }
 
+func Ping() error {
+	return dbC.Ping()
+}
+
 func CloseDB() error {
 	err := dbC.Close()
 	if err != nil {

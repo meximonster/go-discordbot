@@ -1,6 +1,6 @@
 package bet
 
-var openBets map[string]Bet
+var openBets = make(map[string]Bet)
 
 func AddOpen(messageID string, b Bet) {
 	openBets[messageID] = b
