@@ -88,7 +88,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if bet.IsBetCandidate(m.Author.ID, m.ChannelID) {
-		checkForBet(m.ChannelID, m.Author.ID, m.Content, s)
+		checkForBet(m.ChannelID, m.ID, m.Author.ID, m.Content, s)
 		return
 	}
 
@@ -241,14 +241,14 @@ func checkForParola(content string, channel string, attachments []*discordgo.Mes
 	}
 }
 
-func checkForBet(channel string, author string, content string, s *discordgo.Session) {
+func checkForBet(channel string, messageID string, author string, content string, s *discordgo.Session) {
 	if bet.IsBet(content) {
 		b, err := bet.Decouple(content, "")
 		if err != nil {
 			s.ChannelMessageSend(channel, err.Error())
 			return
 		}
-		bet.AddOpen(channel, b)
+		bet.AddOpen(messageID, b)
 		s.ChannelMessageSend(channel, fmt.Sprintf("%s %s %du @everyone", b.Team, b.Prediction, b.Size))
 	}
 }
