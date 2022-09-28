@@ -19,9 +19,9 @@ jobs:
         port: ${{ secrets.PORT }}
         script_stop: true
         script: |
-          docker stop deploy_app_1
+          cd /root/github.com/meximonster/go-discordbot/deploy
+          docker-compose down
           docker container prune -f
           docker rmi deploy_app:latest
-          cd /root/github.com/meximonster/go-discordbot/deploy
           git pull
           docker-compose up -d
