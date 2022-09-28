@@ -12,7 +12,7 @@ func GetOpen() []Bet {
 
 func Settle(b Bet) {
 	for i, bet := range openBets {
-		if b == bet {
+		if b.Team == bet.Team && b.Prediction == bet.Prediction && b.Size == bet.Size {
 			openBets[i] = openBets[len(openBets)-1]
 			openBets = openBets[:len(openBets)-1]
 			return
