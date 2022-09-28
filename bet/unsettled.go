@@ -15,7 +15,9 @@ func Settle(messageID string) {
 }
 
 func ClearAll() {
-	openBets = nil
+	for k := range openBets {
+		delete(openBets, k)
+	}
 }
 
 func FormatOpenBets() string {
