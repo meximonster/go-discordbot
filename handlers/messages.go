@@ -78,7 +78,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if bet.IsBetChannel(m.ChannelID) && m.Content == "!open" {
-
+		serveOpenBets(m.ChannelID, s)
 		return
 	}
 
@@ -294,7 +294,7 @@ func checkForBetSumQuery(content string, channel string, s *discordgo.Session) {
 	s.ChannelMessageSend(channel, res)
 }
 
-func serverOpenBets(channel string, s *discordgo.Session) {
+func serveOpenBets(channel string, s *discordgo.Session) {
 	bets := bet.GetOpen()
 	if len(bets) == 0 {
 		s.ChannelMessageSend(channel, "no open bets")
