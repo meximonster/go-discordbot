@@ -19,7 +19,7 @@ func ClearAll() {
 }
 
 func FormatOpenBets() string {
-	betFormats := make([]string, len(openBets))
+	betFormats := make([]string, 0, len(openBets))
 	for _, bet := range openBets {
 		betFormats = append(betFormats, bet.Format())
 	}
