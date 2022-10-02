@@ -11,6 +11,7 @@ import (
 
 var (
 	betRegexp1       = regexp.MustCompile(`(.*?)((o|over|u|under|\+|\-)[0-9]{1,2}([.]2?7?5)?|X|x|1|2|1X|1x|2x|2X|X2|x2|combo)(.*?)[0-9]{1,3}u(.*)`)
+	betRegexp2       = regexp.MustCompile(`(.*?)[0-9]{1,3}u(.*?)((o|over|u|under|\+|\-)[0-9]{1,2}([.]2?7?5)?|X|x|1|2|1X|1x|2x|2X|X2|x2|combo|[0-9]ada)(.*)`)
 	unitsRegexp      = regexp.MustCompile(`^[0-9]{1,3}u(.*?)$`)
 	predictionRegexp = regexp.MustCompile(`^((o|over|u|under|\+|\-)[0-9]{1,2}([.]2?7?5)?(ck)?|X|x|1|2|1X|1x|2x|2X|X2|x2|combo)$`)
 	oddsRegexp       = regexp.MustCompile(`^@([0-9]*[.])?[0-9]+$`)
@@ -63,7 +64,7 @@ type Yield struct {
 }
 
 func IsBet(content string) bool {
-	return betRegexp1.MatchString(content)
+	return betRegexp1.MatchString(content) || betRegexp2.MatchString(content)
 }
 
 func IsPrediction(word string) bool {
