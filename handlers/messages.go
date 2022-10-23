@@ -68,12 +68,12 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if bet.IsBetChannel(m.ChannelID) && strings.HasPrefix(m.Content, "!bet ") {
-		checkForBetQuery(m.Content, m.ChannelID, s)
+		betQuery(m.Content, m.ChannelID, s)
 		return
 	}
 
 	if bet.IsBetChannel(m.ChannelID) && strings.HasPrefix(m.Content, "!betsum ") {
-		checkForBetSumQuery(m.Content, m.ChannelID, s)
+		betSum(m.Content, m.ChannelID, s)
 		return
 	}
 
@@ -84,6 +84,11 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if bet.IsBetChannel(m.ChannelID) && m.Content == "!clearbets" {
 		clearBets()
+		return
+	}
+
+	if bet.IsBetChannel(m.ChannelID) && strings.HasPrefix(m.Content, "!clear ") {
+		clearBet(m.Content, m.ChannelID, s)
 		return
 	}
 
@@ -262,7 +267,7 @@ func checkForContent(content string, channel string, s *discordgo.Session) {
 	respondWithRandomImage(str, channel, s)
 }
 
-func checkForBetQuery(content string, channel string, s *discordgo.Session) {
+func betQuery(content string, channel string, s *discordgo.Session) {
 	table := bet.GetTableFromChannel(channel)
 	q := bet.Parse(content, table)
 	bets, err := bet.GetBetsByQuery(q)
@@ -278,7 +283,7 @@ func checkForBetQuery(content string, channel string, s *discordgo.Session) {
 	s.ChannelMessageSend(channel, res)
 }
 
-func checkForBetSumQuery(content string, channel string, s *discordgo.Session) {
+func betSum(content string, channel string, s *discordgo.Session) {
 	table := bet.GetTableFromChannel(channel)
 	q := bet.ParseSum(content, table)
 	sum, err := bet.GetBetsSumByQuery(q)
@@ -306,6 +311,14 @@ func serveOpenBets(channel string, s *discordgo.Session) {
 
 func clearBets() {
 	bet.ClearAll()
+}
+
+func clearBet(content string, channel string, s *discordgo.Session) {
+	input := strings.Split(content, " ")
+	if len(input) != 2 {
+		s.ChannelMessageSend(channel, "wrong parameters")
+	}
+	bet.Settle(input[1])
 }
 
 func respondWithRandomImage(name string, channel string, s *discordgo.Session) {
