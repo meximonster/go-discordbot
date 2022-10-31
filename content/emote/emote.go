@@ -63,7 +63,7 @@ func (e *Emote) AddImage(text string, url string) error {
 		return err
 	}
 	e.Images = all
-	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = %s`, table, string(img), e.Alias)
+	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = '%s'`, table, string(img), e.Alias)
 	_, err = dbC.Exec(q)
 	return err
 }
