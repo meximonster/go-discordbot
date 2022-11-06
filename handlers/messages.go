@@ -22,6 +22,18 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	if bet.IsBetCandidate(m.Author.ID, m.ChannelID) {
+		checkForBet(m.ChannelID, m.ID, m.Author.ID, m.Content, s)
+	}
+
+	if m.ChannelID == ParolesOnlyChannel {
+		checkForParola(m.Content, m.ChannelID, m.Attachments, s)
+	}
+
+	if strings.HasPrefix(m.Content, "!") {
+		checkForContent(m.Content, m.ChannelID, s)
+	}
+
 	if strings.HasPrefix(m.Content, "!tts") {
 		tts(m.Content, m.ChannelID, s)
 		return
@@ -62,11 +74,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if m.ChannelID == ParolesOnlyChannel {
-		checkForParola(m.Content, m.ChannelID, m.Attachments, s)
-		return
-	}
-
 	if bet.IsBetChannel(m.ChannelID) && strings.HasPrefix(m.Content, "!bet ") {
 		betQuery(m.Content, m.ChannelID, s)
 		return
@@ -92,18 +99,9 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if bet.IsBetCandidate(m.Author.ID, m.ChannelID) {
-		checkForBet(m.ChannelID, m.ID, m.Author.ID, m.Content, s)
-		return
-	}
-
 	if strings.HasPrefix(m.Content, "!set") {
 		setContent(m.Content, m.ChannelID, s)
 		return
-	}
-
-	if strings.HasPrefix(m.Content, "!") {
-		checkForContent(m.Content, m.ChannelID, s)
 	}
 
 }
