@@ -22,16 +22,9 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if bet.IsBetCandidate(m.Author.ID, m.ChannelID) {
-		checkForBet(m.ChannelID, m.ID, m.Author.ID, m.Content, s)
-	}
-
-	if m.ChannelID == ParolesOnlyChannel {
-		checkForParola(m.Content, m.ChannelID, m.Attachments, s)
-	}
-
-	if strings.HasPrefix(m.Content, "!") {
-		checkForContent(m.Content, m.ChannelID, s)
+	if bet.IsBetCandidate(m.Author.ID, m.ChannelID) && bet.IsBet(m.Content) {
+		betNotify(m.ChannelID, m.ID, m.Author.ID, m.Content, s)
+		return
 	}
 
 	if strings.HasPrefix(m.Content, "!tts") {
@@ -102,6 +95,15 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if strings.HasPrefix(m.Content, "!set") {
 		setContent(m.Content, m.ChannelID, s)
 		return
+	}
+
+	if m.ChannelID == ParolesOnlyChannel && (len(m.Attachments) > 0 || strings.HasPrefix(m.Content, "https://www.stoiximan.gr/mybets/")) {
+		parolaNotify(m.Content, m.ChannelID, m.Attachments, s)
+		return
+	}
+
+	if strings.HasPrefix(m.Content, "!") {
+		checkForContent(m.Content, m.ChannelID, s)
 	}
 
 }
@@ -238,22 +240,18 @@ func serveMeme(content string, channel string, s *discordgo.Session) {
 	respondWithEmbed(channel, link, url, s)
 }
 
-func checkForParola(content string, channel string, attachments []*discordgo.MessageAttachment, s *discordgo.Session) {
-	if len(attachments) > 0 || strings.HasPrefix(content, "https://www.stoiximan.gr/mybets/") {
-		s.ChannelMessageSend(channel, "@everyone possible parola was just posted.")
-	}
+func parolaNotify(content string, channel string, attachments []*discordgo.MessageAttachment, s *discordgo.Session) {
+	s.ChannelMessageSend(channel, "@everyone possible parola was just posted.")
 }
 
-func checkForBet(channel string, messageID string, author string, content string, s *discordgo.Session) {
-	if bet.IsBet(content) {
-		b, err := bet.Decouple(content, "")
-		if err != nil {
-			s.ChannelMessageSend(channel, err.Error())
-			return
-		}
-		bet.AddOpen(messageID, b)
-		s.ChannelMessageSend(channel, fmt.Sprintf("%s %s %du @everyone", b.Team, b.Prediction, b.Size))
+func betNotify(channel string, messageID string, author string, content string, s *discordgo.Session) {
+	b, err := bet.Decouple(content, "")
+	if err != nil {
+		s.ChannelMessageSend(channel, err.Error())
+		return
 	}
+	bet.AddOpen(messageID, b)
+	s.ChannelMessageSend(channel, fmt.Sprintf("%s %s %du @everyone", b.Team, b.Prediction, b.Size))
 }
 
 func checkForContent(content string, channel string, s *discordgo.Session) {

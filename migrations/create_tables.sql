@@ -31,6 +31,28 @@ CREATE TABLE nick_bets
     posted_at     TIMESTAMP     DEFAULT (now() at time zone 'utc-3')
 );
 
+CREATE TABLE panos_bets
+(
+    id            serial PRIMARY KEY,
+    team          VARCHAR(100)  NOT NULL,
+    prediction    VARCHAR(20)   NOT NULL,
+    size          INTEGER  NOT NULL,
+    odds          NUMERIC,
+    result        VARCHAR(10)   NOT NULL,
+    posted_at     TIMESTAMP     DEFAULT (now() at time zone 'utc-3')
+);
+
+CREATE TABLE esports_bets
+(
+    id            serial PRIMARY KEY,
+    team          VARCHAR(100)  NOT NULL,
+    prediction    VARCHAR(20)   NOT NULL,
+    size          INTEGER  NOT NULL,
+    odds          NUMERIC,
+    result        VARCHAR(10)   NOT NULL,
+    posted_at     TIMESTAMP     DEFAULT (now() at time zone 'utc-3')
+);
+
 CREATE TABLE users
 (
     id            serial PRIMARY KEY,

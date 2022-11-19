@@ -80,6 +80,11 @@ func main() {
 		log.Fatal("error loading content: ", err)
 	}
 
+	err = bet.LoadOpen()
+	if err != nil {
+		log.Println("error loading open bets: ", err)
+	}
+
 	go func() {
 		err := server.Run()
 		if err != nil {
@@ -93,6 +98,10 @@ func main() {
 	<-sc
 
 	// Gracefully stop session and close db connections and running routines.
+	err = bet.SaveOpen()
+	if err != nil {
+		log.Println("error saving open bets: ", err)
+	}
 	graph.Done()
 	server.Close()
 	bet.CloseDB()
