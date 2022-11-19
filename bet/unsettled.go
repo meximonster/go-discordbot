@@ -41,21 +41,16 @@ func SaveOpen() error {
 }
 
 func LoadOpen() error {
-	fmt.Println("openbets: ", openBets)
-	fmt.Println("a")
 	f, err := os.Open("open.txt")
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 	defer f.Close()
 	fileScanner := bufio.NewScanner(f)
 	fileScanner.Split(bufio.ScanLines)
 	for fileScanner.Scan() {
-		fmt.Println("b")
 		text := strings.SplitN(fileScanner.Text(), ":", 2)
 		if len(text) == 2 {
-			fmt.Println("c")
 			b, err := Decouple(text[1], "")
 			if err != nil {
 				return err
@@ -63,7 +58,6 @@ func LoadOpen() error {
 			openBets[text[0]] = b
 		}
 	}
-	fmt.Println("openbets: ", openBets)
 	return nil
 }
 
