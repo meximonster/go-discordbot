@@ -52,18 +52,8 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if m.Content == "!users" {
-		serveUsers(m.Content, m.ChannelID, s)
-		return
-	}
-
-	if m.Content == "!pets" {
-		servePets(m.Content, m.ChannelID, s)
-		return
-	}
-
-	if m.Content == "!emotes" {
-		serveEmotes(m.Content, m.ChannelID, s)
+	if m.Content == "!users" || m.Content == "!pets" || m.Content == "!emotes" {
+		serveContent(m.Content, m.ChannelID, s)
 		return
 	}
 
@@ -183,51 +173,20 @@ func serveGitURL(content string, channel string, s *discordgo.Session) {
 	s.ChannelMessageSend(channel, "https://github.com/meximonster/go-discordbot")
 }
 
-func serveUsers(content string, channel string, s *discordgo.Session) {
-	users := cnt.List("user")
-	if len(users) == 0 {
-		s.ChannelMessageSend(channel, "no users configured")
+func serveContent(content string, channel string, s *discordgo.Session) {
+	cntType := strings.Trim(content, "!")
+	cnt := cnt.List(cntType)
+	if len(cnt) == 0 {
+		s.ChannelMessageSend(channel, fmt.Sprintf("no %s configured", cntType))
 		return
 	}
 	var str string
-	cnt := 0
-	for _, u := range users {
-		str = str + fmt.Sprintf("%d. %s\n", cnt+1, u)
-		cnt++
+	count := 0
+	for _, u := range cnt {
+		str = str + fmt.Sprintf("%d. %s\n", count+1, u)
+		count++
 	}
-	result := "Configured users are:\n" + str
-	s.ChannelMessageSend(channel, result)
-}
-
-func servePets(content string, channel string, s *discordgo.Session) {
-	pets := cnt.List("pet")
-	if len(pets) == 0 {
-		s.ChannelMessageSend(channel, "no pets configured")
-		return
-	}
-	var str string
-	cnt := 0
-	for _, p := range pets {
-		str = str + fmt.Sprintf("%d. %s\n", cnt+1, p)
-		cnt++
-	}
-	result := "Configured pets are:\n" + str
-	s.ChannelMessageSend(channel, result)
-}
-
-func serveEmotes(content string, channel string, s *discordgo.Session) {
-	emotes := cnt.List("emote")
-	if len(emotes) == 0 {
-		s.ChannelMessageSend(channel, "no emotes configured")
-		return
-	}
-	var str string
-	cnt := 0
-	for _, e := range emotes {
-		str = str + fmt.Sprintf("%d. %s\n", cnt+1, e)
-		cnt++
-	}
-	result := "Configured emotes are:\n" + str
+	result := fmt.Sprintf("Configured %s are:\n%s", cntType, str)
 	s.ChannelMessageSend(channel, result)
 }
 

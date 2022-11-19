@@ -31,7 +31,7 @@ func CloseDB() error {
 }
 
 func (e *Emote) Type() string {
-	return "emote"
+	return "emotes"
 }
 
 func (e *Emote) GetName() string {

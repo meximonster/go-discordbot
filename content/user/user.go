@@ -31,7 +31,7 @@ func CloseDB() error {
 }
 
 func (u *User) Type() string {
-	return "user"
+	return "users"
 }
 
 func (u *User) GetName() string {

@@ -31,7 +31,7 @@ func CloseDB() error {
 }
 
 func (p *Pet) Type() string {
-	return "pet"
+	return "pets"
 }
 
 func (p *Pet) GetName() string {
