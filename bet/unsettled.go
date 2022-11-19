@@ -28,7 +28,7 @@ func ClearAll() {
 }
 
 func SaveOpen() error {
-	f, err := os.Create("open.txt")
+	f, err := os.Create("/usr/src/go-discordbot/open.txt")
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func SaveOpen() error {
 }
 
 func LoadOpen() error {
-	f, err := os.Open("open.txt")
+	f, err := os.Open("/usr/src/go-discordbot/open.txt")
 	if err != nil {
 		return err
 	}
