@@ -21,21 +21,21 @@ var percentPerSizeQuery = `SELECT CAST((CAST(won_bets AS DECIMAL(7,2)) / total_b
 INNER JOIN 
 (SELECT count(1) as won_bets, ` + sizeCase + ` as won_size FROM %[1]v where result = 'won' GROUP BY 2) b 
 ON a.size = b.won_size) c ORDER BY percentage desc;`
-var overQuery = `select count(1) FROM %[1]v where prediction like 'o%' 
-and prediction not like '%ck%' and result = 'won' 
+var overQuery = `select count(1) FROM %[1]v where prediction like 'o%%' 
+and prediction not like '%%ck%%' and result = 'won' 
 UNION 
-select count(1) FROM %[1]v where prediction like 'o%' and prediction not like '%ck%';`
-var ckQuery = `select count(1) FROM %[1]v where prediction like '%ck%' and result = 'won' 
+select count(1) FROM %[1]v where prediction like 'o%%' and prediction not like '%%ck%%';`
+var ckQuery = `select count(1) FROM %[1]v where prediction like '%%ck%%' and result = 'won' 
 UNION 
-select count(1) FROM %[1]v where prediction like '%ck%';`
-var comboQuery = `select count(1) FROM %[1]v where prediction like '%combo%' and result = 'won' UNION select count(1) FROM %[1]v where prediction like '%combo%';`
-var hcQuery = `select count(1) FROM %[1]v where result = 'won' and prediction not like '%ck%' and prediction not like 'o%' and prediction not like '%combo%' 
+select count(1) FROM %[1]v where prediction like '%%ck%%';`
+var comboQuery = `select count(1) FROM %[1]v where prediction like '%%combo%%' and result = 'won' UNION select count(1) FROM %[1]v where prediction like '%%combo%%';`
+var hcQuery = `select count(1) FROM %[1]v where result = 'won' and prediction not like '%%ck%%' and prediction not like 'o%%' and prediction not like '%%combo%%' 
 UNION 
-select count(1) FROM %[1]v where prediction not like '%ck%' and prediction not like 'o%' and prediction not like '%combo%';`
+select count(1) FROM %[1]v where prediction not like '%%ck%%' and prediction not like 'o%%' and prediction not like '%%combo%%';`
 var typeQueries = []string{overQuery, ckQuery, comboQuery, hcQuery}
 var countBySizeQuery = `select count(1) AS bets, ` + sizeCase + ` AS units FROM %[1]v group by 2 order by 1;`
-var countByTypeQuery = `select count(1) AS bets, CASE WHEN prediction like '%ck%' 
-THEN 'ck' WHEN prediction like 'o%' THEN 'over' WHEN prediction like '%combo%' THEN 'combo' 
+var countByTypeQuery = `select count(1) AS bets, CASE WHEN prediction like '%%ck%%' 
+THEN 'ck' WHEN prediction like 'o%%' THEN 'over' WHEN prediction like '%%combo%%' THEN 'combo' 
 ELSE 'pregame/hc' END AS type FROM %[1]v group by 2 order by 1;`
 var yieldQuery = `select a.profit / b.units as yield 
 from (select sum(CASE WHEN result = 'won' THEN size*odds - size ELSE -size END) as profit from %[1]v) 
