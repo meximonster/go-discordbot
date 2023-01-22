@@ -43,8 +43,8 @@ a join (select sum(size) as units from %[1]v) b on 1=1;`
 
 func Parse(content string, table string) string {
 	q := strings.Replace(content, "!bet ", "", 1)
-	args := dateParser(q)
-	query := fmt.Sprintf("SELECT * FROM %s WHERE ", table) + strings.ReplaceAll(args, " ", " AND ")
+	qr := fmt.Sprintf("SELECT * FROM %s WHERE ", table) + strings.ReplaceAll(q, " ", " AND ")
+	query := dateParser(qr)
 	return query
 }
 
