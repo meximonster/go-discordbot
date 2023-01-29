@@ -58,10 +58,8 @@ func LoadOpen() error {
 			openBets[text[0]] = b
 		}
 	}
-	err = os.Remove("open.txt")
-	if err != nil {
-		return err
-	}
+	f.Truncate(0)
+	f.Seek(0, 0)
 	return nil
 }
 
