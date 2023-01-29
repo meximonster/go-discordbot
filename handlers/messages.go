@@ -13,7 +13,10 @@ import (
 	"github.com/meximonster/go-discordbot/meme"
 )
 
-var ParolesOnlyChannel string
+var (
+	parolesOnlyChannel string
+	r8mypl8Channel     string
+)
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
@@ -87,8 +90,13 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if m.ChannelID == ParolesOnlyChannel && (len(m.Attachments) > 0 || strings.HasPrefix(m.Content, "https://www.stoiximan.gr/mybets/")) {
+	if m.ChannelID == parolesOnlyChannel && (len(m.Attachments) > 0 || strings.HasPrefix(m.Content, "https://www.stoiximan.gr/mybets/")) {
 		parolaNotify(m.Content, m.ChannelID, m.Attachments, s)
+		return
+	}
+
+	if m.ChannelID == r8mypl8Channel && (len(m.Attachments)) > 0 {
+		ratePlate(m.Content, m.ChannelID, m.Author.Username, s)
 		return
 	}
 
@@ -96,6 +104,16 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		checkForContent(m.Content, m.ChannelID, s)
 	}
 
+}
+
+func InitChannels(paroles string, r8mypl8 string) {
+	parolesOnlyChannel = paroles
+	r8mypl8Channel = r8mypl8
+}
+
+func ratePlate(content string, channel string, username string, s *discordgo.Session) {
+	rand.Seed(time.Now().UnixNano())
+	s.ChannelMessageSend(channel, fmt.Sprintf("%s m8, i r8 your pl8 %d/8", username, rand.Intn(8)+1))
 }
 
 func tts(content string, channel string, s *discordgo.Session) {

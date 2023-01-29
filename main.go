@@ -65,7 +65,7 @@ func main() {
 	}
 
 	bet.InitAdmins(c.Admins)
-	handlers.ParolesOnlyChannel = c.ParolesOnlyChannel
+	handlers.InitChannels(c.ParolesOnlyChannel, c.PlateChannel)
 
 	for _, adm := range c.Admins {
 		err := graph.Generate(adm.Name, adm.Table, adm.ExtraGraphs)
