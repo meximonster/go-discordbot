@@ -1,19 +1,20 @@
 package bet
 
-import (
-	"bufio"
-	"fmt"
-	"os"
-	"strings"
-)
+var openBets = make(map[string]openBet)
 
-var openBets = make(map[string]Bet)
-
-func AddOpen(messageID string, b Bet) {
-	openBets[messageID] = b
+type openBet struct {
+	message_id string
+	Bet
 }
 
-func GetOpen() map[string]Bet {
+func AddOpen(messageID string, b Bet) {
+	openBets[messageID] = openBet{
+		message_id: messageID,
+		Bet:        b,
+	}
+}
+
+func GetOpen() map[string]openBet {
 	return openBets
 }
 
@@ -28,38 +29,29 @@ func ClearAll() {
 }
 
 func SaveOpen() error {
-	f, err := os.Create("open.txt")
-	if err != nil {
-		return err
-	}
-	defer f.Close()
 	for k, v := range openBets {
-		s := fmt.Sprintf("%s:%v\n", k, v)
-		f.WriteString(s)
+		q := `INSERT INTO open_bets (message_id,team,prediction,size,odds) VALUES ($1,$2,$3,$4,$5)`
+		_, err := dbC.Exec(q, k, v.Team, v.Prediction, v.Size, v.Odds)
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }
 
 func LoadOpen() error {
-	f, err := os.Open("open.txt")
+	bets := []openBet{}
+	err := dbC.Select(&bets, `SELECT message_id,team,prediction,size,odds FROM open_bets`)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
-	fileScanner := bufio.NewScanner(f)
-	fileScanner.Split(bufio.ScanLines)
-	for fileScanner.Scan() {
-		text := strings.SplitN(fileScanner.Text(), ":", 2)
-		if len(text) == 2 {
-			b, err := Decouple(text[1], "")
-			if err != nil {
-				return err
-			}
-			openBets[text[0]] = b
-		}
+	for _, bet := range bets {
+		openBets[bet.message_id] = bet
 	}
-	f.Truncate(0)
-	f.Seek(0, 0)
+	_, err = dbC.Exec(`DELETE FROM open_bets`)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 

@@ -53,6 +53,16 @@ CREATE TABLE esports_bets
     posted_at     TIMESTAMP     DEFAULT (now() at time zone 'utc-3')
 );
 
+CREATE TABLE open_bets
+(
+    id            serial PRIMARY KEY,
+    message_id    VARCHAR(100)  NOT NULL,
+    team          VARCHAR(100)  NOT NULL,
+    prediction    VARCHAR(20)   NOT NULL,
+    size          INTEGER  NOT NULL,
+    odds          NUMERIC
+);
+
 CREATE TABLE users
 (
     id            serial PRIMARY KEY,
@@ -77,6 +87,8 @@ CREATE TABLE emotes
 CREATE INDEX idx_bets_date ON bets (posted_at);
 CREATE INDEX idx_polo_bets_date ON polo_bets (posted_at);
 CREATE INDEX idx_nick_bets_date ON nick_bets (posted_at);
+CREATE INDEX idx_panos_bets_date ON panos_bets (posted_at);
+CREATE INDEX idx_esports_bets_date ON esports_bets (posted_at);
 CREATE INDEX idx_users ON users (alias);
 CREATE INDEX idx_pets ON pets (alias);
 CREATE INDEX idx_emotes ON emotes (alias);
