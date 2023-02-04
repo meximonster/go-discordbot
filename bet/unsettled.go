@@ -3,13 +3,13 @@ package bet
 var openBets = make(map[string]openBet)
 
 type openBet struct {
-	message_id string
+	Message_id string
 	Bet
 }
 
 func AddOpen(messageID string, b Bet) {
 	openBets[messageID] = openBet{
-		message_id: messageID,
+		Message_id: messageID,
 		Bet:        b,
 	}
 }
@@ -46,7 +46,7 @@ func LoadOpen() error {
 		return err
 	}
 	for _, bet := range bets {
-		openBets[bet.message_id] = bet
+		openBets[bet.Message_id] = bet
 	}
 	_, err = dbC.Exec(`DELETE FROM open_bets`)
 	if err != nil {
