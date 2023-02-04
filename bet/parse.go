@@ -12,11 +12,11 @@ WHEN month = '10' then 'Oct' WHEN month = '11' then 'Nov' ELSE 'Dec' END AS mont
 var sizeCase = `CASE WHEN size BETWEEN 1 AND 4 THEN '1-4' 
 WHEN size BETWEEN 5 AND 9 THEN '5-9' WHEN size = 10 then '10' WHEN size BETWEEN 11 AND 15 THEN '11-15' WHEN SIZE BETWEEN 16 AND 25 
 THEN '16-25' ELSE '25+' END`
-var unitPerMonthQuery = `SELECT units, concat(month,year) as month FROM (SELECT units,` + monthCase + `, year FROM (SELECT sum(CASE WHEN result = 'won' THEN size*odds - size ELSE -size END) as units, to_char(posted_at, 'mm') as month, to_char(posted_at, 'YY') as year
+var unitPerMonthQuery = `SELECT units, concat(month,year) as month FROM (SELECT units,` + monthCase + `, year FROM (SELECT sum(CASE WHEN result = 'won' THEN size*odds - size ELSE -size END)::int as units, to_char(posted_at, 'mm') as month, to_char(posted_at, 'YY') as year
 FROM %[1]v group by 2,3 order by 3) foo) foo2;`
 var betsPerMonthQuery = `SELECT bets, concat(month,year) as month FROM (SELECT bets, ` + monthCase + `, year FROM (SELECT count(1) as bets, to_char(posted_at, 'mm') as month, to_char(posted_at, 'YY') as year
 FROM %[1]v group by 2,3 order by 3) foo) foo2;`
-var percentPerSizeQuery = `SELECT CAST((CAST(won_bets AS DECIMAL(7,2)) / total_bets) * 100 AS DECIMAL(5,2)) as percentage, size, total_bets AS bets FROM 
+var percentPerSizeQuery = `SELECT CAST((CAST(won_bets AS DECIMAL(7)) / total_bets) * 100 AS DECIMAL(5)) as percentage, size, total_bets AS bets FROM 
 (SELECT * FROM (SELECT count(1) as total_bets, ` + sizeCase + ` AS size FROM %[1]v GROUP BY 2) a 
 INNER JOIN 
 (SELECT count(1) as won_bets, ` + sizeCase + ` as won_size FROM %[1]v where result = 'won' GROUP BY 2) b 
