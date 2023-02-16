@@ -10,23 +10,28 @@ import (
 var cl = &http.Client{Timeout: 10 * time.Second}
 
 type Response struct {
-	CurrentMythicRating Rating `json:"current_mythic_rating"`
+	CurrentMythicRating MythicRating `json:"current_mythic_rating"`
 }
 
-type Rating struct {
-	rating float64
+type MythicRating struct {
+	Rating float64 `json:"rating"`
 }
 
 func GetRating(realm string, name string) (float64, error) {
-	url := fmt.Sprintf("https://eu.api.blizzard.com/profile/wow/character/%s/%s/mythic-keystone-profile?namespace=profile-eu/?access_token=%s", realm, name, accessToken)
-	r, err := cl.Get(url)
+	url := fmt.Sprintf("https://eu.api.blizzard.com/profile/wow/character/%s/%s/mythic-keystone-profile?namespace=profile-eu", realm, name)
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return -1, err
+	}
+	req.Header.Add("Authorization", "Bearer "+accessToken)
+	resp, err := cl.Do(req)
 	if err != nil {
 		return -1, fmt.Errorf("error during request: %s", err.Error())
 	}
-	defer r.Body.Close()
+	defer resp.Body.Close()
 	var res Response
-	if err := json.NewDecoder(r.Body).Decode(&res); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&res); err != nil {
 		return -1, fmt.Errorf("error decoding response: %s", err.Error())
 	}
-	return res.CurrentMythicRating.rating, nil
+	return res.CurrentMythicRating.Rating, nil
 }

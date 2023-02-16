@@ -93,6 +93,7 @@ func main() {
 		}
 	}()
 
+	wow.LoadAuthVars(c.BNET_CLIENT_ID, c.BNET_CLIENT_SECRET)
 	err = wow.Authorize()
 	if err != nil {
 		log.Println("error during battlenet oauth flow: ", err)
