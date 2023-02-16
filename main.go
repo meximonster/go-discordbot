@@ -18,6 +18,7 @@ import (
 	"github.com/meximonster/go-discordbot/graph"
 	"github.com/meximonster/go-discordbot/handlers"
 	"github.com/meximonster/go-discordbot/server"
+	"github.com/meximonster/go-discordbot/wow"
 )
 
 var c *configuration.Config
@@ -91,6 +92,11 @@ func main() {
 			log.Println("http server returned error: ", err)
 		}
 	}()
+
+	err = wow.Authorize()
+	if err != nil {
+		log.Println("error during battlenet oauth flow: ", err)
+	}
 
 	// Create signaling for process termination.
 	sc := make(chan os.Signal, 1)

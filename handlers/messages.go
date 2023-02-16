@@ -11,6 +11,7 @@ import (
 	bet "github.com/meximonster/go-discordbot/bet"
 	cnt "github.com/meximonster/go-discordbot/content"
 	"github.com/meximonster/go-discordbot/meme"
+	"github.com/meximonster/go-discordbot/wow"
 )
 
 var (
@@ -28,6 +29,10 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	if bet.IsBetCandidate(m.Author.ID, m.ChannelID) && bet.IsBet(m.Content) {
 		betNotify(m.ChannelID, m.ID, m.Author.ID, m.Content, s)
 		return
+	}
+
+	if strings.HasPrefix(m.Content, "!rating") {
+		getRating(m.Content, m.ChannelID, s)
 	}
 
 	if strings.HasPrefix(m.Content, "!tts") {
@@ -109,6 +114,20 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 func InitChannels(paroles string, r8mypl8 string) {
 	parolesOnlyChannel = paroles
 	r8mypl8Channel = r8mypl8
+}
+
+func getRating(content string, channel string, s *discordgo.Session) {
+	input := strings.Split(content, " ")
+	if len(input) != 3 {
+		s.ChannelMessageSend(channel, "wrong parameters")
+		return
+	}
+	rating, err := wow.GetRating(input[1], input[2])
+	if err != nil {
+		s.ChannelMessageSend(channel, err.Error())
+	}
+	str := fmt.Sprintf("%f", rating)
+	s.ChannelMessageSend(channel, fmt.Sprintf("%s pogU", str))
 }
 
 func ratePlate(content string, channel string, username string, s *discordgo.Session) {
