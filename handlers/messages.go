@@ -119,7 +119,7 @@ func InitChannels(paroles string, r8mypl8 string) {
 func getRating(content string, channel string, s *discordgo.Session) {
 	input := strings.Split(content, " ")
 	if len(input) != 3 {
-		s.ChannelMessageSend(channel, "wrong parameters")
+		s.ChannelMessageSend(channel, "wrong parameters - usage: !rating <name> <realm>")
 		return
 	}
 	rating, err := wow.GetRating(input[2], input[1])
