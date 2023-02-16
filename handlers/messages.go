@@ -33,6 +33,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if strings.HasPrefix(m.Content, "!rating") {
 		getRating(m.Content, m.ChannelID, s)
+		return
 	}
 
 	if strings.HasPrefix(m.Content, "!tts") {
@@ -125,6 +126,7 @@ func getRating(content string, channel string, s *discordgo.Session) {
 	rating, err := wow.GetRating(input[2], input[1])
 	if err != nil {
 		s.ChannelMessageSend(channel, err.Error())
+		return
 	}
 	str := fmt.Sprintf("%f", rating)
 	s.ChannelMessageSend(channel, fmt.Sprintf("%s pogU", str))
