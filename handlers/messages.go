@@ -122,7 +122,7 @@ func getRating(content string, channel string, s *discordgo.Session) {
 		s.ChannelMessageSend(channel, "wrong parameters")
 		return
 	}
-	rating, err := wow.GetRating(input[1], input[2])
+	rating, err := wow.GetRating(input[2], input[1])
 	if err != nil {
 		s.ChannelMessageSend(channel, err.Error())
 	}
