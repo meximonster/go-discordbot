@@ -213,7 +213,8 @@ func serveGitURL(content string, channel string, s *discordgo.Session) {
 }
 
 func serveContent(content string, channel string, s *discordgo.Session) {
-	cntType := strings.Trim(content, "!")
+	ctypes := strings.Trim(content, "!")
+	cntType := strings.TrimSuffix(ctypes, "s")
 	cnt := cnt.List(cntType)
 	if len(cnt) == 0 {
 		s.ChannelMessageSend(channel, fmt.Sprintf("no %s configured", cntType))
