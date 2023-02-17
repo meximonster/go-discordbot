@@ -31,7 +31,7 @@ func CloseDB() error {
 }
 
 func (p *Pet) Type() string {
-	return "pets"
+	return "pet"
 }
 
 func (p *Pet) GetName() string {
@@ -54,7 +54,6 @@ func (p *Pet) Store() error {
 }
 
 func (p *Pet) AddImage(text string, url string) error {
-	var concat string
 	img, err := image.Validate(table, text, url)
 	if err != nil {
 		return err
@@ -63,12 +62,14 @@ func (p *Pet) AddImage(text string, url string) error {
 	if err != nil {
 		return err
 	}
-	if len(p.Images) != 0 {
-		concat = "images ||"
+	var q string
+	if string(p.Images) != "" {
+		q = fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = '%s'`, table, string(img), p.Alias)
+	} else {
+		q = fmt.Sprintf(`UPDATE %s SET images = '[%s]'::jsonb WHERE alias = '%s'`, table, string(img), p.Alias)
 	}
-	p.Images = all
-	q := fmt.Sprintf(`UPDATE %s SET images = %s '%s'::jsonb WHERE alias = '%s'`, table, concat, string(img), p.Alias)
 	_, err = dbC.Exec(q)
+	p.Images = all
 	return err
 }
 

@@ -93,6 +93,8 @@ func Set(name string, contentType string) error {
 			}
 		}
 		c = &emote.Emote{Alias: name, Images: []byte{}}
+	default:
+		return fmt.Errorf("unknown content type: %s", contentType)
 	}
 	Cnt[c.GetName()] = c
 	return c.Store()

@@ -31,7 +31,7 @@ func CloseDB() error {
 }
 
 func (u *User) Type() string {
-	return "users"
+	return "user"
 }
 
 func (u *User) GetName() string {
@@ -62,9 +62,14 @@ func (u *User) AddImage(text string, url string) error {
 	if err != nil {
 		return err
 	}
-	u.Images = all
-	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = '%s'`, table, string(img), u.Alias)
+	var q string
+	if string(u.Images) != "" {
+		q = fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = '%s'`, table, string(img), u.Alias)
+	} else {
+		q = fmt.Sprintf(`UPDATE %s SET images = '[%s]'::jsonb WHERE alias = '%s'`, table, string(img), u.Alias)
+	}
 	_, err = dbC.Exec(q)
+	u.Images = all
 	return err
 }
 

@@ -31,7 +31,7 @@ func CloseDB() error {
 }
 
 func (e *Emote) Type() string {
-	return "emotes"
+	return "emote"
 }
 
 func (e *Emote) GetName() string {
@@ -62,9 +62,14 @@ func (e *Emote) AddImage(text string, url string) error {
 	if err != nil {
 		return err
 	}
-	e.Images = all
-	q := fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = '%s'`, table, string(img), e.Alias)
+	var q string
+	if string(e.Images) != "" {
+		q = fmt.Sprintf(`UPDATE %s SET images = images || '%s'::jsonb WHERE alias = '%s'`, table, string(img), e.Alias)
+	} else {
+		q = fmt.Sprintf(`UPDATE %s SET images = '[%s]'::jsonb WHERE alias = '%s'`, table, string(img), e.Alias)
+	}
 	_, err = dbC.Exec(q)
+	e.Images = all
 	return err
 }
 
