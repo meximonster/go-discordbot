@@ -111,6 +111,7 @@ func main() {
 		log.Println("error saving open bets: ", err)
 	}
 	graph.Done()
+	wow.Done()
 	server.Close()
 	bet.CloseDB()
 	content.CloseDB()

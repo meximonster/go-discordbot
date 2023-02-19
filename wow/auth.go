@@ -14,10 +14,15 @@ var (
 	clientId     string
 	cleintSecret string
 	accessToken  string
+	done         = make(chan bool)
 )
 
 type AuthResponse struct {
 	AccessToken string `json:"access_token"`
+}
+
+func Done() {
+	done <- true
 }
 
 func LoadAuthVars(id string, secret string) {
@@ -56,6 +61,8 @@ func Schedule() {
 	ticker := time.NewTicker(48 * time.Hour)
 	for {
 		select {
+		case <-done:
+			return
 		case <-ticker.C:
 			err := Authorize()
 			if err != nil {
