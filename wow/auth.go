@@ -49,11 +49,10 @@ func Authorize() error {
 		return err
 	}
 	accessToken = res.AccessToken
-	go schedule()
 	return nil
 }
 
-func schedule() {
+func Schedule() {
 	ticker := time.NewTicker(48 * time.Hour)
 	for {
 		select {

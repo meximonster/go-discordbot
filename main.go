@@ -98,6 +98,7 @@ func main() {
 	if err != nil {
 		log.Println("error during battlenet oauth flow: ", err)
 	}
+	go wow.Schedule()
 
 	// Create signaling for process termination.
 	sc := make(chan os.Signal, 1)
