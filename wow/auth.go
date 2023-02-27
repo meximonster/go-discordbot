@@ -2,6 +2,7 @@ package wow
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -64,10 +65,12 @@ func Schedule() {
 		case <-done:
 			return
 		case <-ticker.C:
+			fmt.Println("previous token: ", accessToken)
 			err := Authorize()
 			if err != nil {
 				log.Println("error during battlenet oauth flow: ", err)
 			}
+			fmt.Println("new token: ", accessToken)
 		}
 	}
 }

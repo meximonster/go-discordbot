@@ -259,7 +259,7 @@ func checkForContent(content string, channel string, s *discordgo.Session) {
 	if _, ok := c[str]; !ok {
 		return
 	}
-	respondWithRandomImage(str, channel, s)
+	respondWithRandomImage(c[str], channel, s)
 }
 
 func betQuery(content string, channel string, s *discordgo.Session) {
@@ -316,13 +316,8 @@ func clearBet(content string, channel string, s *discordgo.Session) {
 	bet.Settle(input[1])
 }
 
-func respondWithRandomImage(name string, channel string, s *discordgo.Session) {
-	c, err := cnt.GetOne(name)
-	if err != nil {
-		s.ChannelMessageSend(channel, err.Error())
-		return
-	}
-	img, err := cnt.RandomImage(c)
+func respondWithRandomImage(content cnt.Content, channel string, s *discordgo.Session) {
+	img, err := cnt.RandomImage(content)
 	if err != nil {
 		s.ChannelMessageSend(channel, err.Error())
 		return

@@ -23,6 +23,7 @@ func GetRating(realm string, name string) (float64, error) {
 	if err != nil {
 		return -1, err
 	}
+	fmt.Println("current token: ", accessToken)
 	req.Header.Add("Authorization", "Bearer "+accessToken)
 	resp, err := cl.Do(req)
 	if err != nil {

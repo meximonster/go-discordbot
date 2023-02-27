@@ -12,8 +12,8 @@ import (
 var srv *http.Server
 
 type Health struct {
-	Result      string
-	Description string
+	Result      string `json:"result"`
+	Description string `json:"description"`
 }
 
 func Run() error {
