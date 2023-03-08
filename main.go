@@ -94,11 +94,6 @@ func main() {
 	}()
 
 	wow.LoadAuthVars(c.BNET_CLIENT_ID, c.BNET_CLIENT_SECRET)
-	err = wow.Authorize()
-	if err != nil {
-		log.Println("error during battlenet oauth flow: ", err)
-	}
-	go wow.Schedule()
 
 	// Create signaling for process termination.
 	sc := make(chan os.Signal, 1)
@@ -111,7 +106,6 @@ func main() {
 		log.Println("error saving open bets: ", err)
 	}
 	graph.Done()
-	wow.Done()
 	server.Close()
 	bet.CloseDB()
 	content.CloseDB()

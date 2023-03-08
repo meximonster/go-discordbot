@@ -18,13 +18,17 @@ type MythicRating struct {
 }
 
 func GetRating(realm string, name string) (float64, error) {
+	tok, err := Authorize()
+	if err != nil {
+		return -1, err
+	}
 	url := fmt.Sprintf("https://eu.api.blizzard.com/profile/wow/character/%s/%s/mythic-keystone-profile?namespace=profile-eu", realm, name)
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return -1, err
 	}
-	fmt.Println("current token: ", accessToken)
-	req.Header.Add("Authorization", "Bearer "+accessToken)
+	fmt.Println("current token: ", tok)
+	req.Header.Add("Authorization", "Bearer "+tok)
 	resp, err := cl.Do(req)
 	if err != nil {
 		return -1, fmt.Errorf("error during request: %s", err.Error())

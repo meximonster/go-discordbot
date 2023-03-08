@@ -2,28 +2,19 @@ package wow
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"net/url"
 	"strings"
-	"time"
 )
 
 var (
 	clientId     string
 	cleintSecret string
-	accessToken  string
-	done         = make(chan bool)
 )
 
 type AuthResponse struct {
 	AccessToken string `json:"access_token"`
-}
-
-func Done() {
-	done <- true
 }
 
 func LoadAuthVars(id string, secret string) {
@@ -31,46 +22,28 @@ func LoadAuthVars(id string, secret string) {
 	cleintSecret = secret
 }
 
-func Authorize() error {
+func Authorize() (string, error) {
 	v := url.Values{}
 	v.Set("grant_type", "client_credentials")
 	req, err := http.NewRequest("POST", "https://oauth.battle.net/token", strings.NewReader(v.Encode()))
 	if err != nil {
-		return err
+		return "", err
 	}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	req.SetBasicAuth(clientId, cleintSecret)
 	resp, err := cl.Do(req)
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return "", err
 	}
 	var res AuthResponse
 	err = json.Unmarshal(body, &res)
 	if err != nil {
-		return err
+		return "", err
 	}
-	accessToken = res.AccessToken
-	return nil
-}
-
-func Schedule() {
-	ticker := time.NewTicker(48 * time.Hour)
-	for {
-		select {
-		case <-done:
-			return
-		case <-ticker.C:
-			fmt.Println("previous token: ", accessToken)
-			err := Authorize()
-			if err != nil {
-				log.Println("error during battlenet oauth flow: ", err)
-			}
-			fmt.Println("new token: ", accessToken)
-		}
-	}
+	return res.AccessToken, nil
 }
