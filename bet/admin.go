@@ -37,6 +37,15 @@ func GetTableFromChannel(channel string) string {
 	return ""
 }
 
+func IsAdmin(id string) bool {
+	for _, admin := range admins {
+		if admin.Id == id {
+			return true
+		}
+	}
+	return false
+}
+
 func IsBetCandidate(id string, channel string) bool {
 	for _, admin := range admins {
 		if admin.Id == id && admin.Channel == channel {

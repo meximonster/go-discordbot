@@ -28,6 +28,10 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		return
 	}
 
+	if !bet.IsAdmin(m.Author.ID) {
+		return
+	}
+
 	if !bet.IsBet(m.Content) {
 		return
 	}

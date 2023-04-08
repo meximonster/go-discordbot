@@ -123,13 +123,16 @@ func getRating(content string, channel string, s *discordgo.Session) {
 		s.ChannelMessageSend(channel, "wrong parameters - usage: !rating <name> <realm>")
 		return
 	}
-	rating, err := wow.GetRating(input[2], input[1])
+	profile, err := wow.GetProfile(input[2], input[1])
 	if err != nil {
 		s.ChannelMessageSend(channel, err.Error())
 		return
 	}
-	str := fmt.Sprintf("%f", rating)
-	s.ChannelMessageSend(channel, fmt.Sprintf("%s pogU", str))
+	s.ChannelMessageSendEmbed(channel, &discordgo.MessageEmbed{
+		Footer: &discordgo.MessageEmbedFooter{
+			Text: profile,
+		},
+	})
 }
 
 func ratePlate(content string, channel string, username string, s *discordgo.Session) {
