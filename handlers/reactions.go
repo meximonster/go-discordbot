@@ -39,10 +39,10 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 	var result string
 	switch r.Emoji.Name {
 	case "✅":
-		s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("***"+"%s ----> WON!"+"***", m.Content))
+		s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("***"+"%s ✅"+"***", m.Content))
 		result = "won"
 	case "❌":
-		s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("***"+"%s ----> lost"+"***", m.Content))
+		s.ChannelMessageSend(r.ChannelID, fmt.Sprintf("***"+"%s ❌"+"***", m.Content))
 		result = "lost"
 	}
 
