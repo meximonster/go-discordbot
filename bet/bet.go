@@ -133,10 +133,16 @@ func Store(b Bet, table string) error {
 }
 
 func (b *Bet) Format() string {
-	if b.Result == "" {
-		return fmt.Sprintf("%s %s %du\n", b.Team, b.Prediction, b.Size)
+	var s string
+	switch b.Result {
+	case "won":
+		s = fmt.Sprintf("%s %s %du ✅\n", b.Team, b.Prediction, b.Size)
+	case "lost":
+		s = fmt.Sprintf("%s %s %du ❌\n", b.Team, b.Prediction, b.Size)
+	default:
+		s = fmt.Sprintf("%s %s %du\n", b.Team, b.Prediction, b.Size)
 	}
-	return fmt.Sprintf("%s %s %du ---> %s\n", b.Team, b.Prediction, b.Size, b.Result)
+	return s
 }
 
 func (bs *BetSummary) Format() string {
