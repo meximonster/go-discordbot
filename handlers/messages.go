@@ -268,6 +268,7 @@ func checkForContent(content string, channel string, s *discordgo.Session) {
 func betQuery(content string, channel string, s *discordgo.Session) {
 	table := bet.GetTableFromChannel(channel)
 	q := bet.Parse(content, table)
+	s.ChannelMessageSend("959782280493154357", q)
 	bets, err := bet.GetBetsByQuery(q)
 	if err != nil {
 		s.ChannelMessageSend(channel, fmt.Sprintf("error getting bets: %s", err.Error()))
@@ -284,6 +285,7 @@ func betQuery(content string, channel string, s *discordgo.Session) {
 func betSum(content string, channel string, s *discordgo.Session) {
 	table := bet.GetTableFromChannel(channel)
 	q := bet.ParseSum(content, table)
+	s.ChannelMessageSend("959782280493154357", q)
 	sum, err := bet.GetBetsSumByQuery(q)
 	if err != nil {
 		s.ChannelMessageSend(channel, fmt.Sprintf("error getting bets: %s", err.Error()))
