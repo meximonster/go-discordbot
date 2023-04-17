@@ -153,6 +153,7 @@ func FormatBets(bets []Bet) string {
 	betFormats := make([]string, len(bets))
 	for i, b := range bets {
 		betFormats[i] = b.Format()
+		fmt.Println(b.Team, b.Posted_at)
 	}
 	var result string
 	for i := range betFormats {
