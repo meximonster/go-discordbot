@@ -31,7 +31,7 @@ func init() {
 
 	c = configuration.Read()
 
-	db, err := sqlx.Connect("postgres", fmt.Sprintf("postgres://%s/postgres?sslmode=disable&user=%s&password=%s", c.POSTGRES_HOST, c.POSTGRES_USER, c.POSTGRES_PASS))
+	db, err := sqlx.Connect("postgres", fmt.Sprintf("postgres://%s/postgres?sslmode=disable&user=%s&password=%s&timezone=Europe/Athens", c.POSTGRES_HOST, c.POSTGRES_USER, c.POSTGRES_PASS))
 	if err != nil {
 		log.Fatal("error connecting to db: ", err)
 	}
