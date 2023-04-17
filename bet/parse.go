@@ -43,7 +43,7 @@ a join (select sum(size) as units from %[1]v) b on 1=1;`
 
 func Parse(content string, table string) string {
 	q := strings.Replace(content, "!bet ", "", 1)
-	qr := fmt.Sprintf("SELECT * FROM %s WHERE ", table) + strings.ReplaceAll(q, " ", " AND ")
+	qr := fmt.Sprintf("SET timezone='Europe/Athens'; SELECT * FROM %s WHERE ", table) + strings.ReplaceAll(q, " ", " AND ")
 	query := dateParser(qr)
 	return query
 }
@@ -51,7 +51,7 @@ func Parse(content string, table string) string {
 func ParseSum(content string, table string) string {
 	q := strings.Replace(content, "!betsum ", "", 1)
 	args := dateParser(q)
-	query := fmt.Sprintf("SELECT count(1), sum(CASE WHEN result = 'won' THEN size*odds - size ELSE size END) as total_units, result FROM %s WHERE %s group by 3 order by 1", table, args)
+	query := fmt.Sprintf("SET timezone='Europe/Athens'; SELECT count(1), sum(CASE WHEN result = 'won' THEN size*odds - size ELSE size END) as total_units, result FROM %s WHERE %s group by 3 order by 1", table, args)
 	return query
 }
 
