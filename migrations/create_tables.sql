@@ -6,7 +6,7 @@ CREATE TABLE bets
     size          INTEGER  NOT NULL,
     odds          NUMERIC,
     result        VARCHAR(10)   NOT NULL,
-    posted_at     TIMESTAMP     DEFAULT (now() at time zone 'utc+3')
+    posted_at     TIMESTAMP     DEFAULT now()
 );
 
 CREATE TABLE polo_bets
@@ -17,7 +17,7 @@ CREATE TABLE polo_bets
     size          INTEGER  NOT NULL,
     odds          NUMERIC,
     result        VARCHAR(10)   NOT NULL,
-    posted_at     TIMESTAMP     DEFAULT (now() at time zone 'utc+3')
+    posted_at     TIMESTAMP     DEFAULT now()
 );
 
 CREATE TABLE nick_bets
@@ -28,7 +28,7 @@ CREATE TABLE nick_bets
     size          INTEGER  NOT NULL,
     odds          NUMERIC,
     result        VARCHAR(10)   NOT NULL,
-    posted_at     TIMESTAMP     DEFAULT (now() at time zone 'utc+3')
+    posted_at     TIMESTAMP     DEFAULT now()
 );
 
 CREATE TABLE panos_bets
@@ -39,7 +39,7 @@ CREATE TABLE panos_bets
     size          INTEGER  NOT NULL,
     odds          NUMERIC,
     result        VARCHAR(10)   NOT NULL,
-    posted_at     TIMESTAMP     DEFAULT (now() at time zone 'utc+3')
+    posted_at     TIMESTAMP     DEFAULT now()
 );
 
 CREATE TABLE esports_bets
@@ -50,7 +50,7 @@ CREATE TABLE esports_bets
     size          INTEGER  NOT NULL,
     odds          NUMERIC,
     result        VARCHAR(10)   NOT NULL,
-    posted_at     TIMESTAMP     DEFAULT (now() at time zone 'utc+3')
+    posted_at     TIMESTAMP     DEFAULT now()
 );
 
 CREATE TABLE open_bets
