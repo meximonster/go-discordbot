@@ -22,6 +22,7 @@ type Config struct {
 	ParolesOnlyChannel string        `yaml:"parolesOnlyChannel"`
 	PlateChannel       string        `yaml:"plateChannel"`
 	POSTGRES_HOST      string        `yaml:"postgres_host"`
+	POSTGRES_USER      string        `yaml:"postgres_user"`
 	POSTGRES_PASS      string        `yaml:"postgres_password"`
 	BNET_CLIENT_ID     string        `yaml:"bnet_client_id"`
 	BNET_CLIENT_SECRET string        `yaml:"bnet_client_secret"`

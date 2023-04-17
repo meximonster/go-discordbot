@@ -58,9 +58,9 @@ func ParseSum(content string, table string) string {
 func dateParser(q string) string {
 	var args string
 	if strings.Contains(q, "date") {
-		args = strings.Replace(q, "date", "(posted_at - INTERVAL '1' HOUR)::date", 1)
+		args = strings.Replace(q, "date", "posted_at::date", 1)
 	} else if strings.Contains(q, "today") {
-		args = strings.Replace(q, "today", "(posted_at - INTERVAL '1' HOUR)::date=CURRENT_DATE", 1)
+		args = strings.Replace(q, "today", "posted_at::date=CURRENT_DATE", 1)
 	} else {
 		args = q
 	}
