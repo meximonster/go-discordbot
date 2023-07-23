@@ -6,6 +6,18 @@ on:
 
 jobs:
 
+  build:
+    name: docker build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build and Push Docker Image
+        uses: mr-smithers-excellent/docker-build-push@v4
+        with:
+          image: meximonster/discord-bot
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
   deploy:
     name: deploy
     runs-on: ubuntu-latest
@@ -19,10 +31,8 @@ jobs:
         port: ${{ secrets.PORT }}
         script_stop: true
         script: |
-          cd /root/github.com/meximonster/go-discordbot/deploy
+          cd ${{ secrets.APP_FOLDER }}
           docker-compose down
-          docker container prune -f
-          docker volume rm deploy_postgres-data
-          docker rmi deploy_app:latest
+          docker-compose pull
           git pull
           docker-compose up -d

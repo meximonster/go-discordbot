@@ -25,7 +25,7 @@ services:
 
     app:
       container_name: discordbot_app
-      build: ../
+      image: meximonster/discord-bot:latest
       ports:
         - "9999:9999"
       depends_on:
