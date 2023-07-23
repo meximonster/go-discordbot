@@ -11,7 +11,7 @@ services:
         ports:
           - '5432:5432'
         volumes: 
-          - ../.env:/usr/src/go-discordbot
+          - ../:/usr/src/go-discordbot
           - ./postgres-data:/var/lib/postgresql/data
           # copy the sql script to create tables
           - ../migrations/create_tables.sql:/docker-entrypoint-initdb.d/create_tables.sql
