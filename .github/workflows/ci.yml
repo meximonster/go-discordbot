@@ -10,6 +10,9 @@ jobs:
     name: docker build
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v3
+        name: checkout
+
       - name: Build and Push Docker Image
         uses: mr-smithers-excellent/docker-build-push@v4
         with:
