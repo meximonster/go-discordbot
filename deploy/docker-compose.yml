@@ -26,6 +26,8 @@ services:
     app:
       container_name: discordbot_app
       image: meximonster/discord-bot:latest
+      security_opt:
+        - seccomp:unconfined
       ports:
         - "9999:9999"
       depends_on:
