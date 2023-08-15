@@ -135,7 +135,7 @@ func getAccid(playerName string) (string, error) {
 	}
 	err = json.Unmarshal(body, &p)
 	if err != nil {
-		return "", nil
+		return "", err
 	}
 	if len(p.Data) == 0 {
 		return "", fmt.Errorf("player %s not found", playerName)
