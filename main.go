@@ -14,9 +14,9 @@ import (
 	"github.com/bwmarrin/discordgo"
 	"github.com/meximonster/go-discordbot/bet"
 	"github.com/meximonster/go-discordbot/configuration"
-	"github.com/meximonster/go-discordbot/content"
 	"github.com/meximonster/go-discordbot/graph"
 	"github.com/meximonster/go-discordbot/handlers"
+	"github.com/meximonster/go-discordbot/pubg"
 	"github.com/meximonster/go-discordbot/server"
 	"github.com/meximonster/go-discordbot/wow"
 )
@@ -37,7 +37,6 @@ func init() {
 	}
 
 	bet.NewDB(db)
-	content.NewDB(db)
 
 	db.SetMaxOpenConns(25)
 	db.SetMaxIdleConns(25)
@@ -76,11 +75,6 @@ func main() {
 		go graph.Schedule(adm.Name, adm.Table, adm.ExtraGraphs)
 	}
 
-	err = content.Load()
-	if err != nil {
-		log.Fatal("error loading content: ", err)
-	}
-
 	err = bet.LoadOpen()
 	if err != nil {
 		log.Println("error loading open bets: ", err)
@@ -94,6 +88,7 @@ func main() {
 	}()
 
 	wow.LoadAuthVars(c.BNET_CLIENT_ID, c.BNET_CLIENT_SECRET)
+	pubg.InitAuth(c.PUBG_API_KEY, c.PUBG_CURRENT_SEASON)
 
 	// Create signaling for process termination.
 	sc := make(chan os.Signal, 1)
@@ -108,6 +103,5 @@ func main() {
 	graph.Done()
 	server.Close()
 	bet.CloseDB()
-	content.CloseDB()
 	dg.Close()
 }

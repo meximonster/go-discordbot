@@ -9,8 +9,8 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	bet "github.com/meximonster/go-discordbot/bet"
-	cnt "github.com/meximonster/go-discordbot/content"
 	"github.com/meximonster/go-discordbot/meme"
+	"github.com/meximonster/go-discordbot/pubg"
 	"github.com/meximonster/go-discordbot/wow"
 )
 
@@ -31,6 +31,11 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	if strings.HasPrefix(m.Content, "!stats") {
+		getPubgStats(m.Content, m.ChannelID, s)
+		return
+	}
+
 	if strings.HasPrefix(m.Content, "!rating") {
 		getRating(m.Content, m.ChannelID, s)
 		return
@@ -46,11 +51,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if strings.HasPrefix(m.Content, "!add") {
-		addImage(m.Content, m.ChannelID, s)
-		return
-	}
-
 	if m.Content == "!git" {
 		serveGitURL(m.Content, m.ChannelID, s)
 		return
@@ -58,11 +58,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if m.Content == "!meme" {
 		serveMeme(m.Content, m.ChannelID, s)
-		return
-	}
-
-	if m.Content == "!users" || m.Content == "!pets" || m.Content == "!emotes" {
-		serveContent(m.Content, m.ChannelID, s)
 		return
 	}
 
@@ -91,11 +86,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if strings.HasPrefix(m.Content, "!set") {
-		setContent(m.Content, m.ChannelID, s)
-		return
-	}
-
 	if m.ChannelID == parolesOnlyChannel && (len(m.Attachments) > 0 || strings.HasPrefix(m.Content, "https://www.stoiximan.gr/mybets/")) {
 		parolaNotify(m.Content, m.ChannelID, m.Attachments, s)
 		return
@@ -106,15 +96,25 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if strings.HasPrefix(m.Content, "!") {
-		checkForContent(m.Content, m.ChannelID, s)
-	}
-
 }
 
 func InitChannels(paroles string, r8mypl8 string) {
 	parolesOnlyChannel = paroles
 	r8mypl8Channel = r8mypl8
+}
+
+func getPubgStats(content string, channel string, s *discordgo.Session) {
+	input := strings.Split(content, " ")
+	if len(input) != 3 {
+		s.ChannelMessageSend(channel, "wrong parameters - usage: !stats <name> <solo/duo/squad>")
+		return
+	}
+	stats, err := pubg.SeasonInformation(input[1], input[2])
+	if err != nil {
+		s.ChannelMessageSend(channel, err.Error())
+		return
+	}
+	s.ChannelMessageSend(channel, stats)
 }
 
 func getRating(content string, channel string, s *discordgo.Session) {
@@ -168,69 +168,8 @@ func rng(username string, content string, channel string, s *discordgo.Session) 
 	s.ChannelMessageSend(channel, fmt.Sprintf("%s rolled %d", username, rand.Intn(max)+1))
 }
 
-func setContent(content string, channel string, s *discordgo.Session) {
-	input := strings.Split(content, " ")
-	if len(input) != 3 {
-		s.ChannelMessageSend(channel, "wrong parameters")
-		return
-	}
-	name := input[1]
-	cntType := input[2]
-	err := cnt.Set(name, cntType)
-	if err != nil {
-		s.ChannelMessageSend(channel, err.Error())
-	}
-}
-
-func addImage(content string, channel string, s *discordgo.Session) {
-	text := strings.Split(content, "'")
-	if len(text) != 3 {
-		s.ChannelMessageSend(channel, "wrong parameters")
-		return
-	}
-	imgText := text[1]
-	replace := " '" + imgText + "'"
-	str := strings.Replace(content, replace, "", 1)
-	input := strings.Split(str, " ")
-	if len(input) < 3 {
-		s.ChannelMessageSend(channel, "not enough parameters")
-		return
-	}
-	if len(input) > 3 {
-		s.ChannelMessageSend(channel, "too many parameters")
-		return
-	}
-	c, err := cnt.GetOne(input[1])
-	if err != nil {
-		s.ChannelMessageSend(channel, err.Error())
-		return
-	}
-	err = cnt.AddImage(c, imgText, input[2])
-	if err != nil {
-		s.ChannelMessageSend(channel, err.Error())
-	}
-}
-
 func serveGitURL(content string, channel string, s *discordgo.Session) {
 	s.ChannelMessageSend(channel, "https://github.com/meximonster/go-discordbot")
-}
-
-func serveContent(content string, channel string, s *discordgo.Session) {
-	ctypes := strings.Trim(content, "!")
-	cntType := strings.TrimSuffix(ctypes, "s")
-	cnt := cnt.List(cntType)
-	if len(cnt) == 0 {
-		s.ChannelMessageSend(channel, fmt.Sprintf("no %s configured", cntType))
-		return
-	}
-	var str string
-	count := 0
-	for _, u := range cnt {
-		str = str + fmt.Sprintf("%d. %s\n", count+1, u)
-		count++
-	}
-	result := fmt.Sprintf("Configured %s are:\n%s", cntType, str)
-	s.ChannelMessageSend(channel, result)
 }
 
 func serveMeme(content string, channel string, s *discordgo.Session) {
@@ -254,15 +193,6 @@ func betNotify(channel string, messageID string, author string, content string, 
 	}
 	bet.AddOpen(messageID, b)
 	s.ChannelMessageSend(channel, fmt.Sprintf("%s %s %du @everyone", b.Team, b.Prediction, b.Size))
-}
-
-func checkForContent(content string, channel string, s *discordgo.Session) {
-	str := strings.TrimPrefix(content, "!")
-	c := cnt.Get()
-	if _, ok := c[str]; !ok {
-		return
-	}
-	respondWithRandomImage(c[str], channel, s)
 }
 
 func betQuery(content string, channel string, s *discordgo.Session) {
@@ -317,15 +247,6 @@ func clearBet(content string, channel string, s *discordgo.Session) {
 		s.ChannelMessageSend(channel, "wrong parameters")
 	}
 	bet.Settle(input[1])
-}
-
-func respondWithRandomImage(content cnt.Content, channel string, s *discordgo.Session) {
-	img, err := cnt.RandomImage(content)
-	if err != nil {
-		s.ChannelMessageSend(channel, err.Error())
-		return
-	}
-	respondWithEmbed(channel, img.Text, img.Url, s)
 }
 
 func respondWithEmbed(channel string, title string, imageURL string, s *discordgo.Session) {

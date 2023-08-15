@@ -23,21 +23,21 @@ services:
           app_subnet:
             ipv4_address: 172.40.10.10
 
-    app:
-      container_name: discordbot_app
-      image: meximonster/discord-bot:latest
-      security_opt:
-        - seccomp:unconfined
-      ports:
-        - "9999:9999"
-      volumes:
-        - ${PWD}/../.env:/usr/src/go-discordbot/.env
-      depends_on:
-        postgres:
-          condition: service_healthy
-      networks:
-        app_subnet:
-          ipv4_address: 172.40.10.11
+    # app:
+    #   container_name: discordbot_app
+    #   image: meximonster/discord-bot:latest
+    #   security_opt:
+    #     - seccomp:unconfined
+    #   ports:
+    #     - "9999:9999"
+    #   volumes:
+    #     - ${PWD}/../.env:/usr/src/go-discordbot/.env
+    #   depends_on:
+    #     postgres:
+    #       condition: service_healthy
+    #   networks:
+    #     app_subnet:
+    #       ipv4_address: 172.40.10.11
 
 volumes:
   postgres-data:
