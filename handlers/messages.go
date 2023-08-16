@@ -31,8 +31,13 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if strings.HasPrefix(m.Content, "!stats") {
-		getPubgStats(m.Content, m.ChannelID, s)
+	if strings.HasPrefix(m.Content, "!season") {
+		getPubgSeasonStats(m.Content, m.ChannelID, s)
+		return
+	}
+
+	if strings.HasPrefix(m.Content, "!ranked") {
+		getPubgRankedStats(m.Content, m.ChannelID, s)
 		return
 	}
 
@@ -103,13 +108,27 @@ func InitChannels(paroles string, r8mypl8 string) {
 	r8mypl8Channel = r8mypl8
 }
 
-func getPubgStats(content string, channel string, s *discordgo.Session) {
+func getPubgSeasonStats(content string, channel string, s *discordgo.Session) {
 	input := strings.Split(content, " ")
 	if len(input) != 3 {
 		s.ChannelMessageSend(channel, "wrong parameters - usage: !stats <name> <solo/duo/squad>")
 		return
 	}
 	stats, err := pubg.SeasonInformation(input[1], input[2])
+	if err != nil {
+		s.ChannelMessageSend(channel, err.Error())
+		return
+	}
+	s.ChannelMessageSend(channel, stats)
+}
+
+func getPubgRankedStats(content string, channel string, s *discordgo.Session) {
+	input := strings.Split(content, " ")
+	if len(input) != 3 {
+		s.ChannelMessageSend(channel, "wrong parameters - usage: !stats <name> <solo/duo/squad>")
+		return
+	}
+	stats, err := pubg.RankedSeasonInformation(input[1], input[2])
 	if err != nil {
 		s.ChannelMessageSend(channel, err.Error())
 		return
