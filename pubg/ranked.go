@@ -55,6 +55,9 @@ func getRankedSeasonStats(acc string, season string, mode string) (RankedSeasonS
 }
 
 func formatRankedSeasonStats(name string, stats PlayerRankedSeasonStats) string {
+	if stats == (PlayerRankedSeasonStats{}) {
+		return fmt.Sprintf("no ranked stats for %s", name)
+	}
 	s := fmt.Sprintf(`
 ----------------------------------------------
 | PUBG Stats            |         %v                
