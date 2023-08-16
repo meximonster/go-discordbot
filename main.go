@@ -8,10 +8,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 
-	"github.com/bwmarrin/discordgo"
 	"github.com/meximonster/go-discordbot/bet"
 	"github.com/meximonster/go-discordbot/configuration"
 	"github.com/meximonster/go-discordbot/graph"
@@ -20,7 +20,10 @@ import (
 	"github.com/meximonster/go-discordbot/server"
 )
 
-var c *configuration.Config
+var (
+	c  *configuration.Config
+	dg *discordgo.Session
+)
 
 func init() {
 	err := configuration.Load()
@@ -41,12 +44,8 @@ func init() {
 	db.SetMaxIdleConns(25)
 	db.SetConnMaxLifetime(5 * time.Minute)
 
-}
-
-func main() {
-
 	// Create a new session.
-	dg, err := discordgo.New("Bot " + c.BotToken)
+	dg, err = discordgo.New("Bot " + c.BotToken)
 	if err != nil {
 		log.Fatal("error creating session: ", err)
 	}
@@ -63,6 +62,10 @@ func main() {
 		log.Fatal("error opening connection: ", err)
 	}
 
+}
+
+func main() {
+
 	bet.InitAdmins(c.Admins)
 	handlers.InitChannels(c.ParolesOnlyChannel, c.PlateChannel)
 
@@ -74,7 +77,7 @@ func main() {
 		go graph.Schedule(adm.Name, adm.Table, adm.ExtraGraphs)
 	}
 
-	err = bet.LoadOpen()
+	err := bet.LoadOpen()
 	if err != nil {
 		log.Println("error loading open bets: ", err)
 	}
