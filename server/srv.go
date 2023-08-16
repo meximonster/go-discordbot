@@ -10,7 +10,7 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/meximonster/go-discordbot/bet"
-	"github.com/meximonster/go-discordbot/pubg"
+	"github.com/meximonster/go-discordbot/integrations/pubg"
 )
 
 var srv *http.Server

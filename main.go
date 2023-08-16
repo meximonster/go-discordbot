@@ -16,9 +16,8 @@ import (
 	"github.com/meximonster/go-discordbot/configuration"
 	"github.com/meximonster/go-discordbot/graph"
 	"github.com/meximonster/go-discordbot/handlers"
-	"github.com/meximonster/go-discordbot/pubg"
+	"github.com/meximonster/go-discordbot/integrations"
 	"github.com/meximonster/go-discordbot/server"
-	"github.com/meximonster/go-discordbot/wow"
 )
 
 var c *configuration.Config
@@ -87,8 +86,7 @@ func main() {
 		}
 	}()
 
-	wow.LoadAuthVars(c.BNET_CLIENT_ID, c.BNET_CLIENT_SECRET)
-	pubg.InitAuth(c.PUBG_API_KEY, c.PUBG_CURRENT_SEASON)
+	integrations.Initialize(c.BNET_CLIENT_ID, c.BNET_CLIENT_SECRET, c.PUBG_API_KEY, c.PUBG_CURRENT_SEASON)
 
 	// Create signaling for process termination.
 	sc := make(chan os.Signal, 1)

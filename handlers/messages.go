@@ -9,9 +9,9 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	bet "github.com/meximonster/go-discordbot/bet"
+	"github.com/meximonster/go-discordbot/integrations/pubg"
+	"github.com/meximonster/go-discordbot/integrations/wow"
 	"github.com/meximonster/go-discordbot/meme"
-	"github.com/meximonster/go-discordbot/pubg"
-	"github.com/meximonster/go-discordbot/wow"
 )
 
 var (
