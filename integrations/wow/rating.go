@@ -69,9 +69,12 @@ func makeProfileRequest(realm string, name string) (KeyStoneProfile, error) {
 }
 
 func (p *KeyStoneProfile) format() string {
-	s := "Dungeon - Level - WithinTime - Rating\n"
-	for _, run := range p.CurrentPeriod.BestRuns {
-		s += fmt.Sprintf("%s\t%d\t%v\t%v\n", run.Dungeon.Name, run.KeystoneLevel, run.IsCompletedWithinTime, int(run.MapRating.Rating))
+	var s string
+	if len(p.CurrentPeriod.BestRuns) > 0 {
+		s += "Dungeon - Level - WithinTime - Rating\n"
+		for _, run := range p.CurrentPeriod.BestRuns {
+			s += fmt.Sprintf("%s\t%d\t%v\t%v\n", run.Dungeon.Name, run.KeystoneLevel, run.IsCompletedWithinTime, int(run.MapRating.Rating))
+		}
 	}
 	s += fmt.Sprintf("Rating: %v\n", p.CurrentMythicRating.Rating)
 	return s
