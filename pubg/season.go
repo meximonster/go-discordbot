@@ -68,6 +68,9 @@ func getSeasonStats(acc string, season string, mode string) (SeasonStats, error)
 }
 
 func formatSeasonStats(name string, stats PlayerSeasonStats) string {
+	if stats == (PlayerSeasonStats{}) {
+		return fmt.Sprintf("no season stats for %s", name)
+	}
 	s := fmt.Sprintf(`
 ----------------------------------------------
 | PUBG Stats            |         %v                
