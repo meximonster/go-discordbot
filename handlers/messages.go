@@ -114,7 +114,7 @@ func getPubgSeasonStats(content string, channel string, s *discordgo.Session) {
 		s.ChannelMessageSend(channel, "wrong parameters - usage: !stats <name> <solo/duo/squad>")
 		return
 	}
-	stats, err := pubg.SeasonInformation(input[1], input[2])
+	stats, err := pubg.GetSeasonStats(input[1], input[2])
 	if err != nil {
 		s.ChannelMessageSend(channel, err.Error())
 		return
@@ -128,7 +128,7 @@ func getPubgRankedStats(content string, channel string, s *discordgo.Session) {
 		s.ChannelMessageSend(channel, "wrong parameters - usage: !stats <name> <solo/duo/squad>")
 		return
 	}
-	stats, err := pubg.RankedSeasonInformation(input[1], input[2])
+	stats, err := pubg.GetRankedSeasonStats(input[1], input[2])
 	if err != nil {
 		s.ChannelMessageSend(channel, err.Error())
 		return

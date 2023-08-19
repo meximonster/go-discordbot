@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 )
 
 var (
 	apikey   string
 	seasonId string
-	client   http.Client
+	client   = http.Client{Timeout: 15 * time.Second}
 	accounts = map[string]string{
 		"meximonster":   "account.543f6e5d409f4a5c8806015b7bc71214",
 		"flea14":        "account.7263c200f62b4799a9aef0dcfcb01321",
@@ -20,12 +21,12 @@ var (
 	}
 )
 
-type Players struct {
-	Data []Player `json:"data"`
-}
-
-type Player struct {
-	Id string `json:"id"`
+type PubgPlayer struct {
+	Name      string
+	AccountId string
+	Matches   []string
+	PlayerSeasonStats
+	PlayerRankedSeasonStats
 }
 
 func InitAuth(key string, currentSeason string) {
@@ -33,49 +34,47 @@ func InitAuth(key string, currentSeason string) {
 	seasonId = currentSeason
 }
 
-func SeasonInformation(name string, mode string) (string, error) {
-	acc, err := getAccid(name)
+func GetSeasonStats(name string, mode string) (string, error) {
+	p := &PubgPlayer{Name: name}
+	s, err := p.SeasonStats(mode)
 	if err != nil {
 		return "", err
-	}
-	stats, err := getSeasonStats(acc, seasonId, mode)
-	if err != nil {
-		return "", err
-	}
-	var s string
-	switch mode {
-	case "solo":
-		s = formatSeasonStats(name, stats.Data[0].Attributes.GameModeStats.SoloFpp)
-	case "duo":
-		s = formatSeasonStats(name, stats.Data[0].Attributes.GameModeStats.DuoFpp)
-	case "squad":
-		s = formatSeasonStats(name, stats.Data[0].Attributes.GameModeStats.SquadFpp)
-	default:
-		return "", fmt.Errorf("invalid game mode: %s", mode)
 	}
 	return s, nil
 }
 
-func RankedSeasonInformation(name string, mode string) (string, error) {
-	acc, err := getAccid(name)
+func GetRankedSeasonStats(name string, mode string) (string, error) {
+	p := &PubgPlayer{Name: name}
+	s, err := p.RankedSeasonStats(mode)
 	if err != nil {
 		return "", err
 	}
-	stats, err := getRankedSeasonStats(acc, seasonId, mode)
+	return s, nil
+}
+
+func (p *PubgPlayer) SeasonStats(mode string) (string, error) {
+	err := p.getAccid()
 	if err != nil {
 		return "", err
 	}
-	var s string
-	switch mode {
-	case "solo":
-		s = formatRankedSeasonStats(name, stats.Data.Attributes.RankedGameModeStats.SoloFpp)
-	case "duo":
-		s = formatRankedSeasonStats(name, stats.Data.Attributes.RankedGameModeStats.DuoFpp)
-	case "squad":
-		s = formatRankedSeasonStats(name, stats.Data.Attributes.RankedGameModeStats.SquadFpp)
-	default:
-		return "", fmt.Errorf("invalid game mode: %s", mode)
+	err = p.getSeasonStats(seasonId, mode)
+	if err != nil {
+		return "", err
 	}
+	s := p.formatSeasonStats()
+	return s, nil
+}
+
+func (p *PubgPlayer) RankedSeasonStats(mode string) (string, error) {
+	err := p.getAccid()
+	if err != nil {
+		return "", err
+	}
+	err = p.getRankedSeasonStats(seasonId, mode)
+	if err != nil {
+		return "", err
+	}
+	s := p.formatRankedSeasonStats()
 	return s, nil
 }
 
@@ -96,26 +95,6 @@ func SetSeason() (string, error) {
 		}
 	}
 	return seasonId, nil
-}
-
-func getAccid(playerName string) (string, error) {
-	if acc, ok := accounts[playerName]; ok {
-		return acc, nil
-	}
-	var p Players
-	endpoint := "https://api.pubg.com/shards/steam/players?filter[playerNames]=" + playerName
-	body, err := getReq(endpoint, true, false)
-	if err != nil {
-		return "", err
-	}
-	err = json.Unmarshal(body, &p)
-	if err != nil {
-		return "", err
-	}
-	if len(p.Data) == 0 {
-		return "", fmt.Errorf("player %s not found", playerName)
-	}
-	return p.Data[0].Id, nil
 }
 
 func getReq(endpoint string, needAuth bool, useGzipHeader bool) ([]byte, error) {

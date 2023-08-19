@@ -53,23 +53,33 @@ type PlayerSeasonStats struct {
 	TeamKills      int     `json:"teamKills"`
 }
 
-func getSeasonStats(acc string, season string, mode string) (SeasonStats, error) {
-	endpoint := "https://api.pubg.com/shards/steam/seasons/" + season + "/gameMode/" + mode + "-fpp" + "/players?filter[playerIds]=" + acc
+func (p *PubgPlayer) getSeasonStats(season string, mode string) error {
+	endpoint := "https://api.pubg.com/shards/steam/seasons/" + season + "/gameMode/" + mode + "-fpp" + "/players?filter[playerIds]=" + p.AccountId
 	body, err := getReq(endpoint, true, false)
 	if err != nil {
-		return SeasonStats{}, err
+		return err
 	}
 	var stats SeasonStats
 	err = json.Unmarshal(body, &stats)
 	if err != nil {
-		return SeasonStats{}, err
+		return err
 	}
-	return stats, nil
+	switch mode {
+	case "solo":
+		p.PlayerSeasonStats = stats.Data[0].Attributes.GameModeStats.SoloFpp
+	case "duo":
+		p.PlayerSeasonStats = stats.Data[0].Attributes.GameModeStats.DuoFpp
+	case "squad":
+		p.PlayerSeasonStats = stats.Data[0].Attributes.GameModeStats.SquadFpp
+	default:
+		return fmt.Errorf("invalid game mode: %s", mode)
+	}
+	return nil
 }
 
-func formatSeasonStats(name string, stats PlayerSeasonStats) string {
-	if stats == (PlayerSeasonStats{}) {
-		return fmt.Sprintf("no season stats for %s", name)
+func (p *PubgPlayer) formatSeasonStats() string {
+	if p.PlayerSeasonStats == (PlayerSeasonStats{}) {
+		return fmt.Sprintf("no season stats for %s", p.Name)
 	}
 	s := fmt.Sprintf(`
 ----------------------------------------------
@@ -89,8 +99,8 @@ func formatSeasonStats(name string, stats PlayerSeasonStats) string {
 | Most kills            |         %v
 | Suicides              |         %v
 | Team kills            |         %v
-----------------------------------------------`, name, stats.RoundsPlayed, stats.Wins, stats.Top10S, stats.Kills, stats.DamageDealt,
-		stats.Assists, stats.DBNOs, stats.HeadshotKills, stats.LongestKill, stats.MaxKillStreaks,
-		stats.Revives, stats.RoundMostKills, stats.Suicides, stats.TeamKills)
+----------------------------------------------`, p.Name, p.PlayerSeasonStats.RoundsPlayed, p.PlayerSeasonStats.Wins, p.PlayerSeasonStats.Top10S, p.PlayerSeasonStats.Kills, p.PlayerSeasonStats.DamageDealt,
+		p.PlayerSeasonStats.Assists, p.PlayerSeasonStats.DBNOs, p.PlayerSeasonStats.HeadshotKills, p.PlayerSeasonStats.LongestKill, p.PlayerSeasonStats.MaxKillStreaks,
+		p.PlayerSeasonStats.Revives, p.PlayerSeasonStats.RoundMostKills, p.PlayerSeasonStats.Suicides, p.PlayerSeasonStats.TeamKills)
 	return "```" + s + "```"
 }

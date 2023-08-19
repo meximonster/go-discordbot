@@ -40,23 +40,33 @@ type TierInfo struct {
 	SubTier string `json:"subTier"`
 }
 
-func getRankedSeasonStats(acc string, season string, mode string) (RankedSeasonStats, error) {
-	endpoint := "https://api.pubg.com/shards/steam/players/" + acc + "/seasons/" + season + "/ranked"
+func (p *PubgPlayer) getRankedSeasonStats(season string, mode string) error {
+	endpoint := "https://api.pubg.com/shards/steam/players/" + p.AccountId + "/seasons/" + season + "/ranked"
 	body, err := getReq(endpoint, true, false)
 	if err != nil {
-		return RankedSeasonStats{}, err
+		return err
 	}
 	var stats RankedSeasonStats
 	err = json.Unmarshal(body, &stats)
 	if err != nil {
-		return RankedSeasonStats{}, err
+		return err
 	}
-	return stats, nil
+	switch mode {
+	case "solo":
+		p.PlayerRankedSeasonStats = stats.Data.Attributes.RankedGameModeStats.SoloFpp
+	case "duo":
+		p.PlayerRankedSeasonStats = stats.Data.Attributes.RankedGameModeStats.DuoFpp
+	case "squad":
+		p.PlayerRankedSeasonStats = stats.Data.Attributes.RankedGameModeStats.SquadFpp
+	default:
+		return fmt.Errorf("invalid game mode: %s", mode)
+	}
+	return nil
 }
 
-func formatRankedSeasonStats(name string, stats PlayerRankedSeasonStats) string {
-	if stats == (PlayerRankedSeasonStats{}) {
-		return fmt.Sprintf("no ranked stats for %s", name)
+func (p *PubgPlayer) formatRankedSeasonStats() string {
+	if p.PlayerRankedSeasonStats == (PlayerRankedSeasonStats{}) {
+		return fmt.Sprintf("no ranked stats for %s", p.Name)
 	}
 	s := fmt.Sprintf(`
 ----------------------------------------------
@@ -85,9 +95,9 @@ func formatRankedSeasonStats(name string, stats PlayerRankedSeasonStats) string 
 | Most kills            |         %v
 | Suicides              |         %v
 | Team kills            |         %v
-----------------------------------------------`, name, stats.CurrentTier.Tier+stats.CurrentTier.SubTier, stats.CurrentRankPoint, stats.BestTier.Tier+stats.BestTier.SubTier,
-		stats.BestRankPoint, stats.RoundsPlayed, stats.Wins, stats.Top10S, stats.WinRatio, stats.AvgRank, stats.Kda, stats.Kdr, stats.Kills, stats.DamageDealt,
-		stats.Assists, stats.DBNOs, stats.HeadshotKills, stats.LongestKill, stats.MaxKillStreaks,
-		stats.Revives, stats.RoundMostKills, stats.Suicides, stats.TeamKills)
+----------------------------------------------`, p.Name, p.PlayerRankedSeasonStats.CurrentTier.Tier+p.PlayerRankedSeasonStats.CurrentTier.SubTier, p.PlayerRankedSeasonStats.CurrentRankPoint, p.PlayerRankedSeasonStats.BestTier.Tier+p.PlayerRankedSeasonStats.BestTier.SubTier,
+		p.PlayerRankedSeasonStats.BestRankPoint, p.PlayerRankedSeasonStats.RoundsPlayed, p.PlayerRankedSeasonStats.Wins, p.PlayerRankedSeasonStats.Top10S, p.PlayerRankedSeasonStats.WinRatio, p.PlayerRankedSeasonStats.AvgRank, p.PlayerRankedSeasonStats.Kda, p.PlayerRankedSeasonStats.Kdr, p.PlayerRankedSeasonStats.Kills, p.PlayerRankedSeasonStats.DamageDealt,
+		p.PlayerRankedSeasonStats.Assists, p.PlayerRankedSeasonStats.DBNOs, p.PlayerRankedSeasonStats.HeadshotKills, p.PlayerRankedSeasonStats.LongestKill, p.PlayerRankedSeasonStats.MaxKillStreaks,
+		p.PlayerRankedSeasonStats.Revives, p.PlayerRankedSeasonStats.RoundMostKills, p.PlayerRankedSeasonStats.Suicides, p.PlayerRankedSeasonStats.TeamKills)
 	return "```" + s + "```"
 }
