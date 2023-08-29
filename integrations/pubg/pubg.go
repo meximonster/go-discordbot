@@ -94,6 +94,10 @@ func (p *PubgPlayer) GetLastMatch() (string, error) {
 	if err != nil {
 		return "", err
 	}
+	err = p.GetMatchInfo(p.LastMatchID)
+	if err != nil {
+		return "", err
+	}
 	m := p.FormatLastMatch()
 	return m.Print(), nil
 }
