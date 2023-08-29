@@ -37,8 +37,10 @@ type GameModes struct {
 }
 
 type PlayerSeasonStats struct {
+	KD             string
 	RoundsPlayed   int     `json:"roundsPlayed"`
 	Wins           int     `json:"wins"`
+	Losses         int     `json:"losses"`
 	Top10S         int     `json:"top10s"`
 	Kills          int     `json:"kills"`
 	DamageDealt    float64 `json:"damageDealt"`
@@ -51,6 +53,7 @@ type PlayerSeasonStats struct {
 	RoundMostKills int     `json:"roundMostKills"`
 	Suicides       int     `json:"suicides"`
 	TeamKills      int     `json:"teamKills"`
+	Boosts         int     `json:"boosts"`
 }
 
 func (p *PubgPlayer) getSeasonStats(season string, mode string) error {
@@ -74,6 +77,7 @@ func (p *PubgPlayer) getSeasonStats(season string, mode string) error {
 	default:
 		return fmt.Errorf("invalid game mode: %s", mode)
 	}
+	p.PlayerSeasonStats.KD = fmt.Sprintf("%.2f", float32(p.PlayerSeasonStats.Kills/p.Losses))
 	return nil
 }
 
@@ -85,6 +89,7 @@ func (p *PubgPlayer) formatSeasonStats() string {
 ----------------------------------------------
 | PUBG Stats            |         %v                
 ----------------------------------------------
+| K/D                   |         %v
 | Matches               |         %v
 | Wins                  |         %v
 | Top10                 |         %v
@@ -99,8 +104,9 @@ func (p *PubgPlayer) formatSeasonStats() string {
 | Most kills            |         %v
 | Suicides              |         %v
 | Team kills            |         %v
-----------------------------------------------`, p.Name, p.PlayerSeasonStats.RoundsPlayed, p.PlayerSeasonStats.Wins, p.PlayerSeasonStats.Top10S, p.PlayerSeasonStats.Kills, p.PlayerSeasonStats.DamageDealt,
+| Boosts                |         %v
+----------------------------------------------`, p.Name, p.KD, p.PlayerSeasonStats.RoundsPlayed, p.PlayerSeasonStats.Wins, p.PlayerSeasonStats.Top10S, p.PlayerSeasonStats.Kills, p.PlayerSeasonStats.DamageDealt,
 		p.PlayerSeasonStats.Assists, p.PlayerSeasonStats.DBNOs, p.PlayerSeasonStats.HeadshotKills, p.PlayerSeasonStats.LongestKill, p.PlayerSeasonStats.MaxKillStreaks,
-		p.PlayerSeasonStats.Revives, p.PlayerSeasonStats.RoundMostKills, p.PlayerSeasonStats.Suicides, p.PlayerSeasonStats.TeamKills)
+		p.PlayerSeasonStats.Revives, p.PlayerSeasonStats.RoundMostKills, p.PlayerSeasonStats.Suicides, p.PlayerSeasonStats.TeamKills, p.Boosts)
 	return "```" + s + "```"
 }

@@ -31,6 +31,11 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	if strings.HasPrefix(m.Content, "!last") {
+		getPubgSeasonStats(m.Content, m.ChannelID, s)
+		return
+	}
+
 	if strings.HasPrefix(m.Content, "!season") {
 		getPubgSeasonStats(m.Content, m.ChannelID, s)
 		return
@@ -120,6 +125,20 @@ func getPubgSeasonStats(content string, channel string, s *discordgo.Session) {
 		return
 	}
 	s.ChannelMessageSend(channel, stats)
+}
+
+func getPubgLastMatchInfo(content string, channel string, s *discordgo.Session) {
+	input := strings.Split(content, " ")
+	if len(input) != 2 {
+		s.ChannelMessageSend(channel, "wrong parameters - usage: !last <name>")
+		return
+	}
+	info, err := pubg.GetLastMatchInfo(input[1])
+	if err != nil {
+		s.ChannelMessageSend(channel, err.Error())
+		return
+	}
+	s.ChannelMessageSend(channel, info)
 }
 
 func getPubgRankedStats(content string, channel string, s *discordgo.Session) {

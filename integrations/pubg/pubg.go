@@ -22,9 +22,11 @@ var (
 )
 
 type PubgPlayer struct {
-	Name      string
-	AccountId string
-	Matches   []string
+	Name          string
+	AccountId     string
+	Matches       []string
+	LastMatchID   string
+	LastMatchInfo PubgMatch
 	PlayerSeasonStats
 	PlayerRankedSeasonStats
 }
@@ -46,6 +48,15 @@ func GetSeasonStats(name string, mode string) (string, error) {
 func GetRankedSeasonStats(name string, mode string) (string, error) {
 	p := &PubgPlayer{Name: name}
 	s, err := p.RankedSeasonStats(mode)
+	if err != nil {
+		return "", err
+	}
+	return s, nil
+}
+
+func GetLastMatchInfo(name string) (string, error) {
+	p := &PubgPlayer{Name: name}
+	s, err := p.GetLastMatch()
 	if err != nil {
 		return "", err
 	}
@@ -78,6 +89,15 @@ func (p *PubgPlayer) RankedSeasonStats(mode string) (string, error) {
 	return s, nil
 }
 
+func (p *PubgPlayer) GetLastMatch() (string, error) {
+	err := p.getLastMatchID()
+	if err != nil {
+		return "", err
+	}
+	m := p.FormatLastMatch()
+	return m.Print(), nil
+}
+
 func SetSeason() (string, error) {
 	var s Seasons
 	url := "https://api.pubg.com/shards/steam/seasons"
@@ -108,10 +128,10 @@ func getReq(endpoint string, needAuth bool, useGzipHeader bool) ([]byte, error) 
 		req.Header.Set("Accept", "Content-Encoding: gzip")
 	}
 	res, err := client.Do(req)
-	defer res.Body.Close()
 	if err != nil {
 		return nil, err
 	}
+	defer res.Body.Close()
 	body, _ := io.ReadAll(res.Body)
 	return body, nil
 }
