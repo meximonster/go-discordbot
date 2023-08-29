@@ -193,5 +193,5 @@ func (f *FormattedMatch) Print() string {
 		f.Assists, f.Boosts, f.DamageDealt, f.DeathType, f.HeadshotKills, f.Heals, f.KillPlace, f.KillStreaks,
 		f.Kills, f.LongestKill, f.Revives, f.RideDistance, f.RoadKills, f.SwimDistance, f.TeamKills, f.TimeSurvived, f.VehicleDestroys,
 		f.WalkDistance, f.WeaponsAcquired, f.WinPlace)
-	return s
+	return "```" + s + "```"
 }
