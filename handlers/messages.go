@@ -32,7 +32,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if strings.HasPrefix(m.Content, "!last") {
-		getPubgSeasonStats(m.Content, m.ChannelID, s)
+		getPubgLastMatchInfo(m.Content, m.ChannelID, s)
 		return
 	}
 
