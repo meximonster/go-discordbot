@@ -40,9 +40,9 @@ type PlayerSeasonStats struct {
 	KD             string
 	RoundsPlayed   int     `json:"roundsPlayed"`
 	Wins           int     `json:"wins"`
-	Losses         int     `json:"losses"`
+	Losses         float32 `json:"losses"`
 	Top10S         int     `json:"top10s"`
-	Kills          int     `json:"kills"`
+	Kills          float32 `json:"kills"`
 	DamageDealt    float64 `json:"damageDealt"`
 	Assists        int     `json:"assists"`
 	DBNOs          int     `json:"dBNOs"`
@@ -77,7 +77,7 @@ func (p *PubgPlayer) getSeasonStats(season string, mode string) error {
 	default:
 		return fmt.Errorf("invalid game mode: %s", mode)
 	}
-	p.PlayerSeasonStats.KD = fmt.Sprintf("%.2f", float32(p.PlayerSeasonStats.Kills/p.Losses))
+	p.PlayerSeasonStats.KD = fmt.Sprintf("%.2f", p.PlayerSeasonStats.Kills/p.Losses)
 	return nil
 }
 
