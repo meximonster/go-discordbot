@@ -92,6 +92,7 @@ func (p *PubgPlayer) formatSeasonStats() string {
 | K/D                   |         %v
 | Matches               |         %v
 | Wins                  |         %v
+| Losses                |         %v
 | Top10                 |         %v
 | Kills                 |         %v
 | Damage                |         %v
@@ -105,7 +106,7 @@ func (p *PubgPlayer) formatSeasonStats() string {
 | Suicides              |         %v
 | Team kills            |         %v
 | Boosts                |         %v
-----------------------------------------------`, p.Name, p.KD, p.PlayerSeasonStats.RoundsPlayed, p.PlayerSeasonStats.Wins, p.PlayerSeasonStats.Top10S, p.PlayerSeasonStats.Kills, p.PlayerSeasonStats.DamageDealt,
+----------------------------------------------`, p.Name, p.KD, p.PlayerSeasonStats.RoundsPlayed, p.PlayerSeasonStats.Wins, p.Losses, p.PlayerSeasonStats.Top10S, p.PlayerSeasonStats.Kills, p.PlayerSeasonStats.DamageDealt,
 		p.PlayerSeasonStats.Assists, p.PlayerSeasonStats.DBNOs, p.PlayerSeasonStats.HeadshotKills, p.PlayerSeasonStats.LongestKill, p.PlayerSeasonStats.MaxKillStreaks,
 		p.PlayerSeasonStats.Revives, p.PlayerSeasonStats.RoundMostKills, p.PlayerSeasonStats.Suicides, p.PlayerSeasonStats.TeamKills, p.Boosts)
 	return "```" + s + "```"
