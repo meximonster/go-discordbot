@@ -75,7 +75,7 @@ type MatchPlayerInfo struct {
 	Revives         int     `json:"revives"`
 	RideDistance    float64 `json:"rideDistance"`
 	RoadKills       int     `json:"roadKills"`
-	SwimDistance    int     `json:"swimDistance"`
+	SwimDistance    float64 `json:"swimDistance"`
 	TeamKills       int     `json:"teamKills"`
 	TimeSurvived    int     `json:"timeSurvived"`
 	VehicleDestroys int     `json:"vehicleDestroys"`
