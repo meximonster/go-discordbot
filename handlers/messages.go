@@ -12,6 +12,7 @@ import (
 	"github.com/meximonster/go-discordbot/integrations/pubg"
 	"github.com/meximonster/go-discordbot/integrations/wow"
 	"github.com/meximonster/go-discordbot/meme"
+	"github.com/meximonster/go-discordbot/telegram"
 )
 
 var (
@@ -27,7 +28,7 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 	}
 
 	if bet.IsBetCandidate(m.Author.ID, m.ChannelID) && bet.IsBet(m.Content) {
-		betNotify(m.ChannelID, m.ID, m.Author.ID, m.Content, s)
+		betNotify(m.ChannelID, m.ID, m.Author.ID, m.Content, s, m.Author.Username)
 		return
 	}
 
@@ -223,7 +224,7 @@ func parolaNotify(content string, channel string, attachments []*discordgo.Messa
 	s.ChannelMessageSend(channel, "@everyone possible parola was just posted.")
 }
 
-func betNotify(channel string, messageID string, author string, content string, s *discordgo.Session) {
+func betNotify(channel string, messageID string, author string, content string, s *discordgo.Session, username string) {
 	b, err := bet.Decouple(content, "")
 	if err != nil {
 		s.ChannelMessageSend(channel, err.Error())
@@ -231,6 +232,7 @@ func betNotify(channel string, messageID string, author string, content string, 
 	}
 	bet.AddOpen(messageID, b)
 	s.ChannelMessageSend(channel, fmt.Sprintf("%s %s %du @everyone", b.Team, b.Prediction, b.Size))
+	telegram.NewForwardMessage(fmt.Sprintf("user: %s: %s %s %du @%v", username, b.Team, b.Prediction, b.Size, b.Odds)).Forward()
 }
 
 func betQuery(content string, channel string, s *discordgo.Session) {

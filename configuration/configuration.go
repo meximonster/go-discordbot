@@ -28,6 +28,7 @@ type Config struct {
 	BNET_CLIENT_SECRET  string        `yaml:"bnet_client_secret"`
 	PUBG_API_KEY        string        `yaml:"pubg_api_key"`
 	PUBG_CURRENT_SEASON string        `yaml:"pubg_current_season"`
+	FORWARD_ENDPOINT    string        `yaml:"forward_endpoint"`
 }
 
 func Load() error {

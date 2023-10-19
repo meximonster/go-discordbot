@@ -18,6 +18,7 @@ import (
 	"github.com/meximonster/go-discordbot/handlers"
 	"github.com/meximonster/go-discordbot/integrations"
 	"github.com/meximonster/go-discordbot/server"
+	"github.com/meximonster/go-discordbot/telegram"
 )
 
 var (
@@ -90,6 +91,7 @@ func main() {
 	}()
 
 	integrations.Initialize(c.BNET_CLIENT_ID, c.BNET_CLIENT_SECRET, c.PUBG_API_KEY, c.PUBG_CURRENT_SEASON)
+	telegram.NewForwardMechanism(c.FORWARD_ENDPOINT)
 
 	// Create signaling for process termination.
 	sc := make(chan os.Signal, 1)
