@@ -232,7 +232,7 @@ func betNotify(channel string, messageID string, author string, content string, 
 	}
 	bet.AddOpen(messageID, b)
 	s.ChannelMessageSend(channel, fmt.Sprintf("%s %s %du @everyone", b.Team, b.Prediction, b.Size))
-	go telegram.NewForwardMessage(fmt.Sprintf("user: %s: %s %s %du @%v", username, b.Team, b.Prediction, b.Size, b.Odds)).Forward()
+	go telegram.NewForwardMessage(fmt.Sprintf("%s: %s %s %du @%v", username, b.Team, b.Prediction, b.Size, b.Odds)).Forward()
 }
 
 func betQuery(content string, channel string, s *discordgo.Session) {
