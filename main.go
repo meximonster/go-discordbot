@@ -93,6 +93,8 @@ func main() {
 	integrations.Initialize(c.BNET_CLIENT_ID, c.BNET_CLIENT_SECRET, c.PUBG_API_KEY, c.PUBG_CURRENT_SEASON)
 	telegram.NewForwardMechanism(c.FORWARD_ENDPOINT)
 
+	log.Println("up and running!")
+
 	// Create signaling for process termination.
 	sc := make(chan os.Signal, 1)
 	signal.Notify(sc, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)

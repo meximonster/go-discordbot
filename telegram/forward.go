@@ -28,23 +28,22 @@ func NewForwardMessage(message string) *BetForwardMessage {
 	return &m
 }
 
-func (m *BetForwardMessage) Forward() error {
+func (m *BetForwardMessage) Forward() {
 	body, err := json.Marshal(m)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 	r, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(body))
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 	r.Header.Add("Content-Type", "application/json")
 	res, err := cl.Do(r)
 	if err != nil {
-		return err
+		log.Println(err)
 	}
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK {
 		log.Printf("got %d while forwarding message\n", res.StatusCode)
 	}
-	return nil
 }
