@@ -3,6 +3,7 @@ package graph
 import (
 	"fmt"
 	"io"
+	"log"
 	"math"
 	"os"
 
@@ -36,6 +37,7 @@ func Generate(name string, table string, extra bool) error {
 	if err != nil {
 		return err
 	}
+	log.Printf("%s yield: %v\n", name, yield)
 
 	unitsperMonthCum, unitsPerMonthAbs := unitsPerMonthGraph(upm)
 	charts = append(charts, unitsperMonthCum, unitsPerMonthAbs, percentBySize(prc), countBySize(cbs))
