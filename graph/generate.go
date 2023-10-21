@@ -59,6 +59,7 @@ func Generate(name string, table string, extra bool) error {
 	if len(yield) == 1 {
 		if yield[0].YieldTotal.Valid {
 			s := fmt.Sprintf("%.4f", yield[0].YieldTotal.Float64)
+			log.Println(s)
 			charts = append(charts, betsPerMonthGraph(bpm), newLiquid("yield", "yield", s))
 		}
 	}
