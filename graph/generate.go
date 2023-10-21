@@ -3,7 +3,6 @@ package graph
 import (
 	"fmt"
 	"io"
-	"log"
 	"math"
 	"os"
 
@@ -37,7 +36,6 @@ func Generate(name string, table string, extra bool) error {
 	if err != nil {
 		return err
 	}
-	log.Printf("%s yield: %v\n", name, yield)
 
 	unitsperMonthCum, unitsPerMonthAbs := unitsPerMonthGraph(upm)
 	charts = append(charts, unitsperMonthCum, unitsPerMonthAbs, percentBySize(prc), countBySize(cbs))
@@ -55,11 +53,9 @@ func Generate(name string, table string, extra bool) error {
 		charts = append(charts, wptBar, countByType(cbt))
 	}
 
-	log.Println(len(yield))
 	if len(yield) == 1 {
 		if yield[0].YieldTotal.Valid {
 			s := fmt.Sprintf("%.4f", yield[0].YieldTotal.Float64)
-			log.Println(s)
 			charts = append(charts, betsPerMonthGraph(bpm), newLiquid("yield", "yield", s))
 		}
 	}

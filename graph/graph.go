@@ -84,13 +84,14 @@ func newLiquid(title string, seriesName string, data string) *charts.Liquid {
 		}),
 	)
 
-	liquid.AddSeries(seriesName, []opts.LiquidData{{Value: data}, {Value: 0.4}, {Value: 0.5}}).
+	liquid.AddSeries(seriesName, []opts.LiquidData{{Value: data}}).
 		SetSeriesOptions(
 			charts.WithLabelOpts(opts.Label{
 				Show: true,
 			}),
 			charts.WithLiquidChartOpts(opts.LiquidChart{
 				IsWaveAnimation: true,
+				Shape:           "diamond",
 			}),
 		)
 	return liquid
