@@ -53,6 +53,11 @@ func ReactionCreate(s *discordgo.Session, r *discordgo.MessageReactionAdd) {
 		return
 	}
 
+	if b.Odds == 0 {
+		s.ChannelMessageSend(r.ChannelID, "settling bet with null odds. fix the odds and try again")
+		return
+	}
+
 	err = bet.Store(b, table)
 	if err != nil {
 		s.ChannelMessageSend(r.ChannelID, err.Error())
