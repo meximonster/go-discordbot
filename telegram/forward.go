@@ -32,15 +32,18 @@ func (m *BetForwardMessage) Forward() {
 	body, err := json.Marshal(m)
 	if err != nil {
 		log.Println(err)
+		return
 	}
 	r, err := http.NewRequest("POST", endpoint, bytes.NewBuffer(body))
 	if err != nil {
 		log.Println(err)
+		return
 	}
 	r.Header.Add("Content-Type", "application/json")
 	res, err := cl.Do(r)
 	if err != nil {
 		log.Println(err)
+		return
 	}
 	defer res.Body.Close()
 	if res.StatusCode != http.StatusOK {

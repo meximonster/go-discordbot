@@ -30,9 +30,11 @@ func Run() error {
 		ReadTimeout:  15 * time.Second,
 	}
 
+	r.HandleFunc("/", getLastBets).Methods("GET")
 	r.HandleFunc("/health", readiness).Methods("GET")
 	r.HandleFunc("/refresh", refreshSeason).Methods("GET")
 	r.HandleFunc("/{name}", handler).Methods("GET")
+	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("html/static"))))
 
 	if err := srv.ListenAndServe(); err != nil {
 		return err
@@ -104,4 +106,13 @@ func replace(season string) error {
 		return err
 	}
 	return nil
+}
+
+func getLastBets(w http.ResponseWriter, r *http.Request) {
+	htmlTable, err := bet.ServeLastBets()
+	if err != nil {
+		w.Write([]byte(err.Error()))
+	}
+	w.Header().Set("Content-Type", "text/html")
+	w.Write([]byte(htmlTable))
 }
