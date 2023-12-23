@@ -16,7 +16,6 @@ import (
 	"github.com/meximonster/go-discordbot/configuration"
 	"github.com/meximonster/go-discordbot/graph"
 	"github.com/meximonster/go-discordbot/handlers"
-	"github.com/meximonster/go-discordbot/integrations"
 	"github.com/meximonster/go-discordbot/server"
 	"github.com/meximonster/go-discordbot/telegram"
 )
@@ -68,7 +67,7 @@ func init() {
 func main() {
 
 	bet.InitAdmins(c.Admins)
-	handlers.InitChannels(c.ParolesOnlyChannel, c.PlateChannel)
+	handlers.InitChannels(c.ParolesOnlyChannel)
 
 	for _, adm := range c.Admins {
 		err := graph.Generate(adm.Name, adm.Table, adm.ExtraGraphs)
@@ -90,7 +89,6 @@ func main() {
 		}
 	}()
 
-	integrations.Initialize(c.BNET_CLIENT_ID, c.BNET_CLIENT_SECRET, c.PUBG_API_KEY, c.PUBG_CURRENT_SEASON)
 	telegram.NewForwardMechanism(c.FORWARD_ENDPOINT)
 
 	log.Println("up and running!")

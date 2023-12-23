@@ -9,15 +9,11 @@ import (
 
 	"github.com/bwmarrin/discordgo"
 	bet "github.com/meximonster/go-discordbot/bet"
-	"github.com/meximonster/go-discordbot/integrations/pubg"
-	"github.com/meximonster/go-discordbot/integrations/wow"
-	"github.com/meximonster/go-discordbot/meme"
 	"github.com/meximonster/go-discordbot/telegram"
 )
 
 var (
 	parolesOnlyChannel string
-	r8mypl8Channel     string
 )
 
 func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
@@ -32,31 +28,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if strings.HasPrefix(m.Content, "!last") {
-		getPubgLastMatchInfo(m.Content, m.ChannelID, s)
-		return
-	}
-
-	if strings.HasPrefix(m.Content, "!season") {
-		getPubgSeasonStats(m.Content, m.ChannelID, s)
-		return
-	}
-
-	if strings.HasPrefix(m.Content, "!ranked") {
-		getPubgRankedStats(m.Content, m.ChannelID, s)
-		return
-	}
-
-	if strings.HasPrefix(m.Content, "!rating") {
-		getRating(m.Content, m.ChannelID, s)
-		return
-	}
-
-	if strings.HasPrefix(m.Content, "!tts") {
-		tts(m.Content, m.ChannelID, s)
-		return
-	}
-
 	if strings.HasPrefix(m.Content, "!roll") {
 		rng(m.Author.Username, m.Content, m.ChannelID, s)
 		return
@@ -64,11 +35,6 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 
 	if m.Content == "!git" {
 		serveGitURL(m.Content, m.ChannelID, s)
-		return
-	}
-
-	if m.Content == "!meme" {
-		serveMeme(m.Content, m.ChannelID, s)
 		return
 	}
 
@@ -102,89 +68,10 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
-	if m.ChannelID == r8mypl8Channel && (len(m.Attachments)) > 0 {
-		ratePlate(m.Content, m.ChannelID, m.Author.Username, s)
-		return
-	}
-
 }
 
-func InitChannels(paroles string, r8mypl8 string) {
-	parolesOnlyChannel = paroles
-	r8mypl8Channel = r8mypl8
-}
-
-func getPubgSeasonStats(content string, channel string, s *discordgo.Session) {
-	input := strings.Split(content, " ")
-	if len(input) != 3 {
-		s.ChannelMessageSend(channel, "wrong parameters - usage: !stats <name> <solo/duo/squad>")
-		return
-	}
-	stats, err := pubg.GetSeasonStats(input[1], input[2])
-	if err != nil {
-		s.ChannelMessageSend(channel, err.Error())
-		return
-	}
-	s.ChannelMessageSend(channel, stats)
-}
-
-func getPubgLastMatchInfo(content string, channel string, s *discordgo.Session) {
-	input := strings.Split(content, " ")
-	if len(input) != 2 {
-		s.ChannelMessageSend(channel, "wrong parameters - usage: !last <name>")
-		return
-	}
-	info, err := pubg.GetLastMatchInfo(input[1])
-	if err != nil {
-		s.ChannelMessageSend(channel, err.Error())
-		return
-	}
-	s.ChannelMessageSend(channel, info)
-}
-
-func getPubgRankedStats(content string, channel string, s *discordgo.Session) {
-	input := strings.Split(content, " ")
-	if len(input) != 3 {
-		s.ChannelMessageSend(channel, "wrong parameters - usage: !stats <name> <solo/duo/squad>")
-		return
-	}
-	stats, err := pubg.GetRankedSeasonStats(input[1], input[2])
-	if err != nil {
-		s.ChannelMessageSend(channel, err.Error())
-		return
-	}
-	s.ChannelMessageSend(channel, stats)
-}
-
-func getRating(content string, channel string, s *discordgo.Session) {
-	input := strings.Split(content, " ")
-	if len(input) != 3 {
-		s.ChannelMessageSend(channel, "wrong parameters - usage: !rating <name> <realm>")
-		return
-	}
-	profile, err := wow.GetProfile(input[2], input[1])
-	if err != nil {
-		s.ChannelMessageSend(channel, err.Error())
-		return
-	}
-	s.ChannelMessageSendEmbed(channel, &discordgo.MessageEmbed{
-		Footer: &discordgo.MessageEmbedFooter{
-			Text: profile,
-		},
-	})
-}
-
-func ratePlate(content string, channel string, username string, s *discordgo.Session) {
-	rand.Seed(time.Now().UnixNano())
-	s.ChannelMessageSend(channel, fmt.Sprintf("%s m8, i r8 your pl8 %d/8", username, rand.Intn(8)+1))
-}
-
-func tts(content string, channel string, s *discordgo.Session) {
-	tts := strings.Replace(content, "!tts ", "", 1)
-	s.ChannelMessageSendComplex(channel, &discordgo.MessageSend{
-		Content: tts,
-		TTS:     true,
-	})
+func InitChannels(ch string) {
+	parolesOnlyChannel = ch
 }
 
 func rng(username string, content string, channel string, s *discordgo.Session) {
@@ -209,15 +96,6 @@ func rng(username string, content string, channel string, s *discordgo.Session) 
 
 func serveGitURL(content string, channel string, s *discordgo.Session) {
 	s.ChannelMessageSend(channel, "https://github.com/meximonster/go-discordbot")
-}
-
-func serveMeme(content string, channel string, s *discordgo.Session) {
-	link, url, err := meme.Random()
-	if err != nil {
-		s.ChannelMessageSend(channel, err.Error())
-		return
-	}
-	respondWithEmbed(channel, link, url, s)
 }
 
 func parolaNotify(content string, channel string, attachments []*discordgo.MessageAttachment, s *discordgo.Session) {
