@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"io/fs"
 	"math/rand"
 	"os"
 	"strconv"
@@ -92,8 +93,13 @@ func checkForContent(content string, channel string, s *discordgo.Session) {
 			if err != nil {
 				s.ChannelMessageSend(channel, err.Error())
 			}
-			rand.Seed(time.Now().UnixNano())
-			img := imageFiles[rand.Intn(len(imageFiles)-1)+1]
+			var img fs.DirEntry
+			if len(imageFiles) > 1 {
+				rand.Seed(time.Now().UnixNano())
+				img = imageFiles[rand.Intn(len(imageFiles)-1)+1]
+			} else {
+				img = imageFiles[0]
+			}
 			title := "**" + strings.Split(img.Name(), ".")[0] + "**"
 			f, err := os.Open("./static/images/" + name + "/" + img.Name())
 			if err != nil {
