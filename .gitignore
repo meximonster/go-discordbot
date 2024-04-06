@@ -11,8 +11,3 @@
 
 # .json files
 **/*.json
-
-# images
-
-static/images/*
-!static/images/.gitkeep
