@@ -3,6 +3,7 @@ package handlers
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -68,10 +69,48 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	if strings.HasPrefix(m.Content, "!") && len(strings.Split(m.Content, " ")) == 1 {
+		checkForContent(m.Content, m.ChannelID, s)
+		return
+	}
+
 }
 
 func InitChannels(ch string) {
 	parolesOnlyChannel = ch
+}
+
+func checkForContent(content string, channel string, s *discordgo.Session) {
+	name := strings.TrimPrefix(content, "!")
+	imageDirs, err := os.ReadDir("./static/images/")
+	if err != nil {
+		s.ChannelMessageSend(channel, err.Error())
+	}
+	for _, file := range imageDirs {
+		if file.IsDir() && file.Name() == name {
+			imageFiles, err := os.ReadDir("./static/images/" + name)
+			if err != nil {
+				s.ChannelMessageSend(channel, err.Error())
+			}
+			rand.Seed(time.Now().UnixNano())
+			img := imageFiles[rand.Intn(len(imageFiles)-1)+1]
+			title := "**" + strings.Split(img.Name(), ".")[0] + "**"
+			f, err := os.Open("./static/images/" + name + "/" + img.Name())
+			if err != nil {
+				s.ChannelMessageSend(channel, err.Error())
+			}
+			_, err = s.ChannelMessageSendComplex(channel, &discordgo.MessageSend{
+				Content: title,
+				File: &discordgo.File{
+					Name:   img.Name(),
+					Reader: f,
+				},
+			})
+			if err != nil {
+				s.ChannelMessageSend(channel, err.Error())
+			}
+		}
+	}
 }
 
 func rng(username string, content string, channel string, s *discordgo.Session) {
