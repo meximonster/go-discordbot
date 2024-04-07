@@ -25,7 +25,7 @@ services:
 
     app:
       container_name: discordbot_app
-      image: meximonster/discord-bot:latest
+      image: meximonster/discord-bot:test
       security_opt:
         - seccomp:unconfined
       ports:

@@ -70,6 +70,11 @@ func MessageCreate(s *discordgo.Session, m *discordgo.MessageCreate) {
 		return
 	}
 
+	if strings.HasPrefix(m.Content, "!") && (strings.TrimPrefix(m.Content, "!") == "users" || strings.TrimPrefix(m.Content, "!") == "pets" || strings.TrimPrefix(m.Content, "!") == "emotes") {
+		listContent(m.Content, m.ChannelID, s)
+		return
+	}
+
 	if strings.HasPrefix(m.Content, "!") && len(strings.Split(m.Content, " ")) == 1 {
 		checkForContent(m.Content, m.ChannelID, s)
 		return
@@ -81,39 +86,64 @@ func InitChannels(ch string) {
 	parolesOnlyChannel = ch
 }
 
-func checkForContent(content string, channel string, s *discordgo.Session) {
-	name := strings.TrimPrefix(content, "!")
-	imageDirs, err := os.ReadDir("./static/images/")
+func listContent(content string, channel string, s *discordgo.Session) {
+	cnt := strings.TrimPrefix(content, "!")
+	dirs, err := os.ReadDir("./static/" + cnt)
 	if err != nil {
 		s.ChannelMessageSend(channel, err.Error())
 	}
-	for _, file := range imageDirs {
-		if file.IsDir() && file.Name() == name {
-			imageFiles, err := os.ReadDir("./static/images/" + name)
+	var str string
+	for i, dir := range dirs {
+		str += fmt.Sprintf("%d. %s", i+1, dir.Name()+"\n")
+	}
+	_, err = s.ChannelMessageSend(channel, str)
+	if err != nil {
+		s.ChannelMessageSend(channel, err.Error())
+	}
+}
+
+func checkForContent(content string, channel string, s *discordgo.Session) {
+	name := strings.TrimPrefix(content, "!")
+	imageDirs, err := os.ReadDir("./static/")
+	if err != nil {
+		s.ChannelMessageSend(channel, err.Error())
+	}
+	for _, dir := range imageDirs {
+		if dir.IsDir() {
+			fileDirs, err := os.ReadDir("./static/" + dir.Name() + "/")
 			if err != nil {
 				s.ChannelMessageSend(channel, err.Error())
 			}
-			var img fs.DirEntry
-			if len(imageFiles) > 1 {
-				rand.Seed(time.Now().UnixNano())
-				img = imageFiles[rand.Intn(len(imageFiles)-1)+1]
-			} else {
-				img = imageFiles[0]
-			}
-			title := "**" + strings.Split(img.Name(), ".")[0] + "**"
-			f, err := os.Open("./static/images/" + name + "/" + img.Name())
-			if err != nil {
-				s.ChannelMessageSend(channel, err.Error())
-			}
-			_, err = s.ChannelMessageSendComplex(channel, &discordgo.MessageSend{
-				Content: title,
-				File: &discordgo.File{
-					Name:   img.Name(),
-					Reader: f,
-				},
-			})
-			if err != nil {
-				s.ChannelMessageSend(channel, err.Error())
+			for _, file := range fileDirs {
+				if file.IsDir() && file.Name() == name {
+					imageFiles, err := os.ReadDir("./static/" + dir.Name() + "/" + name)
+					if err != nil {
+						s.ChannelMessageSend(channel, err.Error())
+					}
+					var img fs.DirEntry
+					if len(imageFiles) > 1 {
+						rand.Seed(time.Now().UnixNano())
+						img = imageFiles[rand.Intn(len(imageFiles)-1)+1]
+					} else {
+						img = imageFiles[0]
+					}
+					title := "**" + strings.Split(img.Name(), ".")[0] + "**"
+					f, err := os.Open("./static/" + dir.Name() + "/" + name + "/" + img.Name())
+					if err != nil {
+						s.ChannelMessageSend(channel, err.Error())
+					}
+					_, err = s.ChannelMessageSendComplex(channel, &discordgo.MessageSend{
+						Content: title,
+						File: &discordgo.File{
+							Name:   img.Name(),
+							Reader: f,
+						},
+					})
+					if err != nil {
+						s.ChannelMessageSend(channel, err.Error())
+					}
+					break
+				}
 			}
 		}
 	}
@@ -136,7 +166,7 @@ func rng(username string, content string, channel string, s *discordgo.Session) 
 		return
 	}
 	rand.Seed(time.Now().UnixNano())
-	s.ChannelMessageSend(channel, fmt.Sprintf("%s rolled %d", username, rand.Intn(max)+1))
+	s.ChannelMessageSend(channel, fmt.Sprintf("%s rolled %d", username, rand.Intn(max-1)+1))
 }
 
 func serveGitURL(content string, channel string, s *discordgo.Session) {
@@ -210,16 +240,4 @@ func clearBet(content string, channel string, s *discordgo.Session) {
 		s.ChannelMessageSend(channel, "wrong parameters")
 	}
 	bet.Settle(input[1])
-}
-
-func respondWithEmbed(channel string, title string, imageURL string, s *discordgo.Session) {
-	_, err := s.ChannelMessageSendEmbed(channel, &discordgo.MessageEmbed{
-		Title: title,
-		Image: &discordgo.MessageEmbedImage{
-			URL: imageURL,
-		},
-	})
-	if err != nil {
-		s.ChannelMessageSend(channel, err.Error())
-	}
 }
