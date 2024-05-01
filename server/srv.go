@@ -5,11 +5,19 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/bwmarrin/discordgo"
 	"github.com/gorilla/mux"
 	"github.com/meximonster/go-discordbot/bet"
 )
 
-var srv *http.Server
+var (
+	srv *http.Server
+	s   *discordgo.Session
+)
+
+type BetMessage struct {
+	Message string `json:"message"`
+}
 
 type Response struct {
 	Result      string `json:"result"`
@@ -27,6 +35,7 @@ func Run() error {
 	}
 
 	r.HandleFunc("/", getLastBets).Methods("GET")
+	r.HandleFunc("/bet", forwardBetToDiscord).Methods("POST")
 	r.HandleFunc("/health", readiness).Methods("GET")
 	r.HandleFunc("/{name}", handler).Methods("GET")
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("html/static"))))
@@ -69,4 +78,19 @@ func getLastBets(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "text/html")
 	w.Write([]byte(htmlTable))
+}
+
+func InitSession(dg *discordgo.Session) {
+	s = dg
+}
+
+func forwardBetToDiscord(w http.ResponseWriter, r *http.Request) {
+	var b BetMessage
+	err := json.NewDecoder(r.Body).Decode(&b)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	b.Message += " @everyone"
+	s.ChannelMessageSend("812362656341688320", b.Message)
 }

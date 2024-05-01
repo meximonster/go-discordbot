@@ -90,6 +90,7 @@ func main() {
 	}()
 
 	telegram.NewForwardMechanism(c.FORWARD_ENDPOINT)
+	server.InitSession(dg)
 
 	log.Println("up and running!")
 
