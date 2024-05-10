@@ -91,6 +91,5 @@ func forwardBetToDiscord(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	b.Message += " @everyone"
 	s.ChannelMessageSend("1238536129246920755", b.Message)
 }
