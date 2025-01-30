@@ -187,6 +187,14 @@ func WonPerType(table string) ([][]float64, error) {
 		if err != nil {
 			return nil, err
 		}
+		if len(r) == 1 && r[0] == 0 {
+			all = append(all, []float64{0, 1})
+			continue
+		}
+		if len(r) == 1 && r[0] != 0 {
+			all = append(all, []float64{r[0], r[0]})
+			continue
+		}
 		if len(r) != 2 {
 			return nil, fmt.Errorf("slice length: %d, query: %s", len(r), q)
 		}
