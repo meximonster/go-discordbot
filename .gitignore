@@ -2,11 +2,9 @@
 **/.env
 
 # postgres data
-
 **/postgres-data
 
 # html
-
 **/*.html
 
 # .json files

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bets Display</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Bets</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Team</th>
+                <th>Prediction</th>
+                <th>Size</th>
+                <th>Odds</th>
+                <th>Result</th>
+                <th>Posted At</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% bets.forEach(function(bet) { %>
+                <tr>
+                    <td><%= bet.id %></td>
+                    <td><%= bet.team %></td>
+                    <td><%= bet.prediction %></td>
+                    <td><%= bet.size %></td>
+                    <td><%= bet.odds %></td>
+                    <td><%= bet.result %></td>
+                    <td><%= bet.posted_at.toLocaleString() %></td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</body>
+</html>
