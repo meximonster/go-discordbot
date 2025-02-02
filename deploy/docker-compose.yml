@@ -39,23 +39,23 @@ services:
         app_subnet:
           ipv4_address: 172.40.10.11
 
-    # display_app:
-    #   container_name: display_app
-    #   build: ../bets-display
-    #   environment:
-    #     - PGUSER=${POSTGRES_USER}
-    #     - PGPASSWORD=${POSTGRES_PASSWORD}
-    #     - PGHOST=postgres
-    #     - PGDATABASE=postrgres
-    #     - PGPORT=9744
-    #   ports:
-    #     - "3000:3000"
-    #   depends_on:
-    #     postgres:
-    #       condition: service_healthy
-    #   networks:
-    #     app_subnet:
-    #       ipv4_address: 172.40.10.12
+    display_app:
+      container_name: display_app
+      image: meximonster/display-app:latest
+      environment:
+        - PGUSER=${POSTGRES_USER}
+        - PGPASSWORD=${POSTGRES_PASSWORD}
+        - PGHOST=postgres
+        - PGDATABASE=postrgres
+        - PGPORT=9744
+      ports:
+        - "3000:3000"
+      depends_on:
+        postgres:
+          condition: service_healthy
+      networks:
+        app_subnet:
+          ipv4_address: 172.40.10.12
 
 volumes:
   postgres-data:

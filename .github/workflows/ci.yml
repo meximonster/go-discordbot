@@ -13,11 +13,22 @@ jobs:
       - uses: actions/checkout@v3
         name: checkout
 
-      - name: Build and Push Docker Image
+      - name: Build and Push DiscordBot Docker Image
         uses: mr-smithers-excellent/docker-build-push@v4
         with:
           image: meximonster/discord-bot
           tag: latest
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Build and Push DisplayApp Docker Image
+        uses: mr-smithers-excellent/docker-build-push@v4
+        with:
+          image: meximonster/display-app
+          dockerfile: bets-display/Dockerfile
+          tag: latest
+          directory: bets-display
           registry: docker.io
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
