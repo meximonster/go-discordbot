@@ -117,13 +117,3 @@ func GetYield(table string) ([]Yield, error) {
 	}
 	return yield, nil
 }
-
-func getLastBets(table string) ([]Bet, error) {
-	var bets []Bet
-	q := fmt.Sprintf(`SELECT * FROM %s order by id desc`, table)
-	err := dbC.Select(&bets, q)
-	if err != nil {
-		return nil, err
-	}
-	return bets, err
-}

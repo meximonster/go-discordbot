@@ -34,7 +34,6 @@ func Run() error {
 		ReadTimeout:  15 * time.Second,
 	}
 
-	r.HandleFunc("/", getLastBets).Methods("GET")
 	r.HandleFunc("/bet", forwardBetToDiscord).Methods("POST")
 	r.HandleFunc("/health", readiness).Methods("GET")
 	r.HandleFunc("/{name}", handler).Methods("GET")
@@ -69,15 +68,6 @@ func readiness(w http.ResponseWriter, r *http.Request) {
 		Description: description,
 	}
 	json.NewEncoder(w).Encode(res)
-}
-
-func getLastBets(w http.ResponseWriter, r *http.Request) {
-	htmlTable, err := bet.ServeLastBets()
-	if err != nil {
-		w.Write([]byte(err.Error()))
-	}
-	w.Header().Set("Content-Type", "text/html")
-	w.Write([]byte(htmlTable))
 }
 
 func InitSession(dg *discordgo.Session) {
