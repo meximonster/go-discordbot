@@ -46,7 +46,7 @@ services:
         - PGUSER=${POSTGRES_USER}
         - PGPASSWORD=${POSTGRES_PASSWORD}
         - PGHOST=postgres
-        - PGDATABASE=postrgres
+        - PGDATABASE=postgres
         - PGPORT=9744
       ports:
         - "3000:3000"
