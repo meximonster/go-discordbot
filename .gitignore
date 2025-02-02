@@ -6,6 +6,3 @@
 
 # html
 **/*.html
-
-# .json files
-**/*.json
